@@ -6,4 +6,5 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
 data:
+  # this is patched by overlays, please check overlays if you update it.
   config: ""
