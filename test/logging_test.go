@@ -13,13 +13,16 @@ import (
 
 func testLogging() {
 	It("should be successful", func() {
-		checkLog("should be get pod logs", `'{namespace="logging", pod="logging-loki-0"}'`)
+		checkLog("should get pod logs", `'{namespace="logging", pod="logging-loki-0"}'`)
 
 		ssNodeName := getNodeName("ss")
-		checkLog("should be get journal logs by ss", fmt.Sprintf(`'{job="systemd-journal", instance="%s"}'`, ssNodeName))
+		checkLog("should get journal logs by ss", fmt.Sprintf(`'{job="systemd-journal", instance="%s"}'`, ssNodeName))
 
 		csNodeName := getNodeName("cs")
-		checkLog("should be get journal logs by cs", fmt.Sprintf(`'{job="systemd-journal", instance="%s"}'`, csNodeName))
+		checkLog("should get journal logs by cs", fmt.Sprintf(`'{job="systemd-journal", instance="%s"}'`, csNodeName))
+
+		masterNodeName := getNodeName("master")
+		checkLog("should get audit logs from master", fmt.Sprintf(`'{job="kubernetes-apiservers", type="audit", instance="%s"}'`, masterNodeName))
 	})
 }
 
