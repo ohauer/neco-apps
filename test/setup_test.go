@@ -3,6 +3,7 @@ package test
 import (
 	"bufio"
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -25,66 +26,12 @@ import (
 
 const (
 	argoCDPasswordFile = "./argocd-password.txt"
-
-	teleportSecret = `
-apiVersion: v1
-kind: Secret
-metadata:
-  name: teleport-auth-secret
-  namespace: teleport
-  labels:
-    app.kubernetes.io/name: teleport
-stringData:
-  teleport.yaml: |
-    auth_service:
-      authentication:
-        second_factor: "off"
-        type: local
-      cluster_name: gcp0
-      public_addr: teleport-auth:3025
-      tokens:
-        - "proxy,node:{{ .Token }}"
-        - "app:teleport-app-token"
-    teleport:
-      data_dir: /var/lib/teleport
-      auth_token: {{ .Token }}
-      log:
-        output: stderr
-        severity: DEBUG
-      storage:
-        type: dir
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: teleport-proxy-secret
-  namespace: teleport
-  labels:
-    app.kubernetes.io/name: teleport
-stringData:
-  teleport.yaml: |
-    proxy_service:
-      https_cert_file: /var/lib/certs/tls.crt
-      https_key_file: /var/lib/certs/tls.key
-      kubernetes:
-        enabled: true
-        listen_addr: 0.0.0.0:3026
-        public_addr: [ "teleport.gcp0.dev-ne.co:3026" ]
-      listen_addr: 0.0.0.0:3023
-      public_addr: [ "teleport.gcp0.dev-ne.co:443" ]
-      web_listen_addr: 0.0.0.0:3080
-    teleport:
-      data_dir: /var/lib/teleport
-      auth_token: {{ .Token }}
-      auth_servers:
-        - teleport-auth:3025
-      log:
-        output: stderr
-        severity: DEBUG
-`
 )
 
 var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
+
+//go:embed testdata/setup-teleport.yaml
+var setupTeleportYAML string
 
 func prepareNodes() {
 	It("should increase worker nodes", func() {
@@ -179,7 +126,7 @@ func testSetup() {
 				"get", "--print-value-only", "/neco/teleport/auth-token")
 			Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
 			teleportToken := strings.TrimSpace(string(stdout))
-			teleportTmpl := template.Must(template.New("").Parse(teleportSecret))
+			teleportTmpl := template.Must(template.New("").Parse(setupTeleportYAML))
 			buf := bytes.NewBuffer(nil)
 			err = teleportTmpl.Execute(buf, struct {
 				Token string

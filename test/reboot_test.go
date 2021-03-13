@@ -2,6 +2,7 @@ package test
 
 import (
 	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -75,6 +76,9 @@ func getSerfMembers() (*serfMemberContainer, error) {
 	}
 	return &result, nil
 }
+
+//go:embed testdata/reboot-pod.yaml
+var rebootPodYAML []byte
 
 // testRebootAllNodes tests all nodes stop scenario
 func testRebootAllNodes() {
@@ -295,19 +299,8 @@ func testRebootAllNodes() {
 		}).Should(Succeed())
 
 		By("confirming that pods can be deployed")
-		testhttpdYAML := `
-apiVersion: v1
-kind: Pod
-metadata:
-  name: testhttpd-reboot
-spec:
-  containers:
-  - name: testhttpd
-    image: quay.io/cybozu/testhttpd:0
-    imagePullPolicy: Always
-`
 		Eventually(func() error {
-			stdout, stderr, err := ExecAtWithInput(boot0, []byte(testhttpdYAML), "kubectl", "apply", "-f", "-")
+			stdout, stderr, err := ExecAtWithInput(boot0, rebootPodYAML, "kubectl", "apply", "-f", "-")
 			if err != nil {
 				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 			}

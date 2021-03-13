@@ -1,6 +1,7 @@
 package test
 
 import (
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,47 +13,12 @@ import (
 	policyv1beta1 "k8s.io/api/policy/v1beta1"
 )
 
+//go:embed testdata/topolvm.yaml
+var topolvmYAML []byte
+
 func prepareTopoLVM() {
 	It("should prepare a Pod and a PVC", func() {
-		manifest := `
-apiVersion: v1
-kind: Pod
-metadata:
-  name: topolvm-test
-  namespace: sandbox
-spec:
-  priorityClassName: node-bound
-  containers:
-  - name: ubuntu
-    image: quay.io/cybozu/ubuntu:20.04
-    command: ["/usr/local/bin/pause"]
-    volumeMounts:
-    - name: my-volume
-      mountPath: /test1
-  volumes:
-  - name: my-volume
-    persistentVolumeClaim:
-      claimName: topo-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: topo-pvc
-  namespace: sandbox
-  annotations:
-    resize.topolvm.io/threshold: 90%
-    resize.topolvm.io/increase: 1Gi
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-    limits:
-      storage: 3Gi
-  storageClassName: topolvm-provisioner
-`
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(manifest), "kubectl", "apply", "-f", "-")
+		stdout, stderr, err := ExecAtWithInput(boot0, topolvmYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 	})
 }
