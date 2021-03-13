@@ -1,6 +1,7 @@
 package test
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 
@@ -10,67 +11,12 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+//go:embed testdata/elastic.yaml
+var elasticYAML []byte
+
 func prepareElastic() {
 	It("should create Elasticsearch cluster", func() {
-		elasticYAML := `
-apiVersion: elasticsearch.k8s.elastic.co/v1beta1
-kind: Elasticsearch
-metadata:
-  name: sample
-  namespace: sandbox
-spec:
-  version: 7.4.2
-  nodeSets:
-  - count: 1
-    name: master-nodes
-    config:
-      node.master: true
-      node.data: true
-      node.ingest: true
-    volumeClaimTemplates:
-    - metadata:
-        name: elasticsearch-data
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Gi
-        storageClassName: topolvm-provisioner
-    podTemplate:
-      spec:
-        serviceAccountName: elastic
-        securityContext:
-          runAsUser: 1000
-        containers:
-          - name: elasticsearch
-            env:
-              - name: ES_JAVA_OPTS
-                value: "-Xms1g -Xmx1g"
-            resources:
-              limits:
-                memory: 2Gi
-              requests:
-                memory: 2Gi
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: ingress-sample
-  namespace: sandbox
-spec:
-  order: 2000.0
-  selector: elasticsearch.k8s.elastic.co/cluster-name == "sample"
-  types:
-    - Ingress
-  ingress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        ports:
-          - 9200:9400
-`
-		_, stderr, err := ExecAtWithInput(boot0, []byte(elasticYAML), "kubectl", "apply", "-f", "-")
+		_, stderr, err := ExecAtWithInput(boot0, elasticYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 	})
 }

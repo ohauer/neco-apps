@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-local-pv-provisioner
+  namespace: sandbox
+spec:
+  containers:
+  - name: ubuntu
+    image: quay.io/cybozu/ubuntu:20.04
+    command: ["/usr/local/bin/pause"]
+    volumeDevices:
+    - name: local-volume
+      devicePath: /dev/local-dev
+  volumes:
+  - name: local-volume
+    persistentVolumeClaim:
+      claimName: local-pvc
+  tolerations:
+  - key: cke.cybozu.com/role
+    operator: Equal
+    value: storage
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: local-pvc
+  namespace: sandbox
+spec:
+  storageClassName: local-storage
+  accessModes:
+  - ReadWriteOnce
+  volumeMode: Block
+  resources:
+    requests:
+      storage: 1Gi
