@@ -1,0 +1,59 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: tls
+  namespace: test-ingress
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    kubernetes.io/ingress.class: global
+spec:
+  virtualhost:
+    fqdn: "{{.}}-https.test-ingress.gcp0.dev-ne.co"
+    tls:
+      secretName: testsecret
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: testhttpd
+          port: 80
+    - conditions:
+        - prefix: /insecure
+      permitInsecure: true
+      services:
+        - name: testhttpd
+          port: 80
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: root
+  namespace: test-ingress
+  annotations:
+    kubernetes.io/ingress.class: global
+spec:
+  virtualhost:
+    fqdn: "{{.}}-http.test-ingress.gcp0.dev-ne.co"
+  routes:
+    - conditions:
+        - prefix: /testhttpd
+      services:
+        - name: testhttpd
+          port: 80
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: bastion
+  namespace: test-ingress
+  annotations:
+    kubernetes.io/ingress.class: bastion
+spec:
+  virtualhost:
+    fqdn: "{{.}}-bastion.test-ingress.gcp0.dev-ne.co"
+  routes:
+    - conditions:
+        - prefix: /testhttpd
+      services:
+        - name: testhttpd
+          port: 80

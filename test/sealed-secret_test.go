@@ -1,26 +1,20 @@
 package test
 
 import (
+	_ "embed"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
 
+//go:embed testdata/sealed-secret.yaml
+var sealedSecretYAML []byte
+
 func prepareSealedSecret() {
 	It("should create a Secret to be converted for SealedSecret", func() {
 		By("creating a SealedSecret")
-		secret := []byte(`
-apiVersion: v1
-kind: Secret
-metadata:
-  name: sealed-secret-test
-  namespace: default
-type: Opaque
-data:
-  foo: YmFy
-`)
-		stdout, stderr, err := ExecAtWithInput(boot0, secret, "kubeseal | kubectl apply -f -")
+		stdout, stderr, err := ExecAtWithInput(boot0, sealedSecretYAML, "kubeseal | kubectl apply -f -")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
 	})
 }

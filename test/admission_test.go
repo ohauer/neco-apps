@@ -1,9 +1,11 @@
 package test
 
 import (
+	"bytes"
+	_ "embed"
 	"encoding/json"
-	"fmt"
 	"strings"
+	"text/template"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,20 +13,21 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
+//go:embed testdata/admission-pod.yaml
+var admissionPodYAML []byte
+
+//go:embed testdata/admission-networkpolicy.yaml
+var admissionNetworkPolicyYAML []byte
+
+//go:embed testdata/admission-httpproxy.yaml
+var admissionHTTPProxyYAML []byte
+
+//go:embed testdata/admission-application.yaml
+var admissionApplicationYAML string
+
 func testAdmission() {
 	It("should mutate pod to append emptyDir for /tmp", func() {
-		podYAML := `apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-mutator-test
-  namespace: default
-spec:
-  containers:
-  - name: ubuntu
-    image: quay.io/cybozu/ubuntu:20.04
-    command: ["pause"]
-`
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(podYAML), "kubectl", "apply", "-f", "-")
+		stdout, stderr, err := ExecAtWithInput(boot0, admissionPodYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 
 		By("confirming that a emptyDir is added")
@@ -47,48 +50,14 @@ spec:
 	})
 
 	It("should validate Calico NetworkPolicy", func() {
-		networkPolicyYAML := `
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: admission-test
-  namespace: default
-spec:
-  order: 100.0
-  selector: app.kubernetes.io/name == 'hoge'
-  types:
-  - Ingress
-  ingress:
-  - action: Allow
-    protocol: TCP
-    destination:
-      ports:
-      - 8000
-`
-		_, stderr, err := ExecAtWithInput(boot0, []byte(networkPolicyYAML), "kubectl", "apply", "-f", "-")
+		_, stderr, err := ExecAtWithInput(boot0, admissionNetworkPolicyYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).To(HaveOccurred())
 		Expect(string(stderr)).Should(ContainSubstring(`admission webhook "vnetworkpolicy.kb.io" denied the request`))
 	})
 
 	It("should default/validate Contour HTTPProxy", func() {
-		httpProxyYAML := `
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: bad
-  namespace: default
-spec:
-  virtualhost:
-    fqdn: bad.test-admission.gcp0.dev-ne.co
-  routes:
-    - conditions:
-        - prefix: /
-      services:
-        - name: dummy
-          port: 80
-`
 		By("creating HTTPProxy without annotations")
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(httpProxyYAML), "kubectl", "apply", "-f", "-")
+		stdout, stderr, err := ExecAtWithInput(boot0, admissionHTTPProxyYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 
 		stdout, stderr, err = ExecAt(boot0, "kubectl", "get", "-n", "default", "httpproxy/bad", "-o", "json")
@@ -103,42 +72,30 @@ spec:
 		stdout, stderr, err = ExecAt(boot0, "kubectl", "annotate", "-n", "default", "httpproxy/bad", "kubernetes.io/ingress.class-")
 		Expect(err).To(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
 
-		stdout, stderr, err = ExecAtWithInput(boot0, []byte(httpProxyYAML), "kubectl", "delete", "-f", "-")
+		stdout, stderr, err = ExecAtWithInput(boot0, admissionHTTPProxyYAML, "kubectl", "delete", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 	})
 
 	It("should validate Application", func() {
-		applicationTmplYAML := `
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: %s
-  namespace: default
-spec:
-  project: %s
-  source:
-    repoURL: %s
-    targetRevision: main
-    path: dummy/
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default
-`
-
 		By("creating Application which points to neco-apps repo and belongs to default project")
-		name := "valid"
-		project := "default"
-		repoURL := "https://github.com/cybozu-go/neco-apps.git"
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(fmt.Sprintf(applicationTmplYAML, name, project, repoURL)),
-			"kubectl", "apply", "-f", "-")
+		tmpl := template.Must(template.New("").Parse(admissionApplicationYAML))
+		type tmplParams struct {
+			Name    string
+			Project string
+			URL     string
+		}
+		buf := new(bytes.Buffer)
+		err := tmpl.Execute(buf, tmplParams{"valid", "default", "https://github.com/cybozu-go/neco-apps.git"})
+		Expect(err).NotTo(HaveOccurred())
+		stdout, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-		ExecSafeAt(boot0, "kubectl", "delete", "application", name)
+		ExecSafeAt(boot0, "kubectl", "delete", "application", "valid")
 
 		By("denying to create Application which points to maneki-apps repo and belongs to default project")
-		name = "invalid"
-		repoURL = "https://github.com/cybozu-private/maneki-apps.git"
-		stdout, stderr, err = ExecAtWithInput(boot0, []byte(fmt.Sprintf(applicationTmplYAML, name, project, repoURL)),
-			"kubectl", "apply", "-f", "-")
+		buf.Reset()
+		err = tmpl.Execute(buf, tmplParams{"invalid", "default", "https://github.com/cybozu-private/maneki-apps.git"})
+		Expect(err).NotTo(HaveOccurred())
+		stdout, stderr, err = ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).To(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 	})
 

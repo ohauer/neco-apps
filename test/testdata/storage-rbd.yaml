@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: "{{.}}-pvc-rbd"
+  namespace: sandbox
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: "{{.}}"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{.}}-pod-rbd"
+  namespace: sandbox
+spec:
+  containers:
+  - name: ubuntu
+    image: quay.io/cybozu/ubuntu-debug:20.04
+    imagePullPolicy: Always
+    command: ["/usr/local/bin/pause"]
+    volumeMounts:
+    - mountPath: /test1
+      name: rbd-volume
+  volumes:
+  - name: rbd-volume
+    persistentVolumeClaim:
+      claimName: "{{.}}-pvc-rbd"

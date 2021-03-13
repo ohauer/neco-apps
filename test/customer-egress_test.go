@@ -1,6 +1,7 @@
 package test
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 
@@ -10,64 +11,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+//go:embed testdata/customer-egress.yaml
+var customerEgressYAML []byte
+
 func prepareCustomerEgress() {
 	It("should create ubuntu pod on sandbox ns", func() {
-		podYAML := `apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ubuntu-without-nat-annotation
-  namespace: sandbox
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      custom-egress-test: non-nat
-  template:
-    metadata:
-      labels:
-        custom-egress-test: non-nat
-    spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-      containers:
-      - args:
-        - pause
-        image: quay.io/cybozu/ubuntu-debug:20.04
-        name: ubuntu
-`
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(podYAML), "kubectl", "apply", "-f", "-")
-		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-	})
-
-	It("should create ubuntu pod with annotation on sandbox ns", func() {
-		podYAMLWIthAnnotation := `apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ubuntu-with-nat-annotation
-  namespace: sandbox
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      custom-egress-test: nat
-  template:
-    metadata:
-      annotations:
-        egress.coil.cybozu.com/customer-egress: nat
-      labels:
-        custom-egress-test: nat
-    spec:
-      securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-      containers:
-      - args:
-        - pause
-        image: quay.io/cybozu/ubuntu-debug:20.04
-        name: ubuntu
-`
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(podYAMLWIthAnnotation), "kubectl", "apply", "-f", "-")
+		stdout, stderr, err := ExecAtWithInput(boot0, customerEgressYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 	})
 }

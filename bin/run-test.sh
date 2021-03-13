@@ -9,8 +9,7 @@ cat >run.sh <<EOF
 #!/bin/sh -ex
 # Run test
 GOPATH=\$HOME/go
-GO111MODULE=on
-export GOPATH GO111MODULE
+export GOPATH
 PATH=/usr/local/go/bin:\$GOPATH/bin:\$PATH
 export PATH
 NECO_DIR=\$HOME/go/src/github.com/${CIRCLE_PROJECT_USERNAME}/neco
