@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"sort"
 	"strconv"
@@ -149,7 +148,7 @@ func testSetup() {
 	if !doUpgrade {
 		It("should create secrets of account.json", func() {
 			By("loading account.json")
-			data, err := ioutil.ReadFile("account.json")
+			data, err := os.ReadFile("account.json")
 			Expect(err).ShouldNot(HaveOccurred())
 
 			By("creating namespace and secrets for external-dns")
@@ -196,7 +195,7 @@ func testSetup() {
 
 	It("should apply zerossl secrets", func() {
 		By("loading zerossl-secret-resource.json")
-		data, err := ioutil.ReadFile("zerossl-secret-resource.json")
+		data, err := os.ReadFile("zerossl-secret-resource.json")
 		Expect(err).ShouldNot(HaveOccurred())
 
 		By("creating namespace and secrets for zerossl")
@@ -657,7 +656,7 @@ func applyMutatingWebhooks() {
 func setupArgoCD() {
 	By("installing Argo CD")
 	createNamespaceIfNotExists("argocd")
-	data, err := ioutil.ReadFile("install.yaml")
+	data, err := os.ReadFile("install.yaml")
 	Expect(err).ShouldNot(HaveOccurred())
 	_, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "apply", "-n", "argocd", "-f", "-")
 	Expect(err).ShouldNot(HaveOccurred(), "faied to apply install.yaml. stderr=%s", stderr)
