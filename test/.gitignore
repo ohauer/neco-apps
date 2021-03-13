@@ -8,7 +8,6 @@ zerossl-secret-resource.json
 /bin
 /build
 /neco-apps
-/go.sum
 argocd-password.txt
 /download
 current-secret.yaml

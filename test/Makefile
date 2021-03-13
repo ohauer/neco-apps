@@ -2,7 +2,7 @@ OVERLAY ?= gcp
 BOOT0 = 10.72.48.0
 BOOT1 = 10.72.48.1
 BOOT2 = 10.72.48.2
-GINKGO = env GO111MODULE=on $(GOPATH)/bin/ginkgo --failFast -v
+GINKGO = env $(GOPATH)/bin/ginkgo --failFast -v
 SUITE ?= bootstrap
 ifeq ($(SUITE), run)
 	GINKGO += -p
@@ -123,13 +123,13 @@ test-tools: staticcheck nilerr
 .PHONY: staticcheck
 staticcheck:
 	if ! which staticcheck >/dev/null; then \
-		cd /tmp; env GOFLAGS= GO111MODULE=on go get honnef.co/go/tools/cmd/staticcheck; \
+		env GOFLAGS= go install honnef.co/go/tools/cmd/staticcheck@latest; \
 	fi
 
 .PHONY: nilerr
 nilerr:
 	if ! which nilerr >/dev/null; then \
-		cd /tmp; env GOFLAGS= GO111MODULE=on go get github.com/gostaticanalysis/nilerr/cmd/nilerr; \
+		env GOFLAGS= go install github.com/gostaticanalysis/nilerr/cmd/nilerr@latest; \
 	fi
 
 .PHONY: clean
