@@ -151,7 +151,7 @@ commands:
 jobs:
   test:
     docker:
-      - image: quay.io/cybozu/golang:1.15-focal
+      - image: quay.io/cybozu/golang:1.16-focal
     steps:
       - checkout
       # CircleCI has not yet supported to use environment variables in cache keys, so we need to use a workaround.
@@ -334,16 +334,16 @@ workflows:
           filters:
             branches:
               ignore: ["stage", "release", /^op-(stage|release)-.*/]
-      - upgrade-stage:
-          requires: ["test"]
-          filters:
-            branches:
-              ignore: ["stage", "release", /^op-(stage|release)-.*/]
-      - upgrade-release:
-          requires: ["test"]
-          filters:
-            branches:
-              ignore: ["release", /^op-(stage|release)-.*/]
+      # - upgrade-stage:
+      #     requires: ["test"]
+      #     filters:
+      #       branches:
+      #         ignore: ["stage", "release", /^op-(stage|release)-.*/]
+      # - upgrade-release:
+      #     requires: ["test"]
+      #     filters:
+      #       branches:
+      #         ignore: ["release", /^op-(stage|release)-.*/]
       - create-pull-request-stage:
           filters:
             branches:
@@ -351,8 +351,8 @@ workflows:
                 - main
           requires:
             - bootstrap
-            - upgrade-stage
-            - upgrade-release
+            # - upgrade-stage
+            # - upgrade-release
 
   # Test with the specified neco branch.
   manual-dctest-with-neco-feature-branch:

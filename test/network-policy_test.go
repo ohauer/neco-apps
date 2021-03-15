@@ -1,6 +1,7 @@
 package test
 
 import (
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -18,65 +19,16 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+//go:embed testdata/network-policy.yaml
+var networkPolicyYAML []byte
+
 func prepareNetworkPolicy() {
 	It("should prepare test pods in test-netpol namespace", func() {
 		By("preparing namespace")
 		createNamespaceIfNotExists("test-netpol")
 
-		By("deploying testhttpd pods")
-		deployYAML := `
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: testhttpd
-  namespace: test-netpol
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: testhttpd
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: testhttpd
-    spec:
-      containers:
-      - image: quay.io/cybozu/testhttpd:0
-        name: testhttpd
-      restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: testhttpd
-  namespace: test-netpol
-spec:
-  ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 8000
-  selector:
-    app.kubernetes.io/name: testhttpd
-`
-		_, stderr, err := ExecAtWithInput(boot0, []byte(deployYAML), "kubectl", "apply", "-f", "-")
-		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
-
-		By("creating ubuntu-debug pod")
-		debugYAML := `
-apiVersion: v1
-kind: Pod
-metadata:
-  name: ubuntu
-spec:
-  securityContext:
-    runAsUser: 10000
-    runAsGroup: 10000
-  containers:
-  - name: ubuntu
-    image: quay.io/cybozu/ubuntu-debug:20.04
-    command: ["/usr/local/bin/pause"]
-`
-		_, stderr, err = ExecAtWithInput(boot0, []byte(debugYAML), "kubectl", "apply", "-n", "default", "-f", "-")
+		By("deploying pods")
+		_, stderr, err := ExecAtWithInput(boot0, networkPolicyYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 	})
 

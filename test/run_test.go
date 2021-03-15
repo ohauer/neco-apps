@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net"
 	"os"
 	"strings"
@@ -94,7 +94,7 @@ func parsePrivateKey(keyPath string) (ssh.Signer, error) {
 	}
 	defer f.Close()
 
-	data, err := ioutil.ReadAll(f)
+	data, err := io.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
@@ -175,12 +175,12 @@ func ExecSafeAt(host string, args ...string) []byte {
 }
 
 func loadArgoCDPassword() string {
-	password, err := ioutil.ReadFile(argoCDPasswordFile)
+	password, err := os.ReadFile(argoCDPasswordFile)
 	Expect(err).NotTo(HaveOccurred())
 	return string(password)
 }
 
 func saveArgoCDPassword(password string) {
-	err := ioutil.WriteFile(argoCDPasswordFile, []byte(password), os.FileMode(0644))
+	err := os.WriteFile(argoCDPasswordFile, []byte(password), os.FileMode(0644))
 	Expect(err).NotTo(HaveOccurred())
 }

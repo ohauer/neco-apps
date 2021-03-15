@@ -1,8 +1,11 @@
 package test
 
 import (
+	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
+	"text/template"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -11,34 +14,16 @@ import (
 
 var sandboxGrafanaFQDN = testID + "-sandbox-grafana.gcp0.dev-ne.co"
 
+//go:embed testdata/sandbox.yaml
+var sandboxYAML string
+
 func prepareSandboxGrafanaIngress() {
 	It("should create HTTPProxy for Sandbox Grafana", func() {
-		manifest := fmt.Sprintf(`
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: grafana-test
-  namespace: sandbox
-  annotations:
-    kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: bastion
-spec:
-  virtualhost:
-    fqdn: %s
-    tls:
-      secretName: grafana-tls
-  routes:
-    - conditions:
-        - prefix: /
-      timeoutPolicy:
-        response: 2m
-        idle: 5m
-      services:
-        - name: grafana
-          port: 3000
-`, sandboxGrafanaFQDN)
-
-		_, stderr, err := ExecAtWithInput(boot0, []byte(manifest), "kubectl", "apply", "-f", "-")
+		tmpl := template.Must(template.New("").Parse(sandboxYAML))
+		buf := new(bytes.Buffer)
+		err := tmpl.Execute(buf, testID)
+		Expect(err).NotTo(HaveOccurred())
+		_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 	})
 }

@@ -2,6 +2,8 @@ package test
 
 import (
 	"bufio"
+	"bytes"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,6 +14,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/cybozu-go/log"
 	. "github.com/onsi/ginkgo"
@@ -100,46 +103,16 @@ func testKubeStateMetrics() {
 	})
 }
 
-func preparePushgateway() {
-	manifestBase := `
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: pushgateway-bastion-test
-  namespace: monitoring
-  annotations:
-    kubernetes.io/ingress.class: bastion
-spec:
-  virtualhost:
-    fqdn: %s
-  routes:
-    - conditions:
-        - prefix: /
-      services:
-        - name: pushgateway
-          port: 9091
----
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: pushgateway-forest-test
-  namespace: monitoring
-  annotations:
-    kubernetes.io/ingress.class: forest
-spec:
-  virtualhost:
-    fqdn: %s
-  routes:
-    - conditions:
-        - prefix: /
-      services:
-        - name: pushgateway
-          port: 9091
-`
+//go:embed testdata/monitoring-pushgateway.yaml
+var monitoringPushgatewayYAML string
 
+func preparePushgateway() {
 	It("should create HTTPProxy for Pushgateway", func() {
-		manifest := fmt.Sprintf(manifestBase, bastionPushgatewayFQDN, forestPushgatewayFQDN)
-		_, stderr, err := ExecAtWithInput(boot0, []byte(manifest), "kubectl", "apply", "-f", "-")
+		tmpl := template.Must(template.New("").Parse(monitoringPushgatewayYAML))
+		buf := new(bytes.Buffer)
+		err := tmpl.Execute(buf, testID)
+		Expect(err).NotTo(HaveOccurred())
+		_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 	})
 }
@@ -201,59 +174,16 @@ func testPushgateway() {
 	})
 }
 
+//go:embed testdata/monitoring-ingresshealth.yaml
+var monitoringIngressHealthYAML string
+
 func prepareIngressHealth() {
 	It("should create HTTPProxy for ingress-watcher", func() {
-		manifest := fmt.Sprintf(`
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: ingress-health-global-test
-  namespace: monitoring
-  annotations:
-    kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: global
-spec:
-  virtualhost:
-    fqdn: %s
-    tls:
-      secretName: ingress-health-global-test-tls
-  routes:
-    - conditions:
-        - prefix: /
-      services:
-        - name: ingress-health-http
-          port: 80
-      permitInsecure: true
-      timeoutPolicy:
-        response: 2m
-        idle: 5m
----
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: ingress-health-bastion-test
-  namespace: monitoring
-  annotations:
-    kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: bastion
-spec:
-  virtualhost:
-    fqdn: %s
-    tls:
-      secretName: ingress-health-bastion-test-tls
-  routes:
-    - conditions:
-        - prefix: /
-      services:
-        - name: ingress-health-http
-          port: 80
-      permitInsecure: true
-      timeoutPolicy:
-        response: 2m
-        idle: 5m
-`, globalHealthFQDN, bastionHealthFQDN)
-
-		_, stderr, err := ExecAtWithInput(boot0, []byte(manifest), "kubectl", "apply", "-f", "-")
+		tmpl := template.Must(template.New("").Parse(monitoringIngressHealthYAML))
+		buf := new(bytes.Buffer)
+		err := tmpl.Execute(buf, testID)
+		Expect(err).NotTo(HaveOccurred())
+		_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "failed to create HTTPProxy. stderr: %s", stderr)
 	})
 }
@@ -273,8 +203,8 @@ func testIngressHealth() {
 				return err
 			}
 
-			if int(deployment.Status.AvailableReplicas) != 1 {
-				return fmt.Errorf("AvailableReplicas is not 1: %d", int(deployment.Status.AvailableReplicas))
+			if int(deployment.Status.AvailableReplicas) != 2 {
+				return fmt.Errorf("AvailableReplicas is not 2: %d", int(deployment.Status.AvailableReplicas))
 			}
 
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "monitoring", "get", "service", "ingress-health-http")
@@ -365,34 +295,16 @@ func getLoadBalancerIP(namespace, service string) (string, error) {
 	return svc.Status.LoadBalancer.Ingress[0].IP, nil
 }
 
+//go:embed testdata/monitoring-grafana-operator.yaml
+var monitoringGrafanaYAML string
+
 func prepareGrafanaOperator() {
 	It("should create HTTPProxy for grafana", func() {
-		manifest := fmt.Sprintf(`
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: grafana-test
-  namespace: monitoring
-  annotations:
-    kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: bastion
-spec:
-  virtualhost:
-    fqdn: %s
-    tls:
-      secretName: grafana-test-tls
-  routes:
-    - conditions:
-        - prefix: /
-      services:
-        - name: grafana-service
-          port: 3000
-      timeoutPolicy:
-        response: 2m
-        idle: 5m
-`, grafanaFQDN)
-
-		_, stderr, err := ExecAtWithInput(boot0, []byte(manifest), "kubectl", "apply", "-f", "-")
+		tmpl := template.Must(template.New("").Parse(monitoringGrafanaYAML))
+		buf := new(bytes.Buffer)
+		err := tmpl.Execute(buf, testID)
+		Expect(err).NotTo(HaveOccurred())
+		_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "failed to create HTTPProxy. stderr: %s", stderr)
 	})
 }
