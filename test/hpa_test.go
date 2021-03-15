@@ -1,6 +1,7 @@
 package test
 
 import (
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,149 +12,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func prepareHPA() {
-	const manifests = `
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: hpa-resource
-  namespace: sandbox
-spec:
-  selector:
-    matchLabels:
-      run: hpa-resource
-  template:
-    metadata:
-      labels:
-        run: hpa-resource
-    spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 10000
-        runAsGroup: 10000
-      containers:
-      - name: ubuntu
-        image: quay.io/cybozu/ubuntu:20.04
-        command: ["/bin/sh", "-c", "while true; do true; done"]
-        resources:
-          requests:
-            cpu: 100m
-          limits:
-            cpu: 200m
----
-apiVersion: autoscaling/v2beta2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: hpa-resource
-  namespace: sandbox
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: hpa-resource
-  minReplicas: 1
-  maxReplicas: 2
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: hpa-custom
-  namespace: sandbox
-spec:
-  selector:
-    matchLabels:
-      run: hpa-custom
-  template:
-    metadata:
-      labels:
-        run: hpa-custom
-    spec:
-      containers:
-      - name: testhttpd
-        image: quay.io/cybozu/testhttpd:0
-        resources:
-          requests:
-            cpu: 100m
----
-apiVersion: autoscaling/v2beta2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: hpa-custom
-  namespace: sandbox
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: hpa-custom
-  minReplicas: 1
-  maxReplicas: 2
-  metrics:
-  - type: Pods
-    pods:
-      metric:
-        name: test_hpa_requests_per_second
-      target:
-        type: AverageValue
-        averageValue: 10
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: hpa-external
-  namespace: sandbox
-spec:
-  selector:
-    matchLabels:
-      run: hpa-external
-  template:
-    metadata:
-      labels:
-        run: hpa-external
-    spec:
-      containers:
-      - name: testhttpd
-        image: quay.io/cybozu/testhttpd:0
-        resources:
-          requests:
-            cpu: 100m
----
-apiVersion: autoscaling/v2beta2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: hpa-external
-  namespace: sandbox
-  annotations:
-    metric-config.external.processed-events-per-second.prometheus/query: |
-      scalar(test_hpa_external)
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: hpa-external
-  minReplicas: 1
-  maxReplicas: 4
-  metrics:
-  - type: External
-    external:
-      metric:
-        name: processed-events-per-second
-        selector:
-          matchLabels:
-            type: prometheus
-      target:
-        type: AverageValue
-        averageValue: 10
-`
+//go:embed testdata/hpa.yaml
+var hpaYAML []byte
 
+func prepareHPA() {
 	It("should prepare resources for HPA tests", func() {
-		_, stderr, err := ExecAtWithInput(boot0, []byte(manifests), "kubectl", "apply", "-f", "-")
+		_, stderr, err := ExecAtWithInput(boot0, hpaYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
 	})
 }

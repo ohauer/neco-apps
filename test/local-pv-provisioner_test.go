@@ -1,6 +1,7 @@
 package test
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -35,47 +36,13 @@ func getNodeIPFromPV(pv *corev1.PersistentVolume) (string, error) {
 	return pv.Spec.NodeAffinity.Required.NodeSelectorTerms[0].MatchExpressions[0].Values[0], nil
 }
 
+//go:embed testdata/local-pv.yaml
+var localPVYAML []byte
+
 func prepareLocalPVProvisioner() {
 	It("should be used as block device", func() {
 		By("deploying Pod with PVC")
-		manifest := `
-apiVersion: v1
-kind: Pod
-metadata:
-  name: test-local-pv-provisioner
-  namespace: sandbox
-spec:
-  containers:
-  - name: ubuntu
-    image: quay.io/cybozu/ubuntu:20.04
-    command: ["/usr/local/bin/pause"]
-    volumeDevices:
-    - name: local-volume
-      devicePath: /dev/local-dev
-  volumes:
-  - name: local-volume
-    persistentVolumeClaim:
-      claimName: local-pvc
-  tolerations:
-  - key: cke.cybozu.com/role
-    operator: Equal
-    value: storage
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: local-pvc
-  namespace: sandbox
-spec:
-  storageClassName: local-storage
-  accessModes:
-  - ReadWriteOnce
-  volumeMode: Block
-  resources:
-    requests:
-      storage: 1Gi
-`
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(manifest), "kubectl", "apply", "-f", "-")
+		stdout, stderr, err := ExecAtWithInput(boot0, localPVYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 	})
 }

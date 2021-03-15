@@ -1,12 +1,15 @@
 package test
 
 import (
+	"bytes"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"math"
 	"regexp"
 	"strconv"
 	"strings"
+	"text/template"
 	"time"
 
 	. "github.com/onsi/ginkgo"
@@ -15,53 +18,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+//go:embed testdata/storage-load.yaml
+var storageLoadYAML []byte
+
 func prepareLoadPods() {
 	It("should deploy pods", func() {
-		yamlSS := `
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: addload-for-ss
-  namespace: default
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: addload
-  template:
-    metadata:
-      labels:
-        app: addload
-    spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-              - key: app
-                operator: In
-                values:
-                - addload
-            topologyKey: "kubernetes.io/hostname"
-      containers:
-      - name: spread-test-ubuntu
-        image: quay.io/cybozu/ubuntu:20.04
-        command:
-        - "/usr/local/bin/pause"
-        securityContext:
-          runAsUser: 10000
-          runAsGroup: 10000
-        resources:
-          requests:
-            cpu: "1"
-      nodeSelector:
-        cke.cybozu.com/role: ss
-      tolerations:
-      - key: cke.cybozu.com/role
-        operator: Equal
-        value: storage
-`
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(yamlSS), "kubectl", "apply", "-f", "-")
+		stdout, stderr, err := ExecAtWithInput(boot0, storageLoadYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 
 		Eventually(func() error {
@@ -86,77 +48,26 @@ spec:
 	})
 }
 
+//go:embed testdata/storage-obc.yaml
+var storageOBCYAML []byte
+
+//go:embed testdata/storage-rbd.yaml
+var storageRBDYAML string
+
 func prepareRookCeph() {
 	It("should apply a OBC resource and a POD for testRookRGW", func() {
-		podPvcYaml := `apiVersion: objectbucket.io/v1alpha1
-kind: ObjectBucketClaim
-metadata:
-  name: pod-ob
-  namespace: sandbox
-spec:
-  generateBucketName: obc-poc
-  storageClassName: ceph-hdd-bucket
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-ob
-  namespace: sandbox
-spec:
-  containers:
-  - name: mycontainer
-    image: quay.io/cybozu/ubuntu-debug:20.04
-    imagePullPolicy: Always
-    args:
-    - infinity
-    command:
-    - sleep
-    envFrom:
-    - configMapRef:
-        name: pod-ob
-    - secretRef:
-        name: pod-ob
-`
-
-		_, stderr, err := ExecAtWithInput(boot0, []byte(podPvcYaml), "kubectl", "apply", "-f", "-")
+		_, stderr, err := ExecAtWithInput(boot0, storageOBCYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 	})
 
 	It("should create a POD for testRookRBD", func() {
+		tmpl := template.Must(template.New("").Parse(storageRBDYAML))
 		for _, storageClassName := range []string{"ceph-hdd-block", "ceph-ssd-block"} {
-			podPvcYaml := fmt.Sprintf(`kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: %s-pvc-rbd
-  namespace: sandbox
-spec:
-  accessModes:
-  - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-  storageClassName: %s
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: %s-pod-rbd
-  namespace: sandbox
-spec:
-  containers:
-  - name: ubuntu
-    image: quay.io/cybozu/ubuntu-debug:20.04
-    imagePullPolicy: Always
-    command: ["/usr/local/bin/pause"]
-    volumeMounts:
-    - mountPath: /test1
-      name: rbd-volume
-  volumes:
-  - name: rbd-volume
-    persistentVolumeClaim:
-      claimName: %s-pvc-rbd`, storageClassName, storageClassName, storageClassName, storageClassName)
+			buf := new(bytes.Buffer)
+			err := tmpl.Execute(buf, storageClassName)
+			Expect(err).NotTo(HaveOccurred())
 
-			_, stderr, err := ExecAtWithInput(boot0, []byte(podPvcYaml), "kubectl", "apply", "-f", "-")
+			_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 			Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 		}
 	})
@@ -517,30 +428,13 @@ func prepareRebootRookCeph() {
 	})
 }
 
+//go:embed testdata/storage-reboot.yaml
+var storageRebootYAML []byte
+
 func testRebootRookCeph() {
 	It("should get stored data via RGW after reboot", func() {
 		By("recreating Pod using OBC")
-		podPvcYaml := `apiVersion: v1
-kind: Pod
-metadata:
-  name: pod-ob
-  namespace: sandbox
-spec:
-  containers:
-  - name: mycontainer
-    image: quay.io/cybozu/ubuntu-debug:20.04
-    imagePullPolicy: Always
-    args:
-    - infinity
-    command:
-    - sleep
-    envFrom:
-    - configMapRef:
-        name: pod-ob
-    - secretRef:
-        name: pod-ob
-`
-		_, stderr, err := ExecAtWithInput(boot0, []byte(podPvcYaml), "kubectl", "apply", "-f", "-")
+		_, stderr, err := ExecAtWithInput(boot0, storageRebootYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 
 		waitRGW("sandbox", "pod-ob")

@@ -1,9 +1,12 @@
 package test
 
 import (
+	"bytes"
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"text/template"
 
 	"github.com/cybozu-go/log"
 	. "github.com/onsi/ginkgo"
@@ -13,6 +16,12 @@ import (
 	policyv1beta1 "k8s.io/api/policy/v1beta1"
 )
 
+//go:embed testdata/contour-deploy.yaml
+var contourDeployYAML []byte
+
+//go:embed testdata/contour-httpproxy.yaml
+var contourHTTPProxyYAML string
+
 var ingressNamespaces = []string{"ingress-global", "ingress-forest", "ingress-bastion"}
 
 func prepareContour() {
@@ -21,126 +30,15 @@ func prepareContour() {
 		createNamespaceIfNotExists("test-ingress")
 
 		By("creating pod and service")
-		deployYAML := `
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: testhttpd
-  namespace: test-ingress
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: testhttpd
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: testhttpd
-    spec:
-      containers:
-      - image: quay.io/cybozu/testhttpd:0
-        name: testhttpd
-      restartPolicy: Always
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: testhttpd
-  namespace: test-ingress
-spec:
-  ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 8000
-  selector:
-    app.kubernetes.io/name: testhttpd
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: ingress-httpdtest
-  namespace: test-ingress
-spec:
-  order: 2000.0
-  selector: app.kubernetes.io/name == 'testhttpd'
-  types:
-    - Ingress
-  ingress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        ports:
-          - 8000
-`
-		_, stderr, err := ExecAtWithInput(boot0, []byte(deployYAML), "kubectl", "apply", "-f", "-")
+		_, stderr, err := ExecAtWithInput(boot0, contourDeployYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 
 		By("creating HTTPProxy")
-		fqdnHTTP := testID + "-http.test-ingress.gcp0.dev-ne.co"
-		fqdnHTTPS := testID + "-https.test-ingress.gcp0.dev-ne.co"
-		fqdnBastion := testID + "-bastion.test-ingress.gcp0.dev-ne.co"
-		ingressRoute := fmt.Sprintf(`
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: tls
-  namespace: test-ingress
-  annotations:
-    kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: global
-spec:
-  virtualhost:
-    fqdn: %s
-    tls:
-      secretName: testsecret
-  routes:
-    - conditions:
-        - prefix: /
-      services:
-        - name: testhttpd
-          port: 80
-    - conditions:
-        - prefix: /insecure
-      permitInsecure: true
-      services:
-        - name: testhttpd
-          port: 80
----
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: root
-  namespace: test-ingress
-  annotations:
-    kubernetes.io/ingress.class: global
-spec:
-  virtualhost:
-    fqdn: %s
-  routes:
-    - conditions:
-        - prefix: /testhttpd
-      services:
-        - name: testhttpd
-          port: 80
----
-apiVersion: projectcontour.io/v1
-kind: HTTPProxy
-metadata:
-  name: bastion
-  namespace: test-ingress
-  annotations:
-    kubernetes.io/ingress.class: bastion
-spec:
-  virtualhost:
-    fqdn: %s
-  routes:
-    - conditions:
-        - prefix: /testhttpd
-      services:
-        - name: testhttpd
-          port: 80
-`, fqdnHTTPS, fqdnHTTP, fqdnBastion)
-		_, stderr, err = ExecAtWithInput(boot0, []byte(ingressRoute), "kubectl", "apply", "-f", "-")
+		tmpl := template.Must(template.New("").Parse(contourHTTPProxyYAML))
+		buf := new(bytes.Buffer)
+		err = tmpl.Execute(buf, testID)
+		Expect(err).NotTo(HaveOccurred())
+		_, stderr, err = ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 	})
 }
