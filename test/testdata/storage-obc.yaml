@@ -1,0 +1,28 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: pod-ob
+  namespace: sandbox
+spec:
+  generateBucketName: obc-poc
+  storageClassName: ceph-hdd-bucket
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-ob
+  namespace: sandbox
+spec:
+  containers:
+  - name: mycontainer
+    image: quay.io/cybozu/ubuntu-debug:20.04
+    imagePullPolicy: Always
+    args:
+    - infinity
+    command:
+    - sleep
+    envFrom:
+    - configMapRef:
+        name: pod-ob
+    - secretRef:
+        name: pod-ob

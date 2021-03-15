@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: addload-for-ss
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: addload
+  template:
+    metadata:
+      labels:
+        app: addload
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - addload
+            topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: spread-test-ubuntu
+        image: quay.io/cybozu/ubuntu:20.04
+        command:
+        - "/usr/local/bin/pause"
+        securityContext:
+          runAsUser: 10000
+          runAsGroup: 10000
+        resources:
+          requests:
+            cpu: "1"
+      nodeSelector:
+        cke.cybozu.com/role: ss
+      tolerations:
+      - key: cke.cybozu.com/role
+        operator: Equal
+        value: storage
