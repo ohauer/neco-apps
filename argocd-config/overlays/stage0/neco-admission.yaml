@@ -6,4 +6,3 @@ metadata:
 spec:
   source:
     targetRevision: stage
-    path: neco-admission/overlays/stage0
