@@ -20,6 +20,8 @@ spec:
   # namespaces for garoon team
   - namespace: app-garoon-static
     server: '*'
+  - namespace: app-garoon-monitoring
+    server: '*'
 
   # namespaces for maneki team
   - namespace: app-comconv-earthlab
