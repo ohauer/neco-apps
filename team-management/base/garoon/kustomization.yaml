@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - app-garoon-monitoring.yaml
   - app-garoon-static.yaml
   - project.yaml
 commonLabels:
