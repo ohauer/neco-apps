@@ -14,18 +14,42 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 )
+
+// secretResources is a list of namespace resources that the Neco has explicitly provided to unprivileged teams and each team can't see the resources of the other teams.
+var secretResources = []string{
+	// Sealed-secrets
+	"sealedsecrets.bitnami.com",
+
+	// Other
+	"secrets",
+}
 
 // requiredResources is a list of namespace resources that the Neco has explicitly provided to unprivileged teams.
 var requiredResources = []string{
-	"elasticsearches.elasticsearch.k8s.elastic.co",
-	"kibanas.kibana.k8s.elastic.co",
-	"httpproxies.projectcontour.io",
+	// Calico
 	"networkpolicies.crd.projectcalico.org",
-	"grafanadatasources.integreatly.org",
+	"networksets.crd.projectcalico.org",
+
+	// Cert-manager
+	"certificaterequests.cert-manager.io",
+	"certificates.cert-manager.io",
+	"issuers.cert-manager.io",
+
+	// ECK
+	"apmservers.apm.k8s.elastic.co",
+	"beats.beat.k8s.elastic.co",
+	"elasticsearches.elasticsearch.k8s.elastic.co",
+	"enterprisesearches.enterprisesearch.k8s.elastic.co",
+	"kibanas.kibana.k8s.elastic.co",
+
+	// Grafana Operator
 	"grafanadashboards.integreatly.org",
-	"mysqlclusters.moco.cybozu.com",
-	"objectbucketclaims.objectbucket.io",
+	"grafanadatasources.integreatly.org",
+	"grafanas.integreatly.org",
+
+	// VictoriaMetrics operator
 	"vmagents.operator.victoriametrics.com",
 	"vmalertmanagers.operator.victoriametrics.com",
 	"vmalerts.operator.victoriametrics.com",
@@ -34,24 +58,99 @@ var requiredResources = []string{
 	"vmrules.operator.victoriametrics.com",
 	"vmservicescrapes.operator.victoriametrics.com",
 	"vmstaticscrapes.operator.victoriametrics.com",
+
+	// Others
+	"dnsendpoints.externaldns.k8s.io",
+	"httpproxies.projectcontour.io",
+	"mysqlclusters.moco.cybozu.com",
+	"objectbucketclaims.objectbucket.io",
 }
 
-// prohibitedResources is a list of namespace resources that are not allowed to be created by unprivileged teams.
-// This should be matched the `.spec.namespaceResourceBlacklist` field in the AppProject except for `networkpolicies.networking.k8s.io`.
+// viewableResources is a list of resources that Neco allows for tenant users to view or list.
+// All of the `.spec.namespaceResourceBlacklist` field in the AppProject must be included in either viewableResources or prohibitedResources except for `networkpolicies.networking.k8s.io`.
 // `networkpolicies.networking.k8s.io` is configured as bootstrappolicy so we cannot remove the definition.
 // - ref: https://github.com/kubernetes/kubernetes/blob/release-1.18/plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go#L297
-var prohibitedResources = []string{
+var viewableResources = []string{
+	// Argo CD
+	"applications.argoproj.io",
+	"appprojects.argoproj.io",
+
+	// Calico
+	"clusterinformations.crd.projectcalico.org",
+	"felixconfigurations.crd.projectcalico.org",
+	"globalnetworkpolicies.crd.projectcalico.org",
+	"globalnetworksets.crd.projectcalico.org",
+	"hostendpoints.crd.projectcalico.org",
+
+	// Cert-manager
+	"challenges.acme.cert-manager.io",
+	"clusterissuers.cert-manager.io",
+	"orders.acme.cert-manager.io",
+
+	// Coil
+	"egresses.coil.cybozu.com",
+	"blockrequests.coil.cybozu.com",
+
+	// Contour
+	"tlscertificatedelegations.projectcontour.io",
+
+	// Topolvm
+	"logicalvolumes.topolvm.cybozu.com",
+
+	// Others
 	"limitranges",
 	"resourcequotas",
-	"egresses.coil.cybozu.com",
+	"certificatesigningrequests.certificates.k8s.io",
+}
+
+// prohibitedResources is a list of namespace resources that are not allowed to be created or viewed by unprivileged teams.
+var prohibitedResources = []string{
+	// Contour
+	// This resource is classified as prohibitedResources, but that is not intentionally done by Neco team.
+	"extensionservices.projectcontour.io",
 }
 
 // viewableClusterResources is a list of cluster resources that Neco allows for tenant users
 // to view or list.
 var viewableClusterResources = []string{
+	// Coil
 	"addressblocks.coil.cybozu.com",
 	"addresspools.coil.cybozu.com",
+
+	// Other
 	"objectbuckets.objectbucket.io",
+}
+
+// prohibitedClusterResources is a list of cluster resources that are not allowed to be created by unprivileged teams
+var prohibitedClusterResources = []string{
+	// Calico
+	"bgpconfigurations.crd.projectcalico.org",
+	"bgppeers.crd.projectcalico.org",
+	"blockaffinities.crd.projectcalico.org",
+	"ipamblocks.crd.projectcalico.org",
+	"ipamconfigs.crd.projectcalico.org",
+	"ipamhandles.crd.projectcalico.org",
+	"ippools.crd.projectcalico.org",
+	"kubecontrollersconfigurations.crd.projectcalico.org",
+
+	// Rook
+	"cephblockpools.ceph.rook.io",
+	"cephclients.ceph.rook.io",
+	"cephclusters.ceph.rook.io",
+	"cephfilesystems.ceph.rook.io",
+	"cephnfses.ceph.rook.io",
+	"cephobjectrealms.ceph.rook.io",
+	"cephobjectstores.ceph.rook.io",
+	"cephobjectstoreusers.ceph.rook.io",
+	"cephobjectzonegroups.ceph.rook.io",
+	"cephobjectzones.ceph.rook.io",
+	"cephrbdmirrors.ceph.rook.io",
+	"volumes.rook.io",
+
+	// VictoriaMetrics operator
+	"vmclusters.operator.victoriametrics.com",
+	"vmnodescrapes.operator.victoriametrics.com",
+	"vmsingles.operator.victoriametrics.com",
 }
 
 var (
@@ -130,8 +229,42 @@ func testTeamManagement() {
 		nsOwner := map[string]string{}
 		tenantTeamList := []string{}
 
+		By("checking CRD list")
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "crd", "-o=json")
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		crds := &apiextensionsv1.CustomResourceDefinitionList{}
+		crdSet := make(map[string]bool)
+		err = json.Unmarshal(stdout, crds)
+		Expect(err).NotTo(HaveOccurred())
+		for _, c := range crds.Items {
+			crdSet[c.Name] = false
+		}
+
+		for _, resources := range [][]string{
+			secretResources,
+			requiredResources,
+			viewableResources,
+			prohibitedResources,
+			viewableClusterResources,
+			prohibitedClusterResources,
+		} {
+			for _, r := range resources {
+				if _, ok := crdSet[r]; ok {
+					crdSet[r] = true
+				}
+			}
+		}
+
+		uncheckedCRDList := []string{}
+		for key, val := range crdSet {
+			if !val {
+				uncheckedCRDList = append(uncheckedCRDList, key)
+			}
+		}
+		Expect(uncheckedCRDList).Should(HaveLen(0), "tenants' permissions to all the CRDs should be checked., but %v are not checked", uncheckedCRDList)
+
 		By("listing namespaces and their owner team")
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "namespaces", "-o=json")
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "get", "namespaces", "-o=json")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 
 		nsList := new(corev1.NamespaceList)
@@ -179,7 +312,7 @@ func testTeamManagement() {
 				actualVerbsByResource := getActualVerbs(team, ns)
 
 				// check secrets
-				for _, resource := range []string{"secrets", "sealedsecrets.bitnami.com"} {
+				for _, resource := range secretResources {
 					key := keyGen(team, ns, resource)
 
 					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && nsOwner[ns] != "neco") {
@@ -212,10 +345,22 @@ func testTeamManagement() {
 					}
 				}
 
-				// check prohibited resources
-				for _, resource := range prohibitedResources {
+				// check viewable resources
+				for _, resource := range viewableResources {
 					key := keyGen(team, ns, resource)
 					expectedVerbs[key] = viewVerbs
+
+					if v, ok := actualVerbsByResource[resource]; ok {
+						actualVerbs[key] = v
+					} else {
+						actualVerbs[key] = prohibitedVerbs
+					}
+				}
+
+				// prohibited resources will not be listed by `kubectl auth can-i` command.
+				for _, resource := range prohibitedResources {
+					key := keyGen(team, ns, resource)
+					expectedVerbs[key] = prohibitedVerbs
 
 					if v, ok := actualVerbsByResource[resource]; ok {
 						actualVerbs[key] = v
@@ -228,6 +373,18 @@ func testTeamManagement() {
 				for _, resource := range viewableClusterResources {
 					key := keyGen(team, ns, resource)
 					expectedVerbs[key] = viewVerbs
+
+					if v, ok := actualVerbsByResource[resource]; ok {
+						actualVerbs[key] = v
+					} else {
+						actualVerbs[key] = prohibitedVerbs
+					}
+				}
+
+				// prohibited cluster resources will not be listed by `kubectl auth can-i` command.
+				for _, resource := range prohibitedClusterResources {
+					key := keyGen(team, ns, resource)
+					expectedVerbs[key] = prohibitedVerbs
 
 					if v, ok := actualVerbsByResource[resource]; ok {
 						actualVerbs[key] = v
