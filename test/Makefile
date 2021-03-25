@@ -118,7 +118,7 @@ setup: $(KUBECTL) $(KUSTOMIZE) $(PROMTOOL) $(TSH)
 	go install github.com/onsi/ginkgo/ginkgo@latest
 
 .PHONY: test-tools
-test-tools: staticcheck nilerr
+test-tools: staticcheck nilerr custom-checker
 
 .PHONY: staticcheck
 staticcheck:
@@ -130,6 +130,12 @@ staticcheck:
 nilerr:
 	if ! which nilerr >/dev/null; then \
 		env GOFLAGS= go install github.com/gostaticanalysis/nilerr/cmd/nilerr@latest; \
+	fi
+
+.PHONY: custom-checker
+custom-checker:
+	if ! which custom-checker >/dev/null; then \
+		env GOFLAGS= go install github.com/cybozu/neco-containers/golang/analyzer/cmd/custom-checker@latest; \
 	fi
 
 .PHONY: clean
