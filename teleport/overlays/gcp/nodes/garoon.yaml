@@ -1,15 +1,6 @@
+$patch: delete
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: node-garoon
   namespace: teleport
-spec:
-  template:
-    spec:
-      containers:
-      - name: node-garoon
-        args:
-        - --roles=node
-        - --labels=team=garoon
-        - --diag-addr=0.0.0.0:3020
-        - --insecure
