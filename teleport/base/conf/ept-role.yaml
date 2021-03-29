@@ -9,9 +9,9 @@ spec:
     kubernetes_groups:
     - ept
     logins:
-    - dummy
+    - cybozu
     node_labels:
-      '*': '*'
+      'team': 'ept'
     rules: []
   deny:
     logins: null
