@@ -9,9 +9,9 @@ spec:
     kubernetes_groups:
     - cydec
     logins:
-    - dummy
+    - cybozu
     node_labels:
-      '*': '*'
+      'team': 'cydec'
     rules: []
   deny:
     logins: null
