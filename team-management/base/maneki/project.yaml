@@ -14,6 +14,8 @@ spec:
   # namespaces for ept team
   - namespace: app-ept-monitoring
     server: '*'
+  - namespace: app-ept-plantuml
+    server: '*'
   - namespace: app-ept-wiki
     server: '*'
 

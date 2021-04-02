@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - app-ept-monitoring.yaml
+  - app-ept-plantuml.yaml
   - app-ept-wiki.yaml
   - elastic-serviceaccount.yaml
   - project.yaml
