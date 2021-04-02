@@ -9,6 +9,8 @@ spec:
   destinations:
   - namespace: app-ept-monitoring
     server: '*'
+  - namespace: app-ept-plantuml
+    server: '*'
   - namespace: app-ept-wiki
     server: '*'
   - namespace: sandbox
