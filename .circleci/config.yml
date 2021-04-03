@@ -385,7 +385,7 @@ workflows:
   daily:
     triggers:
       - schedule:
-          cron: "10 15 * * 1-5"
+          cron: "30 0 * * 1-5"
           filters:
             branches:
               only:
@@ -393,6 +393,15 @@ workflows:
     jobs:
       - clean-dns
       - reboot:
+          requires:
+            - clean-dns
+      - bootstrap:
+          requires:
+            - clean-dns
+      - upgrade-stage:
+          requires:
+            - clean-dns
+      - upgrade-release:
           requires:
             - clean-dns
 
