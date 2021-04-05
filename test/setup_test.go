@@ -140,29 +140,6 @@ func testSetup() {
 		})
 	}
 
-	// temporary code for #1302
-	// TODO: delete this block after #1302 is released
-	if doUpgrade {
-		It("should update teleport.yaml", func() {
-			stdout, stderr, err := ExecAt(boot0, "env", "ETCDCTL_API=3", "etcdctl", "--cert=/etc/etcd/backup.crt", "--key=/etc/etcd/backup.key",
-				"get", "--print-value-only", "/neco/teleport/auth-token")
-			Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
-			teleportToken := strings.TrimSpace(string(stdout))
-			teleportTmpl := template.Must(template.New("").Parse(setupTeleportYAML))
-			buf := bytes.NewBuffer(nil)
-			err = teleportTmpl.Execute(buf, struct {
-				Token string
-			}{
-				Token: teleportToken,
-			})
-			Expect(err).NotTo(HaveOccurred())
-			stdout, stderr, err = ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-n", "teleport", "-f", "-")
-			Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
-			stdout, stderr, err = ExecAt(boot0, "kubectl", "-nteleport", "delete", "pod/teleport-auth-0")
-			Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
-		})
-	}
-
 	It("should apply zerossl secrets", func() {
 		By("loading zerossl-secret-resource.json")
 		data, err := os.ReadFile("zerossl-secret-resource.json")
@@ -188,17 +165,6 @@ func testSetup() {
 			applyCertManager()
 			setupArgoCD()
 			applyMutatingWebhooks()
-		}
-
-		// TODO: remove this block after operation of remove vmsingles and vmalertmanagers from stage and prod.
-		// https://app.zenhub.com/workspaces/neco-5ca28d055128c041a68c0a8f/issues/cybozu-go/neco/1479
-		if doUpgrade {
-			ExecSafeAt(boot0, "argocd", "app", "set", "argocd-config", "--sync-policy", "none")
-			ExecSafeAt(boot0, "argocd", "app", "set", "monitoring", "--sync-policy", "none")
-			ExecSafeAt(boot0, "kubectl", "delete", "vmsingles", "-n", "monitoring", "vmsingle-smallset")
-			ExecSafeAt(boot0, "kubectl", "delete", "pvc", "-n", "monitoring", "vmsingle-vmsingle-smallset")
-			ExecSafeAt(boot0, "kubectl", "delete", "vmalertmanagers", "-n", "monitoring", "vmalertmanager-smallset")
-			ExecSafeAt(boot0, "kubectl", "delete", "pvc", "-n", "monitoring", "vmalertmanager-vmalertmanager-smallset-db-vmalertmanager-vmalertmanager-smallset-0")
 		}
 
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
