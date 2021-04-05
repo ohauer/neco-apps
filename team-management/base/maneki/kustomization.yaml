@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - app-comconv-earthlab.yaml
   - app-elasticsearch.yaml
+  - app-forest-archive.yaml
   - app-forest-certs.yaml
   - app-kodama.yaml
   - app-maneki-static-cybozu-com.yaml
