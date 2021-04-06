@@ -30,6 +30,8 @@ spec:
     server: '*'
   - namespace: app-elasticsearch
     server: '*'
+  - namespace: app-forest-archive
+    server: '*'
   - namespace: app-forest-certs
     server: '*'
   - namespace: app-kodama
