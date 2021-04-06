@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: loki-canary
+  namespace: logging
+spec:
+  template:
+    spec:
+      containers:
+        - name: loki-canary
+          command: ["/usr/local/loki/bin/loki-canary"]
+          ports:
+          # use default port of loki-canary
+          - $patch: replace
+          - name: http-metrics
+            containerPort: 3500
+      tolerations:
+        - key: cke.cybozu.com/role
+          operator: Equal
+          value: storage
