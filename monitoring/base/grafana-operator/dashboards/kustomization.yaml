@@ -23,6 +23,7 @@ resources:
   - kubernetes-persistence-volumes.yaml
   - kube-scheduler.yaml
   - local-pv-provisioner.yaml
+  - loki-canary.yaml
   - memory-usage.yaml
   - neco-admission.yaml
   - node-exporter.yaml
