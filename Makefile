@@ -249,4 +249,4 @@ setup:
 	chmod +x $$(go env GOPATH)/bin/tk
 
 	# jb
-	go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb
+	go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
