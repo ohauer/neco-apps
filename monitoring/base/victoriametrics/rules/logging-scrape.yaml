@@ -40,6 +40,8 @@ spec:
     relabelConfigs:
       - replacement: loki-canary
         targetLabel: job
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        targetLabel: node
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMPodScrape
@@ -57,6 +59,8 @@ spec:
     relabelConfigs:
       - replacement: promtail
         targetLabel: job
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        targetLabel: node
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMPodScrape
