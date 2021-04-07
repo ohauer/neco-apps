@@ -28,9 +28,6 @@ import (
 )
 
 var (
-	globalHealthFQDN  = testID + "-ingress-health-global.gcp0.dev-ne.co"
-	bastionHealthFQDN = testID + "-ingress-health-bastion.gcp0.dev-ne.co"
-
 	bastionPushgatewayFQDN = testID + "-pushgateway-bastion.gcp0.dev-ne.co"
 	forestPushgatewayFQDN  = testID + "-pushgateway-forest.gcp0.dev-ne.co"
 )
@@ -166,111 +163,6 @@ func testPushgateway() {
 		}).Should(Succeed())
 		Eventually(func() error {
 			return exec.Command("ip", "netns", "exec", "external", "curl", "--resolve", forestPushgatewayFQDN+":80:"+forestIP, forestPushgatewayFQDN+"/-/healthy", "-m", "5").Run()
-		}).Should(Succeed())
-	})
-}
-
-//go:embed testdata/monitoring-ingresshealth.yaml
-var monitoringIngressHealthYAML string
-
-func prepareIngressHealth() {
-	It("should create HTTPProxy for ingress-watcher", func() {
-		tmpl := template.Must(template.New("").Parse(monitoringIngressHealthYAML))
-		buf := new(bytes.Buffer)
-		err := tmpl.Execute(buf, testID)
-		Expect(err).NotTo(HaveOccurred())
-		_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
-		Expect(err).NotTo(HaveOccurred(), "failed to create HTTPProxy. stderr: %s", stderr)
-	})
-}
-
-func testIngressHealth() {
-	It("should be reported as healthy by ingress-watcher", func() {
-		By("checking ingress-health Deployment")
-		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/ingress-health", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != 2 {
-				return fmt.Errorf("AvailableReplicas is not 2: %d", int(deployment.Status.AvailableReplicas))
-			}
-
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "monitoring", "get", "service", "ingress-health-http")
-			if err != nil {
-				return fmt.Errorf("unable to get ingress-health-http. stdout: %s, stderr: %s, err: %w", stdout, stderr, err)
-			}
-			return nil
-		}).Should(Succeed())
-
-		By("confirming created Certificate")
-		Eventually(func() error {
-			err := checkCertificate("ingress-health-global-test", "monitoring")
-			if err != nil {
-				return err
-			}
-			return checkCertificate("ingress-health-bastion-test", "monitoring")
-		}).Should(Succeed())
-
-		By("comfirming ingress-watcher configuration file")
-		ingressWatcherConfPath := "/etc/ingress-watcher/ingress-watcher.yaml"
-		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "test", "-f", ingressWatcherConfPath)
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-			return nil
-		}).Should(Succeed())
-
-		By("replacing ingress-watcher configuration file")
-		config := fmt.Sprintf(`
-targetURLs:
-- https://%s
-- http://%s
-- https://%s
-- http://%s
-watchInterval: 10s
-
-instance: 1.2.3.4
-pushAddr: %s
-pushInterval: 10s
-permitInsecure: true
-`, bastionHealthFQDN, bastionHealthFQDN, globalHealthFQDN, globalHealthFQDN, bastionPushgatewayFQDN)
-		stdout, stderr, err := ExecAtWithInput(boot0, []byte(config), "sudo", "dd", "of="+ingressWatcherConfPath)
-		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-		ExecSafeAt(boot0, "sudo", "systemctl", "restart", "ingress-watcher.service")
-
-		By("getting metrics from push-gateway server")
-		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "curl", "-s", "http://"+bastionPushgatewayFQDN+"/metrics")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			res := string(stdout)
-			for _, targetFQDN := range []string{globalHealthFQDN, bastionHealthFQDN} {
-			OUTER:
-				for _, schema := range []string{"http", "https"} {
-					path := fmt.Sprintf(`path="%s://%s"`, schema, targetFQDN)
-					for _, line := range strings.Split(res, "\n") {
-						if strings.Contains(line, "ingresswatcher_http_get_successful_total") &&
-							strings.Contains(line, `code="200`) &&
-							strings.Contains(line, path) {
-							continue OUTER
-						}
-					}
-					return fmt.Errorf("metric ingresswatcher_http_get_successful_total does not exist: metrics=%s, path=%s://%s", res, schema, targetFQDN)
-				}
-			}
-
-			return nil
 		}).Should(Succeed())
 	})
 }
