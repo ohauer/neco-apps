@@ -9,7 +9,9 @@ How to maintain neco-apps
 - [kube-metrics-adapter](#kube-metrics-adapter)
 - [ingress (Contour & Envoy)](#ingress-contour--envoy)
 - [logging](#logging)
-  - [loki, promtail](#loki-promtail)
+  - [loki, loki-canary](#loki-loki-canary)
+  - [promtail](#promtail)
+  - [consul](#consul)
 - [machines-endpoints](#machines-endpoints)
 - [metallb](#metallb)
 - [moco](#moco)
@@ -141,36 +143,41 @@ Note that:
     - If the manifest is for a namespaced resource, put a template in the `template` directory and apply patches.
 
 ## logging
+### loki, loki-canary
 
-Download Helm used in Loki. Follow `HELM_VERSION` in the upstream configuration.
-Grafana does not say helm version requirements explicitly. However, we confirm that the procedure succeeds using helm v3.1.0.
-The [document](https://github.com/grafana/helm-charts/tree/main/charts/grafana#upgrading-an-existing-release-to-a-new-major-version) is also helpful.
+Check [loki releases](https://github.com/grafana/loki/releases).
+
+Check [k8s-alpha](https://github.com/jsonnet-libs/k8s-alpha/) jsonnet library, rewrite the version in Makefile corresponding to using kubernetes version.
+If supported version is missing, use latest version instead.
+
+Update the manifests as follows:
 
 ```console
-$ HELM_VERSION=X.Y.Z
-$ mkdir -p $GOPATH/src/github.com/cybozu-go/neco-apps/logging/bin
-$ curl -sSLf https://get.helm.sh/helm-v$HELM_VERSION-linux-amd64.tar.gz | tar -C $GOPATH/src/github.com/cybozu-go/neco-apps/logging/bin linux-amd64/helm --strip-components 1 -xzf -
+$ make setup   # for the first time to install tanka and jb.
+$ make update-logging-loki
+$ git diff logging
 ```
 
-### loki, promtail
-There is no official kubernetes manifests for loki and promtail.
+### promtail
+
+There is no official kubernetes manifests for promtail.
 So, check changes in release notes on github and helm charts like bellow.
 
 ```
 LOGGING_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/logging
-${LOGGING_DIR}/bin/helm repo add grafana https://grafana.github.io/helm-charts
-
-# loki
-${LOGGING_DIR}/bin/helm search repo -l grafana | grep grafana/loki
-# Choose the latest `CHART VERSION` match with target Loki's `APP VERSION` and set value like below.
-LOKI_CHART_VERSION=X.Y.Z
-${LOGGING_DIR}/bin/helm template logging --namespace=logging grafana/loki --version=${LOKI_CHART_VERSION} > ${LOGGING_DIR}/base/loki/upstream/loki.yaml
-
-# promtail
-${LOGGING_DIR}/bin/helm search repo -l grafana | grep grafana/promtail
+helm repo add grafana https://grafana.github.io/helm-charts
+helm search repo -l grafana | grep grafana/promtail
 # Choose the latest `CHART VERSION` match with target Loki's `APP VERSION` and set value like below.
 PROMTAIL_CHART_VERSION=X.Y.Z
-${LOGGING_DIR}/bin/helm template logging --namespace=logging grafana/promtail --version=${PROMTAIL_CHART_VERSION} --set rbac.pspEnabled=true > ${LOGGING_DIR}/base/promtail/upstream/promtail.yaml
+helm template logging --namespace=logging grafana/promtail --version=${PROMTAIL_CHART_VERSION} --set rbac.pspEnabled=true > ${LOGGING_DIR}/base/promtail/upstream/promtail.yaml
+```
+### consul
+
+```
+LOGGING_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/logging
+helm repo add hashicorp https://helm.releases.hashicorp.com
+helm search repo hashicorp/consul
+helm template logging --namespace=logging hashicorp/consul -f ${LOGGING_DIR}/base/consul/values.yaml > ${LOGGING_DIR}/base/consul/upstream/consul.yaml
 ```
 
 Check the difference between the existing manifest and the new manifest, and update the kustomization patch.
