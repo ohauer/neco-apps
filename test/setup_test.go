@@ -367,6 +367,7 @@ func applyAndWaitForApplications(commitID string) {
 			if app.Status.Sync.Status == SyncStatusCodeSynced &&
 				app.Status.Health.Status == HealthStatusHealthy &&
 				app.Operation != nil &&
+				app.Status.OperationState != nil &&
 				app.Status.OperationState.Phase == "Running" {
 				fmt.Printf("%s terminate unexpected operation: app=%s\n", time.Now().Format(time.RFC3339), target)
 				stdout, stderr, err := ExecAt(boot0, "argocd", "app", "terminate-op", target)
