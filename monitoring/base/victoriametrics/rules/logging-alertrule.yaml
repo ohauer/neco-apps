@@ -1,0 +1,132 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: logging
+  namespace: monitoring
+spec:
+  groups:
+    - name: loki
+      rules:
+        - alert: LokiCompactorDown
+          expr: |
+            absent(up{job="loki-compactor"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki compactor has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: LokiDistributorDown
+          expr: |
+            absent(up{job="loki-distributor"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki distributor has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: LokiIngesterDown
+          expr: |
+            absent(up{job="loki-ingester"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki ingester has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: LokiQuerierDown
+          expr: |
+            absent(up{job="loki-querier"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki querier has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: LokiQueryFrontendDown
+          expr: |
+            absent(up{job="loki-query-frontend"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki query-frontend has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: LokiTableManagerDown
+          expr: |
+            absent(up{job="loki-table-manager"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki table-manager has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+
+        - alert: LokiConsulServerDown
+          expr: |
+            absent(kube_pod_status_ready{namespace="logging",pod=~"logging-consul-server-.*",condition="true"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki consul-server has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+
+        - alert: LoggingMemcachedDown
+          expr: |
+            absent(up{job="logging-memcached"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Logging memcached has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: LoggingMemcachedFrontendDown
+          expr: |
+            absent(up{job="logging-memcached-frontend"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Logging memcached-frontend has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: LoggingMemcachedIndexQueriesDown
+          expr: |
+            absent(up{job="logging-memcached-index-queries"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Logging memcached-index-queries has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+
+        - alert: LokiCanaryDown
+          expr: |
+            up{job="loki-canary"}==0
+              unless on(node) kube_node_spec_taint{key="node.kubernetes.io/unreachable"}
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Loki canary has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+        - alert: PromtailDown
+          expr: |
+            up{job="promtail"}==0
+              unless on(node) kube_node_spec_taint{key="node.kubernetes.io/unreachable"}
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Promtail has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems
+
+        - alert: LokiCanaryDelay
+          expr: |
+            histogram_quantile(0.9, rate(loki_canary_response_latency_seconds_bucket[5m])) >= 60
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: loki-canary response latency is too high.
+            runbook: Please consider to find root causes, and solve the problems
