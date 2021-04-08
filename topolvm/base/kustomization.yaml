@@ -9,17 +9,23 @@ resources:
 - upstream/base/provisioner.yaml
 - upstream/base/psp.yaml
 - upstream/base/scheduler.yaml
+- upstream/lvmd/lvmd.yaml
 - upstream/overlays/daemonset-scheduler/scheduler.yaml
-- priorityclass.yaml
 - pdb.yaml
+- priorityclass.yaml
 
 patchesStrategicMerge:
 - crd.yaml
+- lvmd.yaml
 - node.yaml
 - scheduler.yaml
 - storageclass.yaml
 
 configMapGenerator:
+  - name: lvmd
+    namespace: topolvm-system
+    files:
+      - ./config/lvmd.yaml
   - name: scheduler-options
     namespace: topolvm-system
     files:
@@ -27,4 +33,4 @@ configMapGenerator:
 
 images:
   - name: quay.io/topolvm/topolvm-with-sidecar
-    newTag: 0.8.1
+    newTag: 0.8.2
