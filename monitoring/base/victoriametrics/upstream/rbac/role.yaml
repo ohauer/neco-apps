@@ -80,6 +80,13 @@ rules:
   verbs:
     - '*'
 - apiGroups:
+    - policy
+  resources:
+    - poddisruptionbudgets
+    - poddisruptionbudgets/finalizers
+  verbs:
+    - '*'
+- apiGroups:
     - monitoring.coreos.com
   resources:
     - '*'
@@ -286,7 +293,9 @@ rules:
     - list
     - watch
 - apiGroups:
+    - extensions
     - "extensions"
+    - networking.k8s.io
     - "networking.k8s.io"
   resources:
     - ingresses
@@ -372,3 +381,11 @@ rules:
     - get
     - patch
     - update
+- apiGroups:
+    - storage.k8s.io
+  resources:
+    - storageclasses
+  verbs:
+    - list
+    - get
+    - watch
