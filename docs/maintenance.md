@@ -73,7 +73,8 @@ Check the [Release Notes](https://www.elastic.co/guide/en/cloud-on-k8s/current/e
 Update the upstream manifests as follows:
 
 ```console
-$ curl -sLf -o elastic/base/upstream/all-in-one.yaml https://download.elastic.co/downloads/eck/X.Y.Z/all-in-one.yaml
+$ make update-eck
+$ git diff
 ```
 
 Check the difference, and adjust our patches to the new manifests.

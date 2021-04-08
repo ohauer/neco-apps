@@ -20,18 +20,19 @@ spec:
       requests:
         cpu: 100m
         memory: 500Mi
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/component: monitoring
-            app.kubernetes.io/instance: vmcluster-largeset
-            app.kubernetes.io/name: vmstorage
-            managed-by: vm-operator
+    podDisruptionBudget:
+      maxUnavailable: 1
     containers:
       - name: vmstorage
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8482
+            scheme: HTTP
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
         startupProbe:
           httpGet:
             path: /health
@@ -48,16 +49,8 @@ spec:
       requests:
         cpu: 100m
         memory: 500Mi
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/component: monitoring
-            app.kubernetes.io/instance: vmcluster-largeset
-            app.kubernetes.io/name: vmselect
-            managed-by: vm-operator
+    podDisruptionBudget:
+      minAvailable: 2
 
     # the following volumes and volumeMounts should be removed eventually
     volumes:
@@ -75,55 +68,5 @@ spec:
       requests:
         cpu: 100m
         memory: 500Mi
-    topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: topology.kubernetes.io/zone
-        whenUnsatisfiable: ScheduleAnyway
-        labelSelector:
-          matchLabels:
-            app.kubernetes.io/component: monitoring
-            app.kubernetes.io/instance: vmcluster-largeset
-            app.kubernetes.io/name: vminsert
-            managed-by: vm-operator
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: vmstorage-vmcluster-largeset
-  namespace: monitoring
-spec:
-  maxUnavailable: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: monitoring
-      app.kubernetes.io/instance: vmcluster-largeset
-      app.kubernetes.io/name: vmstorage
-      managed-by: vm-operator
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: vmselect-vmcluster-largeset
-  namespace: monitoring
-spec:
-  minAvailable: 2
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: monitoring
-      app.kubernetes.io/instance: vmcluster-largeset
-      app.kubernetes.io/name: vmselect
-      managed-by: vm-operator
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: vminsert-vmcluster-largeset
-  namespace: monitoring
-spec:
-  minAvailable: 2
-  selector:
-    matchLabels:
-      app.kubernetes.io/component: monitoring
-      app.kubernetes.io/instance: vmcluster-largeset
-      app.kubernetes.io/name: vminsert
-      managed-by: vm-operator
+    podDisruptionBudget:
+      minAvailable: 2
