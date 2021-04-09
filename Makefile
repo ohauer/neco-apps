@@ -1,5 +1,6 @@
 # Makefile to update manifests
 
+ECK_VERSION = 1.5.0
 HELM_VERSION = 3.5.2
 TANKA_VERSION = 0.15.0
 
@@ -44,6 +45,10 @@ update-customer-egress:
 	sed -i -E '/name:.*squid$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' customer-egress/base/kustomization.yaml
 	$(call get-latest-tag,unbound)
 	sed -i -E '/name:.*unbound$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' customer-egress/base/kustomization.yaml
+
+.PHONY: update-eck
+update-eck:
+	curl -sLf -o elastic/base/upstream/all-in-one.yaml https://download.elastic.co/downloads/eck/$(ECK_VERSION)/all-in-one.yaml
 
 .PHONY: update-external-dns
 update-external-dns:
