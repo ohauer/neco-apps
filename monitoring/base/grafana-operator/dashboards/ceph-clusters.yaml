@@ -199,7 +199,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (irate(ceph_osd_op_w_in_bytes{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_w_in_bytes{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -268,7 +268,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (ceph_daemon, instance) (irate(ceph_osd_op_r_out_bytes{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_r_out_bytes{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -336,7 +336,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance) (ceph_cluster_total_bytes{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_cluster_total_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -413,7 +413,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance) ((ceph_cluster_total_bytes{namespace=\"$namespace\"}-ceph_cluster_total_used_bytes{namespace=\"$namespace\"})/ceph_cluster_total_bytes{namespace=\"$namespace\"})",
+            "expr": "sum ((ceph_cluster_total_bytes{namespace=\"$namespace\"} - ceph_cluster_total_used_bytes{namespace=\"$namespace\"}) / ceph_cluster_total_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -490,7 +490,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance, pool_id) (ceph_pool_objects{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pool_objects{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -559,7 +559,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (ceph_osd_op_w_in_bytes{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_osd_op_w_in_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": false,
             "interval": "$interval",
@@ -628,7 +628,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (ceph_osd_op_r_out_bytes{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_osd_op_r_out_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": false,
             "interval": "$interval",
@@ -696,7 +696,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "count(ALERTS{namespace=\"$namespace\",alertstate='firing',alertname=~'^CephCluster.*'}) OR vector(0)",
+            "expr": "sum(vmalert_alerts_firing{group=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "",
@@ -766,7 +766,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (ceph_daemon, instance) (irate(ceph_osd_op_w{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_w{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -835,7 +835,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (ceph_daemon, instance) (irate(ceph_osd_op_r{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_r{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -903,7 +903,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance) (ceph_cluster_total_used_bytes{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_cluster_total_used_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -976,7 +976,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (ceph_mon_num_sessions{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_mon_num_sessions{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -1051,7 +1051,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "count without (instance, ceph_daemon) (ceph_mon_quorum_status{namespace=\"$namespace\"})",
+            "expr": "count (ceph_mon_quorum_status{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -1143,7 +1143,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "count without (instance, ceph_daemon) (ceph_osd_up{namespace=\"$namespace\"}) - count without (instance, ceph_daemon) (ceph_osd_in{namespace=\"$namespace\"})",
+            "expr": "count (ceph_osd_up{namespace=\"$namespace\"}) - count (ceph_osd_in{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -1293,7 +1293,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (ceph_osd_up{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_osd_up{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -1366,7 +1366,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (ceph_osd_in{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_osd_in{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -1443,7 +1443,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "avg without (instance, ceph_daemon) (ceph_osd_numpg{namespace=\"$namespace\"})",
+            "expr": "avg (ceph_osd_numpg{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -1520,7 +1520,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "avg without (instance, ceph_daemon) (ceph_osd_apply_latency_ms{namespace=\"$namespace\"})",
+            "expr": "avg (ceph_osd_apply_latency_ms{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": true,
             "interval": "$interval",
@@ -1674,7 +1674,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+            "expr": "avg (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -1750,7 +1750,7 @@ spec:
         "pluginVersion": "7.0.4",
         "targets": [
             {
-            "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m])/rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+            "expr": "avg (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m])/rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
             "format": "time_series",
             "instant": true,
             "interval": "",
@@ -1827,7 +1827,7 @@ spec:
         ],
         "targets": [
             {
-            "expr": "ALERTS{namespace=\"$namespace\", alertstate='firing'}",
+            "expr": "vmalert_alerts_firing{group=\"$namespace\"} > 0",
             "format": "table",
             "instant": true,
             "intervalFactor": 1,
@@ -1835,7 +1835,7 @@ spec:
             "refId": "A"
             }
         ],
-        "title": "Alerts from CephThanos",
+        "title": "Firing alerts",
         "transform": "table",
         "type": "table-old"
         },
@@ -1890,7 +1890,7 @@ spec:
         ],
         "targets": [
             {
-            "expr": "topk(5,sort_desc(ceph_osd_apply_latency_ms{namespace=\"$namespace\"} + ceph_osd_commit_latency_ms{namespace=\"$namespace\"}))",
+            "expr": "topk(5, sum without(instance, pod) (sort_desc(ceph_osd_apply_latency_ms{namespace=\"$namespace\"} + ceph_osd_commit_latency_ms{namespace=\"$namespace\"})))",
             "format": "table",
             "instant": true,
             "interval": "",
@@ -2473,7 +2473,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance) (ceph_cluster_total_bytes{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_cluster_total_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -2482,7 +2482,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance) (ceph_cluster_total_bytes{namespace=\"$namespace\"}-ceph_cluster_total_used_bytes{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_cluster_total_bytes{namespace=\"$namespace\"}-ceph_cluster_total_used_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -2491,7 +2491,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance) (ceph_cluster_total_used_bytes{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_cluster_total_used_bytes{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -2605,7 +2605,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (irate(ceph_osd_op_w{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_w{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -2614,7 +2614,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, ceph_daemon) (irate(ceph_osd_op_r{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_r{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -2721,7 +2721,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (irate(ceph_osd_op_w_in_bytes{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_w_in_bytes{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -2730,7 +2730,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, ceph_daemon) (irate(ceph_osd_op_r_out_bytes{namespace=\"$namespace\"}[5m]))",
+            "expr": "sum (irate(ceph_osd_op_r_out_bytes{namespace=\"$namespace\"}[5m]))",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -2834,7 +2834,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum((ceph_pool_num_bytes_recovered{namespace=\"$namespace\"}) *on (instance, pool_id) group_left(name)(ceph_pool_metadata{namespace=\"$namespace\"})) by (name)",
+            "expr": "sum(sum without (instance, pod) (ceph_pool_num_bytes_recovered{namespace=\"$namespace\"}) * on (pool_id) group_left(name)(max without (instance, pod) (ceph_pool_metadata{namespace=\"$namespace\"}))) by (name)",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -2936,7 +2936,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance, pool_id) ((ceph_pool_num_objects_recovered{namespace=\"$namespace\"}) *on (instance, pool_id) group_left(name)(ceph_pool_metadata{namespace=\"$namespace\"}))",
+            "expr": "(sum without(instance, pod) (ceph_pool_num_objects_recovered{namespace=\"$namespace\"})) * on (pool_id) group_left(name) (max without(instance, pod) (ceph_pool_metadata{namespace=\"$namespace\"}))",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -3037,7 +3037,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance) ((ceph_pool_objects{namespace=\"$namespace\"}) *on (instance, pool_id) group_left(name)(ceph_pool_metadata{namespace=\"$namespace\"}))",
+            "expr": "(sum without (instance, pod) (ceph_pool_objects{namespace=\"$namespace\"})) * on (pool_id) group_left(name) (max without (instance, pod) (ceph_pool_metadata{namespace=\"$namespace\"}))",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -3136,7 +3136,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance) ((ceph_pool_quota_bytes{namespace=\"$namespace\"}) *on (instance, pool_id) group_left(name)(ceph_pool_metadata{namespace=\"$namespace\"}))",
+            "expr": "(sum without (instance, pod) (ceph_pool_quota_bytes{namespace=\"$namespace\"})) * on (pool_id) group_left (name) (max without (instance, pod) (ceph_pool_metadata{namespace=\"$namespace\"}))",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -3237,7 +3237,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance) (ceph_pool_quota_objects{namespace=\"$namespace\"}) *on (instance, pool_id) group_left(name)(ceph_pool_metadata{namespace=\"$namespace\"})",
+            "expr": "(sum without (instance, pod) (ceph_pool_quota_objects{namespace=\"$namespace\"})) * on (pool_id) group_left(name) (max without(instance, pod) (ceph_pool_metadata{namespace=\"$namespace\"}))",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -3338,7 +3338,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "count without (instance, ceph_daemon) (ceph_bluestore_commit_lat_count{namespace=\"$namespace\"})",
+            "expr": "count (ceph_bluestore_commit_lat_count{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -3346,7 +3346,7 @@ spec:
             "refId": "A"
             },
             {
-            "expr": "count without (instance, ceph_daemon) (ceph_filestore_journal_latency_count{namespace=\"$namespace\"})",
+            "expr": "count (ceph_filestore_journal_latency_count{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -3470,7 +3470,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance, pool_id) (ceph_pool_objects{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pool_objects{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3581,7 +3581,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_active{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_active{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3589,7 +3589,7 @@ spec:
             "refId": "M"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_clean{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_clean{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3597,7 +3597,7 @@ spec:
             "refId": "U"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_peering{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_peering{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3605,7 +3605,7 @@ spec:
             "refId": "I"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_degraded{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_degraded{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3614,7 +3614,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_stale{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_stale{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3623,7 +3623,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_unclean_pgs{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_unclean_pgs{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3632,7 +3632,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_undersized{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_undersized{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3641,7 +3641,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_incomplete{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_incomplete{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3649,7 +3649,7 @@ spec:
             "refId": "G"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_forced_backfill{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_forced_backfill{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3657,7 +3657,7 @@ spec:
             "refId": "H"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_inconsistent{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_inconsistent{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3665,7 +3665,7 @@ spec:
             "refId": "F"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_forced_recovery{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_forced_recovery{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3673,7 +3673,7 @@ spec:
             "refId": "J"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_creating{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_creating{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3681,7 +3681,7 @@ spec:
             "refId": "K"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_wait_backfill{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_wait_backfill{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3689,7 +3689,7 @@ spec:
             "refId": "L"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_deep{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_deep{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3697,7 +3697,7 @@ spec:
             "refId": "N"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_scrubbing{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_scrubbing{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3705,7 +3705,7 @@ spec:
             "refId": "O"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_recovering{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_recovering{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3713,7 +3713,7 @@ spec:
             "refId": "P"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_repair{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_repair{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3721,7 +3721,7 @@ spec:
             "refId": "Q"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_down{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_down{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3729,7 +3729,7 @@ spec:
             "refId": "R"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_peered{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_peered{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3737,7 +3737,7 @@ spec:
             "refId": "S"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_backfill{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_backfill{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3745,7 +3745,7 @@ spec:
             "refId": "T"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_remapped{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_remapped{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3753,7 +3753,7 @@ spec:
             "refId": "V"
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_backfill_toofull{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_backfill_toofull{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3863,7 +3863,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_degraded{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_degraded{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3872,7 +3872,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_stale{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_stale{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3881,7 +3881,7 @@ spec:
             "step": 300
             },
             {
-            "expr": "sum without (instance, pool_id) (ceph_pg_undersized{namespace=\"$namespace\"})",
+            "expr": "sum (ceph_pg_undersized{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -3985,7 +3985,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "sum without (instance, ceph_daemon) (irate(ceph_osd_recovery_ops{namespace=\"$namespace\"}[$interval]))",
+            "expr": "sum (irate(ceph_osd_recovery_ops{namespace=\"$namespace\"}[$interval]))",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -4088,7 +4088,7 @@ spec:
         "reverseYBuckets": false,
         "targets": [
             {
-            "expr": "ceph_osd_apply_latency_ms{namespace=\"$namespace\"}",
+            "expr": "max without (instance, pod) (ceph_osd_apply_latency_ms{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": false,
             "interval": "$interval",
@@ -4158,7 +4158,7 @@ spec:
         "reverseYBuckets": false,
         "targets": [
             {
-            "expr": "ceph_osd_commit_latency_ms{namespace=\"$namespace\"}",
+            "expr": "max without(instance, pod) (ceph_osd_commit_latency_ms{namespace=\"$namespace\"})",
             "format": "time_series",
             "instant": false,
             "interval": "$interval",
@@ -4227,7 +4227,7 @@ spec:
         "reverseYBuckets": false,
         "targets": [
             {
-            "expr": "rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) >= 0",
+            "expr": "rate(sum without (instance, pod) (ceph_osd_op_r_latency_sum{namespace=\"$namespace\"})[5m]) / rate(sum without (instance, pod) (ceph_osd_op_r_latency_count{namespace=\"$namespace\"})[5m]) >= 0",
             "format": "time_series",
             "instant": false,
             "interval": "$interval",
@@ -4296,7 +4296,7 @@ spec:
         "reverseYBuckets": false,
         "targets": [
             {
-            "expr": "rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) >= 0",
+            "expr": "rate(sum without (instance, pod) (ceph_osd_op_w_latency_sum{namespace=\"$namespace\"})[5m]) / rate(sum without (instance, pod) (ceph_osd_op_w_latency_count{namespace=\"$namespace\"})[5m]) >= 0",
             "format": "time_series",
             "hide": false,
             "instant": false,
@@ -4382,7 +4382,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "avg without (instance,ceph_daemon) (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+            "expr": "avg (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -4390,7 +4390,7 @@ spec:
             "refId": "A"
             },
             {
-            "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+            "expr": "avg (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 1,
@@ -4493,7 +4493,7 @@ spec:
         "steppedLine": false,
         "targets": [
             {
-            "expr": "avg without (instance, ceph_daemon) (ceph_osd_apply_latency_ms{namespace=\"$namespace\"})",
+            "expr": "avg (ceph_osd_apply_latency_ms{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,
@@ -4503,7 +4503,7 @@ spec:
             "step": 4
             },
             {
-            "expr": "avg without (instance, ceph_daemon) (ceph_osd_commit_latency_ms{namespace=\"$namespace\"})",
+            "expr": "avg (ceph_osd_commit_latency_ms{namespace=\"$namespace\"})",
             "format": "time_series",
             "interval": "$interval",
             "intervalFactor": 1,

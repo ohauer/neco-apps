@@ -223,7 +223,7 @@ spec:
                 "pluginVersion": "7.0.4",
                 "targets": [
                 {
-                    "expr": "sum without (instance) (ceph_osd_in{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "sum (ceph_osd_in{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
@@ -292,7 +292,7 @@ spec:
                 "pluginVersion": "7.0.4",
                 "targets": [
                 {
-                    "expr": "count without (instance, ceph_daemon) (ceph_osd_up{namespace=\"$namespace\"})",
+                    "expr": "count (ceph_osd_up{namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
@@ -383,7 +383,7 @@ spec:
                 "steppedLine": false,
                 "targets": [
                 {
-                    "expr": "sum without (instance) (ceph_osd_numpg{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "sum (ceph_osd_numpg{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
@@ -392,7 +392,7 @@ spec:
                     "step": 60
                 },
                 {
-                    "expr": "avg without (instance, ceph_daemon) (ceph_osd_numpg{namespace=\"$namespace\"})",
+                    "expr": "avg (ceph_osd_numpg{namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
@@ -515,7 +515,7 @@ spec:
                 "steppedLine": false,
                 "targets": [
                 {
-                    "expr": "sum without (instance, ceph_daemon) (ceph_osd_stat_bytes{ceph_daemon=\"osd.0\", namespace=\"$namespace\"}-ceph_osd_stat_bytes_used{ceph_daemon=\"osd.0\", namespace=\"$namespace\"})",
+                    "expr": "sum (ceph_osd_stat_bytes{ceph_daemon=\"$osd\", namespace=\"$namespace\"}-ceph_osd_stat_bytes_used{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "hide": false,
                     "interval": "$interval",
@@ -526,7 +526,7 @@ spec:
                     "step": 60
                 },
                 {
-                    "expr": "sum without (instance, ceph_daemon) (ceph_osd_stat_bytes_used{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "sum (ceph_osd_stat_bytes_used{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
@@ -647,7 +647,7 @@ spec:
                 "pluginVersion": "7.0.4",
                 "targets": [
                 {
-                    "expr": "sum without (instance, ceph_daemon) (ceph_osd_stat_bytes_used{ceph_daemon=\"$osd\", namespace=\"$namespace\"}/ceph_osd_stat_bytes{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "sum (ceph_osd_stat_bytes_used{ceph_daemon=\"$osd\", namespace=\"$namespace\"}/ceph_osd_stat_bytes{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
@@ -712,7 +712,7 @@ spec:
                 "reverseYBuckets": false,
                 "targets": [
                 {
-                    "expr": "sum without (instance) (ceph_osd_apply_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "sum (ceph_osd_apply_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "instant": false,
                     "interval": "$interval",
@@ -782,7 +782,7 @@ spec:
                 "reverseYBuckets": false,
                 "targets": [
                 {
-                    "expr": "sum without (instance) (ceph_osd_commit_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "sum (ceph_osd_commit_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "instant": false,
                     "interval": "$interval",
@@ -852,7 +852,7 @@ spec:
                 "reverseYBuckets": false,
                 "targets": [
                 {
-                    "expr": "sum without (instance) (rate(ceph_osd_op_r_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
+                    "expr": "sum (rate(ceph_osd_op_r_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
                     "format": "time_series",
                     "instant": false,
                     "interval": "$interval",
@@ -922,7 +922,7 @@ spec:
                 "reverseYBuckets": false,
                 "targets": [
                 {
-                    "expr": "sum without (instance) (rate(ceph_osd_op_w_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
+                    "expr": "sum (rate(ceph_osd_op_w_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
                     "format": "time_series",
                     "instant": false,
                     "interval": "$interval",
@@ -1007,7 +1007,7 @@ spec:
                 "steppedLine": false,
                 "targets": [
                 {
-                    "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_r_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
+                    "expr": "avg (rate(ceph_osd_op_r_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
                     "format": "time_series",
                     "interval": "",
                     "intervalFactor": 1,
@@ -1015,7 +1015,7 @@ spec:
                     "refId": "A"
                 },
                 {
-                    "expr": "avg without (instance, ceph_daemon) (rate(ceph_osd_op_w_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
+                    "expr": "avg (rate(ceph_osd_op_w_latency_sum{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{ceph_daemon=\"$osd\", namespace=\"$namespace\"}[5m]) >= 0)",
                     "format": "time_series",
                     "interval": "",
                     "intervalFactor": 1,
@@ -1118,7 +1118,7 @@ spec:
                 "steppedLine": false,
                 "targets": [
                 {
-                    "expr": "avg without (instance, ceph_daemon) (ceph_osd_apply_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "avg (ceph_osd_apply_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
@@ -1128,7 +1128,7 @@ spec:
                     "step": 4
                 },
                 {
-                    "expr": "avg without (instance, ceph_daemon)(ceph_osd_commit_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
+                    "expr": "avg (ceph_osd_commit_latency_ms{ceph_daemon=\"$osd\", namespace=\"$namespace\"})",
                     "format": "time_series",
                     "interval": "$interval",
                     "intervalFactor": 1,
