@@ -68,7 +68,7 @@ spec:
                 "steppedLine": false,
                 "targets": [
                     {
-                        "expr": "(topk(10, (node_memory_MemTotal_bytes - node_memory_MemFree_bytes) / (node_memory_MemTotal_bytes ))) * 100",
+                        "expr": "(topk(10, 1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100",
                         "legendFormat": "{{instance}}",
                         "refId": "A"
                     }
