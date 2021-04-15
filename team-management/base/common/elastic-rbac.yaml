@@ -69,6 +69,9 @@ subjects:
     namespace: app-elasticsearch
   - kind: ServiceAccount
     name: elastic
+    namespace: app-endpoint-discovery
+  - kind: ServiceAccount
+    name: elastic
     namespace: app-ept-monitoring
   - kind: ServiceAccount
     name: elastic
@@ -76,6 +79,9 @@ subjects:
   - kind: ServiceAccount
     name: elastic
     namespace: app-ept-wiki
+  - kind: ServiceAccount
+    name: elastic
+    namespace: app-es-cluster-allocator
   - kind: ServiceAccount
     name: elastic
     namespace: app-forest-archive
