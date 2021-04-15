@@ -6,6 +6,8 @@ kind: Kustomization
 resources:
   - app-comconv-earthlab.yaml
   - app-elasticsearch.yaml
+  - app-endpoint-discovery.yaml
+  - app-es-cluster-allocator.yaml
   - app-forest-archive.yaml
   - app-forest-certs.yaml
   - app-kodama.yaml
