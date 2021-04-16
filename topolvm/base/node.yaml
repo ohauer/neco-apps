@@ -10,10 +10,5 @@ spec:
       maxUnavailable: 35%
   template:
     spec:
-      containers:
-        - name: topolvm-node
-          command:
-            - /topolvm-node
-            - --lvmd-socket=/run/lvmd/lvmd-work.sock
       nodeSelector:
         cke.cybozu.com/role: cs
