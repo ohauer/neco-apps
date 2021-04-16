@@ -43,7 +43,7 @@ spec:
           runbook: TBD
         expr: |
           absent(up{job="vmagent-smallset"} == 1)
-        for: 15m
+        for: 60m
         labels:
           severity: critical
       - alert: VMAlertSmallsetDown
@@ -52,7 +52,7 @@ spec:
           runbook: TBD
         expr: |
           absent(up{job="vmalert-smallset"} == 1)
-        for: 15m
+        for: 60m
         labels:
           severity: critical
       - alert: VMSingleSmallsetDown

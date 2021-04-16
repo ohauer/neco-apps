@@ -18,7 +18,7 @@ WGET := wget --retry-connrefused --no-verbose
 WGET_PATH := $(shell which wget || echo wget-install)
 
 .PHONY: all
-all: team-management
+all: team-management teleport
 
 .PHONY: team-management
 team-management:
@@ -36,6 +36,27 @@ team-management:
 		echo $$i; \
 		mkdir -p $(ROOT_DIR)/$$(dirname $$i); \
 		cat $(TEMP_DIR)/team-management.json | $(YQ) eval ".[\"$$i\"] | .[0] headComment=\"$(AUTOGEN_COMMENT)\" | .[] | splitDoc" - --prettyPrint > $(ROOT_DIR)/$$i; \
+	done
+	rm -rf $(TEMP_DIR)
+
+.PHONY: teleport
+teleport:
+	# Cleanup existing files
+	for i in $$(ls $(ROOT_DIR)/teleport/base/conf); do \
+		if ! echo $$i | grep -E '^(admin|neco-readonly)-role[.]yaml$$' > /dev/null; then \
+			rm $(ROOT_DIR)/teleport/base/conf/$$i; \
+		fi; \
+	done
+	rm -rf $(ROOT_DIR)/teleport/base/nodes
+	rm -rf $(ROOT_DIR)/teleport/overlays/gcp/nodes
+
+	# Generate manifests
+	mkdir -p $(TEMP_DIR)
+	$(JSONNET) teleport.jsonnet > $(TEMP_DIR)/teleport.json
+	for i in $$(cat $(TEMP_DIR)/teleport.json | jq -r 'keys | .[]'); do \
+		echo $$i; \
+		mkdir -p $(ROOT_DIR)/$$(dirname $$i); \
+		cat $(TEMP_DIR)/teleport.json | $(YQ) eval ".[\"$$i\"] | .[0] headComment=\"$(AUTOGEN_COMMENT)\" | .[] | splitDoc" - --prettyPrint > $(ROOT_DIR)/$$i; \
 	done
 	rm -rf $(TEMP_DIR)
 
