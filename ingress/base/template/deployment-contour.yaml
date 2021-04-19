@@ -92,9 +92,6 @@ spec:
               command: ["sleep", "5"]
       - image: quay.io/cybozu/contour-plus
         name: contour-plus
-        env:
-        - name: CP_DEFAULT_ISSUER_NAME
-          value: clouddns
       dnsPolicy: ClusterFirst
       serviceAccountName: contour
       volumes:
