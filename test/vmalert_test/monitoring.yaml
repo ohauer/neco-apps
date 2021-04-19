@@ -50,9 +50,9 @@ tests:
   - interval: 1m
     input_series:
       - series: 'up{job="vmagent-smallset"}'
-        values: '0+0x15'
+        values: '0+0x60'
     alert_rule_test:
-      - eval_time: 15m
+      - eval_time: 60m
         alertname: VMAgentSmallsetDown
         exp_alerts:
           - exp_labels:
@@ -63,9 +63,9 @@ tests:
   - interval: 1m
     input_series:
       - series: 'up{job="vmalert-smallset"}'
-        values: '0+0x15'
+        values: '0+0x60'
     alert_rule_test:
-      - eval_time: 15m
+      - eval_time: 60m
         alertname: VMAlertSmallsetDown
         exp_alerts:
           - exp_labels:
