@@ -4,4 +4,5 @@ metadata:
   name: domestic-egress
   annotations:
     coil.cybozu.com/pool: domestic-egress
+  labels:
     pod-security.cybozu.com/policy: privileged
