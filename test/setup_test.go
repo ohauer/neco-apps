@@ -176,6 +176,15 @@ func testSetup() {
 			applyMutatingWebhooks()
 		}
 
+		// temporary code for #1428
+		// TODO: delete this block after #1428 is released
+		if doUpgrade {
+			ExecSafeAt(boot0, "argocd", "app", "set", "argocd-config", "--sync-policy", "none")
+			ExecSafeAt(boot0, "argocd", "app", "set", "logging", "--sync-policy", "none")
+			ExecSafeAt(boot0, "kubectl", "delete", "sts", "-n", "logging", "querier")
+			ExecSafeAt(boot0, "kubectl", "delete", "pvc", "-n", "logging", "-lname=querier")
+		}
+
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/overlays/"+overlayName+"/*.yaml")
 		applyAndWaitForApplications(commitID)
