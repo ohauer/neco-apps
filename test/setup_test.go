@@ -89,7 +89,7 @@ func createNamespaceIfNotExists(ns string, privileged bool) {
 		return nil
 	}).Should(Succeed())
 	if privileged {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "namespace/"+ns, "pod-security.cybozu.com/policy=privileged")
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "--overwrite", "namespace/"+ns, "pod-security.cybozu.com/policy=privileged")
 		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 	}
 }
@@ -144,7 +144,7 @@ func testSetup() {
 		})
 	} else {
 		It("should set privileged label to sandbox namespace", func() {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "namespace/sandbox", "pod-security.cybozu.com/policy=privileged")
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "--overwrite", "namespace/sandbox", "pod-security.cybozu.com/policy=privileged")
 			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 		})
 	}
