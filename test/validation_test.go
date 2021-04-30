@@ -175,7 +175,7 @@ func testAppProjectResources(t *testing.T) {
 }
 
 func testApplicationResources(t *testing.T) {
-	necoAppsTargetRevisions := map[string]string{
+	targetRevisions := map[string]string{
 		"gcp":      "release",
 		"gcp-rook": "release",
 		"neco-dev": "release",
@@ -183,42 +183,24 @@ func testApplicationResources(t *testing.T) {
 		"stage0":   "stage",
 		"tokyo0":   "release",
 	}
-	tenantAppsTargetRevisions := map[string]map[string]string{
-		"ept-apps": {
-			"stage0": "main",
-		},
-		"garoon-apps": {
-			"stage0": "main",
-		},
-		"maneki-apps": {
-			"osaka0": "release",
-			"stage0": "stage",
-			"tokyo0": "release",
-		},
-		"tenant-apps": {
-			"osaka0": "release",
-			"stage0": "main",
-			"tokyo0": "release",
-		},
-	}
 
-	// Getting overlays list
-	overlayDirs := map[string]string{}
-	err := filepath.Walk(filepath.Join(manifestDir, "argocd-config", "overlays"), func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() && info.Name() != "overlays" && info.Name() != "tenants" {
-			overlayDirs[info.Name()] = path
-		}
-		return nil
-	})
+	// List overlays
+	var overlays []string
+	entries, err := os.ReadDir(filepath.Join(manifestDir, "argocd-config/overlays"))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
+	}
+	for _, ent := range entries {
+		info, err := ent.Info()
+		if err != nil || !info.IsDir() {
+			t.Fatal(err)
+		}
+		overlays = append(overlays, info.Name())
 	}
 
 	t.Parallel()
-	for overlay, targetDir := range overlayDirs {
+	for _, overlay := range overlays {
+		targetDir := filepath.Join(manifestDir, "argocd-config/overlays", overlay)
 		t.Run(overlay, func(t *testing.T) {
 			stdout, stderr, err := kustomizeBuild(targetDir)
 			if err != nil {
@@ -240,17 +222,13 @@ func testApplicationResources(t *testing.T) {
 					t.Error(err)
 				}
 
-				if app.Name == "prometheus-adapter" {
+				if app.Name == "prometheus-adapter" || app.GetLabels()["is-tenant"] == "true" {
+					// Target revision for tenant apps is maintained in team-management/template/settings.json.
 					continue
 				}
 
-				// Check the tergetRevision
-				var expectedTargetRevision string
-				if app.GetLabels()["is-tenant"] == "true" {
-					expectedTargetRevision = tenantAppsTargetRevisions[app.Name][overlay]
-				} else {
-					expectedTargetRevision = necoAppsTargetRevisions[overlay]
-				}
+				// Check the targetRevision
+				expectedTargetRevision := targetRevisions[overlay]
 
 				if expectedTargetRevision == "" {
 					t.Errorf("expected targetRevision should be defined. application: %s, overlay: %s", app.Name, overlay)
@@ -258,7 +236,6 @@ func testApplicationResources(t *testing.T) {
 				if app.Spec.Source.TargetRevision != expectedTargetRevision {
 					t.Errorf("invalid targetRevision. application: %s, targetRevision: %s (should be %s)", app.Name, app.Spec.Source.TargetRevision, expectedTargetRevision)
 				}
-
 			}
 		})
 	}
