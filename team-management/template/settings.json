@@ -5,6 +5,13 @@
       "repo": "https://github.com/cybozu-private/cydec-apps.git",
       "team": "cydec"
     },
+    "elasticsearch-apps": {
+      "destinations": {
+        "stage0": "master"
+      },
+      "repo": "https://github.com/cybozu-private/elasticsearch-apps.git",
+      "team": "maneki"
+    },
     "ept-apps": {
       "destinations": {
         "stage0": "main"
