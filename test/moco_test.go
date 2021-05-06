@@ -1,5 +1,6 @@
 package test
 
+/*
 import (
 	_ "embed"
 	"encoding/json"
@@ -64,3 +65,4 @@ func testMoco() {
 		Expect(string(stdout)).Should(ContainSubstring("mysql  Ver 8"))
 	})
 }
+*/
