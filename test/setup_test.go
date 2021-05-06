@@ -188,6 +188,15 @@ func testSetup() {
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/overlays/"+overlayName+"/*.yaml")
 		applyAndWaitForApplications(commitID)
+
+		// TODO: remove this block after #1447 is merged and released
+		if doUpgrade {
+			By("deleting moco")
+			ExecSafeAt(boot0, "kubectl", "annotate", "ns", "moco-system", "admission.cybozu.com/i-am-sure-to-delete=moco-system")
+			ExecSafeAt(boot0, "kubectl", "delete", "-n=argocd", "app", "moco")
+			ExecSafeAt(boot0, "kubectl", "annotate", "crd", "mysqlclusters.moco.cybozu.com", "admission.cybozu.com/i-am-sure-to-delete=mysqlclusters.moco.cybozu.com")
+			ExecSafeAt(boot0, "kubectl", "delete", "crd", "mysqlclusters.moco.cybozu.com")
+		}
 	})
 
 	It("should set DNS", func() {
