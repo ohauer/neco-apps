@@ -62,7 +62,6 @@ var requiredResources = []string{
 	// Others
 	"dnsendpoints.externaldns.k8s.io",
 	"httpproxies.projectcontour.io",
-	"mysqlclusters.moco.cybozu.com",
 	"objectbucketclaims.objectbucket.io",
 }
 
