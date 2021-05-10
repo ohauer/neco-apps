@@ -176,27 +176,9 @@ func testSetup() {
 			applyMutatingWebhooks()
 		}
 
-		// temporary code for #1428
-		// TODO: delete this block after #1428 is released
-		if doUpgrade {
-			ExecSafeAt(boot0, "argocd", "app", "set", "argocd-config", "--sync-policy", "none")
-			ExecSafeAt(boot0, "argocd", "app", "set", "logging", "--sync-policy", "none")
-			ExecSafeAt(boot0, "kubectl", "delete", "sts", "-n", "logging", "querier")
-			ExecSafeAt(boot0, "kubectl", "delete", "pvc", "-n", "logging", "-lname=querier")
-		}
-
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/overlays/"+overlayName+"/*.yaml")
 		applyAndWaitForApplications(commitID)
-
-		// TODO: remove this block after #1447 is merged and released
-		if doUpgrade {
-			By("deleting moco")
-			ExecSafeAt(boot0, "kubectl", "annotate", "ns", "moco-system", "admission.cybozu.com/i-am-sure-to-delete=moco-system")
-			ExecSafeAt(boot0, "kubectl", "delete", "-n=argocd", "app", "moco")
-			ExecSafeAt(boot0, "kubectl", "annotate", "crd", "mysqlclusters.moco.cybozu.com", "admission.cybozu.com/i-am-sure-to-delete=mysqlclusters.moco.cybozu.com")
-			ExecSafeAt(boot0, "kubectl", "delete", "crd", "mysqlclusters.moco.cybozu.com")
-		}
 	})
 
 	It("should set DNS", func() {
