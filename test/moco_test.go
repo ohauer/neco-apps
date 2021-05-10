@@ -46,9 +46,9 @@ func testMoco() {
 	It("should make mysqlcluster ready", func() {
 		By("waiting mysqlcluster is ready")
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=sandbox", "get", "mysqlcluster/test", "-o", "jsonpath={.status.conditions[?(@.type=='Healthy')].status}")
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=sandbox", "get", "mysqlcluster/test", "-o", `"jsonpath={.status.conditions[?(@.type=='Healthy')].status}"`)
 			if err != nil {
-				return err
+				return fmt.Errorf("mysqlcluter is not healthy: %s: %w", stderr, err)
 			}
 
 			if string(stdout) != "True" {
