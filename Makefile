@@ -146,12 +146,8 @@ update-metallb:
 .PHONY: update-moco
 update-moco:
 	$(call get-latest-gh,cybozu-go/moco)
-	rm -rf /tmp/moco
-	cd /tmp; git clone --depth 1 -b $(latest_gh) https://github.com/cybozu-go/moco
-	rm -rf moco/base/upstream/*
-	cp -r /tmp/moco/config/* moco/base/upstream
-	rm -rf /tmp/moco
-	sed -i -E 's/newTag:.*$$/newTag: $(patsubst v%,%,$(latest_gh))/' moco/base/kustomization.yaml
+	curl -sfL -o moco/base/upstream/moco.yaml \
+		https://github.com/cybozu-go/moco/releases/download/$(latest_gh)/moco.yaml
 
 .PHONY: update-neco-admission
 update-neco-admission:
