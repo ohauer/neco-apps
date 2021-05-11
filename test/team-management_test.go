@@ -49,6 +49,9 @@ var requiredResources = []string{
 	"grafanadatasources.integreatly.org",
 	"grafanas.integreatly.org",
 
+	// MOCO
+	"mysqlclusters.moco.cybozu.com",
+
 	// VictoriaMetrics operator
 	"vmagents.operator.victoriametrics.com",
 	"vmalertmanagers.operator.victoriametrics.com",
