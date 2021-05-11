@@ -70,6 +70,7 @@ func prepareTest() {
 	}
 
 	// preparing resources before test to make things faster
+	Context("preparing moco", prepareMoco)
 	Context("preparing rook-ceph", prepareRookCeph)
 	Context("preparing argocd-ingress", prepareArgoCDIngress)
 	Context("preparing contour", prepareContour)
@@ -111,6 +112,7 @@ func runTest() {
 	Context("local-pv-provisioner", testLocalPVProvisioner)
 	Context("teleport", testTeleport)
 	Context("team-management", testTeamManagement)
+	Context("moco", testMoco)
 	Context("sealed-secret", testSealedSecret)
 	Context("customer-egress", testCustomerEgress)
 	Context("pod-security-admission", testPodSecurityAdmission)
