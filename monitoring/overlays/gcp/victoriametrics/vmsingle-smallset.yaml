@@ -8,3 +8,6 @@ spec:
     resources:
       requests:
         storage: 3Gi
+  # vmsingle sometimes stuck in CI because of being assigned to the node running on vmalertmanager-largest pods
+  # To avoid the problem, remove affinity in CI
+  affinity:
