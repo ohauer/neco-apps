@@ -272,45 +272,6 @@ func testCRDStatus(t *testing.T) {
 	})
 }
 
-type certificateValidation struct {
-	Kind     string `json:"kind"`
-	Metadata struct {
-		Name string `json:"name"`
-	} `json:"metadata"`
-	Spec struct {
-		IsCA   bool     `json:"isCA"`
-		Usages []string `json:"usages"`
-	} `json:"spec"`
-}
-
-func testCertificateUsages(t *testing.T) {
-	t.Parallel()
-
-	doCheckKustomizedYaml(t, func(t *testing.T, data []byte) {
-		var cert certificateValidation
-		err := yaml.Unmarshal(data, &cert)
-		if err != nil {
-			// Skip because this YAML might not be certificate
-			return
-		}
-
-		if cert.Kind != "Certificate" {
-			// Skip because this YAML is not certificate
-			return
-		}
-
-		var expected []string
-		if cert.Spec.IsCA {
-			expected = []string{"digital signature", "key encipherment", "cert sign"}
-		} else {
-			expected = []string{"digital signature", "key encipherment", "server auth", "client auth"}
-		}
-		if !cmp.Equal(cert.Spec.Usages, expected) {
-			t.Errorf(".spec.usages has incorrect list in %s: %s", cert.Metadata.Name, cmp.Diff(cert.Spec.Usages, expected))
-		}
-	})
-}
-
 func doCheckKustomizedYaml(t *testing.T, checkFunc func(*testing.T, []byte)) {
 	targets := []string{}
 	err := filepath.Walk(manifestDir, func(path string, info os.FileInfo, err error) error {
@@ -713,7 +674,6 @@ func TestValidation(t *testing.T) {
 	t.Run("AppProjectNamespaces", testAppProjectResources)
 	t.Run("ApplicationTargetRevision", testApplicationResources)
 	t.Run("CRDStatus", testCRDStatus)
-	t.Run("CertificateUsages", testCertificateUsages)
 	t.Run("NamespaceLabels", testNamespaceResources)
 	t.Run("VictoriaMetricsCustomResources", testVMCustomResources)
 }

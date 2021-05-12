@@ -138,6 +138,14 @@ webhooks:
     resources:
     - objectbucketclaims
   - apiGroups:
+    - moco.cybozu.com
+    apiVersions:
+    - v1beta1
+    operations:
+    - DELETE
+    resources:
+    - mysqlclusters
+  - apiGroups:
     - elasticsearch.k8s.elastic.co
     apiVersions:
     - v1beta1
