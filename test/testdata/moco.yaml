@@ -23,3 +23,5 @@ spec:
         requests:
           storage: 10Gi
       storageClassName: topolvm-provisioner
+  collectors:
+  - engine_innodb_status

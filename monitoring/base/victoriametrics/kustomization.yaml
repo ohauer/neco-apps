@@ -54,6 +54,7 @@ resources:
   - rules/logging-scrape.yaml
   - rules/metallb-alertrule.yaml
   - rules/metallb-scrape.yaml
+  - rules/moco-scrape.yaml
   - rules/monitoring-scrape.yaml
   - rules/monitoring-alertrule.yaml
   - rules/neco-admission-alertrule.yaml

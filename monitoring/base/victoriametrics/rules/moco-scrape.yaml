@@ -1,0 +1,70 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: moco-controller
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [moco-system]
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: moco-controller
+  podMetricsEndpoints:
+  - port: metrics
+    relabelConfigs:
+    - replacement: moco-controller
+      targetLabel: job
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: moco-agent
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    any: true
+  selector:
+    app.kubernetes.io/name: mysql
+  podMetricsEndpoints:
+  - port: agent-metrics
+    relabelConfigs:
+    - replacement: moco-agent
+      targetLabel: job
+    - sourceLabels: [__meta_kubernetes_pod_label_statefulset_kubernetes_io_pod_name]
+      regex: moco-.*
+      action: keep
+    - sourceLabels: [__meta_kubernetes_namespace]
+      action: replace
+      targetLabel: namespace
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: moco-mysql
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    any: true
+  selector:
+    app.kubernetes.io/name: mysql
+  podMetricsEndpoints:
+  - port: mysqld-metrics
+    relabelConfigs:
+    - replacement: moco-mysql
+      targetLabel: job
+    - sourceLabels: [__meta_kubernetes_pod_label_statefulset_kubernetes_io_pod_name]
+      regex: moco-.*
+      action: keep
+    - sourceLabels: [__meta_kubernetes_namespace]
+      action: replace
+      targetLabel: namespace
+    - sourceLabels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance]
+      action: replace
+      targetLabel: name
+    - sourceLabels: [__meta_kubernetes_pod_label_statefulset_kubernetes_io_pod_name]
+      action: replace
+      targetLabel: index
+      regex: .*-([0-9])
+    - sourceLabels: [__meta_kubernetes_pod_label_moco_cybozu_com_role]
+      action: replace
+      targetLabel: role
