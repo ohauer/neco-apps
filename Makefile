@@ -19,6 +19,11 @@ update-argocd:
 	$(call get-latest-tag,redis)
 	sed -i -E '/name:.*redis$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' argocd/base/kustomization.yaml
 
+.PHONY: update-bmc-reverse-proxy
+update-bmc-reverse-proxy:
+	$(call get-latest-tag,bmc-reverse-proxy)
+	sed -i -E 's,image: quay.io/cybozu/bmc-reverse-proxy:.*$$,image: quay.io/cybozu/bmc-reverse-proxy:$(latest_tag),' bmc-reverse-proxy/base/bmc-reverse-proxy/deployment.yaml
+
 .PHONY: update-calico
 update-calico:
 	$(call get-latest-tag,calico)
@@ -106,6 +111,11 @@ update-kube-state-metrics:
 	cp /tmp/kube-state-metrics/examples/standard/* monitoring/base/kube-state-metrics
 	rm -rf /tmp/kube-state-metrics
 	sed -i -E '/newName:.*kube-state-metrics$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
+
+.PHONY: update-local-pv-provisioner
+update-local-pv-provisioner:
+	$(call get-latest-tag,local-pv-provisioner)
+	sed -i -E 's,image: quay.io/cybozu/local-pv-provisioner:.*$$,image: quay.io/cybozu/local-pv-provisioner:$(latest_tag),' local-pv-provisioner/base/daemonset.yaml
 
 .PHONY: update-logging-loki
 update-logging-loki:
