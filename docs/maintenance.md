@@ -2,6 +2,7 @@ How to maintain neco-apps
 =========================
 
 - [argocd](#argocd)
+- [bmc-reverse-proxy](#bmc-reverse-proxy)
 - [cert-manager](#cert-manager)
 - [customer-egress (Squid and unbound)](#customer-egress-squid-and-unbound)
 - [elastic (ECK)](#elastic-eck)
@@ -29,6 +30,7 @@ How to maintain neco-apps
 - [prometheus-adapter](#prometheus-adapter)
 - [pvc-autoresizer](#pvc-autoresizer)
 - [rook](#rook)
+- [local-pv-provisioner](#local-pv-provisioner)
   - [ceph](#ceph)
 - [sealed-secrets](#sealed-secrets)
 - [teleport](#teleport)
@@ -46,6 +48,15 @@ How to maintain neco-apps
    ```
 
 4. Update `KUSTOMIZE_VERSION` in `test/Makefile`.
+
+## bmc-reverse-proxy
+
+Update image tags as follows,
+
+```console
+$ make update-bmc-reverse-proxy
+$ git diff
+```
 
 ## cert-manager
 
@@ -412,6 +423,15 @@ $ cp $GOPATH/src/github.com/rook/rook/cluster/examples/kubernetes/ceph/toolbox.y
 ```
 
 Update rook/**/kustomization.yaml if necessary.
+
+## local-pv-provisioner
+
+Update image tags as follows,
+
+```console
+$ make update-local-pv-provisioner
+$ git diff
+```
 
 ### ceph
 
