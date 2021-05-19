@@ -104,7 +104,7 @@ func testRebootAllNodes() {
 	})
 
 	It("should stop all kube-controller-manager and delete all Pod", func() {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "nodes", "-l", "node-role.kubernetes.io/master=true", "-ojsonpath='{.items..metadata.name}'")
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "nodes", "-l", "node-role.kubernetes.io/control-plane=true", "-ojsonpath='{.items..metadata.name}'")
 		Expect(err).ShouldNot(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
 		cpAddrs := strings.Split(string(stdout), " ")
 		for _, a := range cpAddrs {
