@@ -17,6 +17,7 @@ spec:
   selector:
     app.kubernetes.io/name: teleport
     app.kubernetes.io/component: auth
+  allocateLoadBalancerNodePorts: false
 ---
 apiVersion: v1
 kind: Service
@@ -51,3 +52,4 @@ spec:
   selector:
     app.kubernetes.io/name: teleport
     app.kubernetes.io/component: proxy
+  allocateLoadBalancerNodePorts: false

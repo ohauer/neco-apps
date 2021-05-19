@@ -20,3 +20,4 @@ spec:
       targetPort: 5900
   selector:
     app.kubernetes.io/name: bmc-reverse-proxy
+  allocateLoadBalancerNodePorts: false
