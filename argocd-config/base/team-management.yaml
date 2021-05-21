@@ -18,4 +18,5 @@ spec:
     namespace: sandbox
   syncPolicy:
     automated:
+      prune: true
       selfHeal: true
