@@ -266,7 +266,9 @@ spec:
               }}) is restarting {{ printf "%.2f" $value }} times / 5 minutes.
             runbook: TBD
           expr: |
-            rate(kube_pod_container_status_restarts_total{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}[5m]) * 60 * 5 > 0
+            rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[5m])
+            * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            * 60 * 5  > 0
           for: 15m
           labels:
             severity: error
@@ -276,7 +278,11 @@ spec:
               state for longer than 30 minutes.
             runbook: TBD
           expr: |
-            sum by (namespace, pod) (kube_pod_status_phase{job="kube-state-metrics", phase=~"Failed|Pending|Unknown",namespace!~"app-.+|maneki|sandbox"} * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}) > 0
+            sum by (namespace, pod) (
+              kube_pod_status_phase{job="kube-state-metrics", phase=~"Failed|Pending|Unknown"}
+              * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+              * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}
+            ) > 0
           for: 30m
           labels:
             severity: error
@@ -286,7 +292,12 @@ spec:
               state though scheduled for longer than 15 minutes.
             runbook: TBD
           expr: |
-            sum by (namespace, pod) (kube_pod_status_phase{job="kube-state-metrics", phase=~"Failed|Pending|Unknown",namespace!~"app-.+|maneki|sandbox"} * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"} and on(namespace,pod) kube_pod_info{job="kube-state-metrics",node!=""}) > 0
+            sum by (namespace, pod) (
+              kube_pod_status_phase{job="kube-state-metrics", phase=~"Failed|Pending|Unknown"}
+              * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+              * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}
+              and on(namespace, pod) kube_pod_info{job="kube-state-metrics",node!=""}
+            ) > 0
           for: 15m
           labels:
             severity: error
@@ -296,9 +307,12 @@ spec:
               state though containers are in a ready state for longer than 30 minutes.
             runbook: TBD
           expr: |
-            min by(namespace, pod) (kube_pod_container_status_ready{namespace!~"app-.+|maneki|sandbox"})
-              * on(namespace, pod) kube_pod_status_ready{condition="false"}
-              * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"} > 0
+            min by(namespace, pod) (
+              kube_pod_container_status_ready
+              * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            )
+            * on(namespace, pod) kube_pod_status_ready{condition="false"}
+            * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"} > 0
           for: 30m
           labels:
             severity: error
@@ -310,9 +324,9 @@ spec:
               not been rolled back.
             runbook: TBD
           expr: |
-            kube_deployment_status_observed_generation{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_deployment_status_observed_generation{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
               !=
-            kube_deployment_metadata_generation{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_deployment_metadata_generation{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
           for: 15m
           labels:
             severity: error
@@ -322,9 +336,9 @@ spec:
               matched the expected number of replicas for longer than 30 minutes.
             runbook: TBD
           expr: |
-            kube_deployment_spec_replicas{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_deployment_spec_replicas{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
               !=
-            kube_deployment_status_replicas_available{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_deployment_status_replicas_available{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
           for: 30m
           labels:
             severity: error
@@ -335,9 +349,9 @@ spec:
               not matched the expected number of replicas for longer than 30 minutes.
             runbook: TBD
           expr: |
-            kube_statefulset_status_replicas_ready{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_statefulset_status_replicas_ready{job="kube-state-metrics"} *on(namespace) group_left kube_namespace_labels{label_team="neco"})
               !=
-            kube_statefulset_status_replicas{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_statefulset_status_replicas{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
           for: 30m
           labels:
             severity: error
@@ -349,9 +363,9 @@ spec:
               not been rolled back.
             runbook: TBD
           expr: |
-            kube_statefulset_status_observed_generation{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_statefulset_status_observed_generation{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
               !=
-            kube_statefulset_metadata_generation{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_statefulset_metadata_generation{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
           for: 15m
           labels:
             severity: error
@@ -362,15 +376,15 @@ spec:
             runbook: TBD
           expr: |
             max without (revision) (
-              kube_statefulset_status_current_revision{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+              (kube_statefulset_status_current_revision{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
                 unless
-              kube_statefulset_status_update_revision{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+              (kube_statefulset_status_update_revision{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
             )
               *
             (
-              kube_statefulset_replicas{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+              (kube_statefulset_replicas{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
                 !=
-              kube_statefulset_status_replicas_updated{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+              (kube_statefulset_status_replicas_updated{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
             )
           for: 15m
           labels:
@@ -381,9 +395,9 @@ spec:
               }}/{{ $labels.daemonset }} are scheduled and ready.
             runbook: TBD
           expr: |
-            kube_daemonset_status_number_ready{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_daemonset_status_number_ready{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
               /
-            kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"} * 100 < 100
+            (kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}) * 100 < 100
           for: 1h
           labels:
             severity: error
@@ -393,9 +407,9 @@ spec:
             }} are not scheduled.'
             runbook: TBD
           expr: |
-            kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}
+            (kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
               -
-            kube_daemonset_status_current_number_scheduled{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"} > 0
+            (kube_daemonset_status_current_number_scheduled{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}) > 0
           for: 1h
           labels:
             severity: error
@@ -405,7 +419,7 @@ spec:
               matched the expected number of replicas for longer than 30 minutes.
             runbook: TBD
           expr: |
-            kube_daemonset_status_number_unavailable{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"} != 0
+            (kube_daemonset_status_number_unavailable{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}) != 0
           for: 1h
           labels:
             severity: error
@@ -416,7 +430,7 @@ spec:
               than 1h to complete.
             runbook: TBD
           expr: |
-            time() - kube_cronjob_next_schedule_time{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"} > 3600
+            time() - (kube_cronjob_next_schedule_time{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}) > 3600
           for: 1h
           labels:
             severity: warning
@@ -426,7 +440,9 @@ spec:
               than one hour to complete.
             runbook: TBD
           expr: |
-            kube_job_spec_completions{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"} - kube_job_status_succeeded{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}  > 0
+            (kube_job_spec_completions{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
+              -
+            (kube_job_status_succeeded{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}) > 0
           for: 1h
           labels:
             severity: warning
@@ -435,7 +451,7 @@ spec:
             summary: Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to complete.
             runbook: TBD
           expr: |
-            kube_job_failed{job="kube-state-metrics",namespace!~"app-.+|maneki|sandbox"}  > 0
+            (kube_job_failed{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})  > 0
           for: 15m
           labels:
             severity: error
@@ -592,7 +608,10 @@ spec:
             summary: No kube-apiserver is running.
             runbook: Please consider to find root causes, and solve the problems
         - alert: PersistentVolumeSpaceExceeded
-          expr: kubelet_volume_stats_used_bytes{namespace!~"app-.+|maneki|sandbox"} / kubelet_volume_stats_capacity_bytes{namespace!~"app-.+|maneki|sandbox"} > 0.90
+          expr: |
+            (kubelet_volume_stats_used_bytes * on(namespace) group_left kube_namespace_labels{label_team="neco"})
+              /
+            (kubelet_volume_stats_capacity_bytes* on(namespace) group_left kube_namespace_labels{label_team="neco"}) > 0.90
           for: 1m
           labels:
             severity: critical
@@ -600,7 +619,10 @@ spec:
             summary: Disk usage of `{{ $labels.persistentvolumeclaim }}, {{ $labels.namespace }}` is more than 90%.
             runbook: Please consider resizing volume
         - alert: PersistentVolumeUsageRapidIncrease
-          expr: delta(kubelet_volume_stats_used_bytes{namespace!~"app-.+|maneki|sandbox"}[10m]) / (1024 * 1024 * 1024) > 10
+          expr: |
+            delta(kubelet_volume_stats_used_bytes[10m])
+            * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            / (1024 * 1024 * 1024) > 10
           for: 1m
           labels:
             severity: warning
