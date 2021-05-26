@@ -9,6 +9,7 @@ function(teams) [{
     'statefulset.yaml',
     'apps',
     'nodes',
+    'restart',
   ],
   configMapGenerator: [
     {
