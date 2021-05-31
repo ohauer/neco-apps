@@ -1,8 +1,8 @@
 # Makefile to update manifests
 
 ECK_VERSION = 1.5.0
-HELM_VERSION = 3.5.2
-TANKA_VERSION = 0.15.0
+HELM_VERSION = 3.6.0
+TANKA_VERSION = 0.15.1
 
 .PHONY: all
 all:
