@@ -1,6 +1,5 @@
 # Makefile to update manifests
 
-ECK_VERSION = 1.5.0
 HELM_VERSION = 3.6.0
 TANKA_VERSION = 0.15.1
 
@@ -53,7 +52,8 @@ update-customer-egress:
 
 .PHONY: update-eck
 update-eck:
-	curl -sLf -o elastic/base/upstream/all-in-one.yaml https://download.elastic.co/downloads/eck/$(ECK_VERSION)/all-in-one.yaml
+	$(call get-latest-gh,elastic/cloud-on-k8s)
+	curl -sLf -o elastic/base/upstream/all-in-one.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/all-in-one.yaml
 
 .PHONY: update-external-dns
 update-external-dns:
