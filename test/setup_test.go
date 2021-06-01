@@ -171,9 +171,7 @@ func testSetup() {
 	It("should setup applications", func() {
 		if !doUpgrade {
 			applyNetworkPolicy()
-			applyCertManager()
 			setupArgoCD()
-			applyMutatingWebhooks()
 		}
 
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
@@ -305,7 +303,11 @@ func applyAndWaitForApplications(commitID string) {
 	}).Should(Succeed())
 
 	Eventually(func() error {
-		stdout, stderr, err := ExecAt(boot0, "cd", "./neco-apps", "&&", "argocd", "app", "sync", "argocd-config", "--local", "argocd-config/overlays/"+overlayName, "--async")
+		stdout, stderr, err := ExecAt(boot0, "cd", "./neco-apps",
+			"&&", "argocd", "app", "sync", "argocd-config",
+			"--retry-limit", "100",
+			"--local", "argocd-config/overlays/"+overlayName,
+			"--async")
 		if err != nil {
 			return fmt.Errorf("stdout=%s, stderr=%s: %w", string(stdout), string(stderr), err)
 		}
@@ -316,7 +318,11 @@ func applyAndWaitForApplications(commitID string) {
 	stdout, _, err := kustomizeBuild("../argocd-config/overlays/" + overlayName)
 	Expect(err).ShouldNot(HaveOccurred())
 
-	var appList []string
+	type nameAndWave struct {
+		name     string
+		syncWave float64
+	}
+	var appList []nameAndWave
 	y := k8sYaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(stdout)))
 	for {
 		data, err := y.Read()
@@ -333,20 +339,29 @@ func applyAndWaitForApplications(commitID string) {
 		if app.GetLabels()["is-tenant"] == "true" {
 			continue
 		}
-		appList = append(appList, app.GetName())
+
+		wave, err := strconv.ParseFloat(app.GetAnnotations()["argocd.argoproj.io/sync-wave"], 32)
+		Expect(err).ShouldNot(HaveOccurred())
+		appList = append(appList, nameAndWave{name: app.GetName(), syncWave: wave})
 	}
 	Expect(appList).ShouldNot(HaveLen(0))
 
-	sort.Strings(appList)
+	sort.Slice(appList, func(i, j int) bool {
+		if appList[i].syncWave != appList[j].syncWave {
+			return appList[i].syncWave < appList[j].syncWave
+		} else {
+			return strings.Compare(appList[i].name, appList[j].name) <= 0
+		}
+	})
 	fmt.Printf("application list:\n")
 	for _, app := range appList {
-		fmt.Println("  " + app)
+		fmt.Printf(" %4.1f: %s\n", app.syncWave, app.name)
 	}
 
 	By("waiting initialization")
 	checkAllAppsSynced := func() error {
 		for _, target := range appList {
-			appStdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", target)
+			appStdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", target.name)
 			if err != nil {
 				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", appStdout, stderr, err)
 			}
@@ -360,7 +375,7 @@ func applyAndWaitForApplications(commitID string) {
 			// These reference upstream Helm chart versions, so no need to check commitID.
 			default:
 				if app.Status.Sync.ComparedTo.Source.TargetRevision != commitID {
-					return errors.New(target + " does not have correct target yet")
+					return errors.New(target.name + " does not have correct target yet")
 				}
 			}
 			if app.Status.Sync.Status == SyncStatusCodeSynced &&
@@ -378,18 +393,18 @@ func applyAndWaitForApplications(commitID string) {
 				app.Operation != nil &&
 				app.Status.OperationState != nil &&
 				app.Status.OperationState.Phase == "Running" {
-				fmt.Printf("%s terminate unexpected operation: app=%s\n", time.Now().Format(time.RFC3339), target)
-				stdout, stderr, err := ExecAt(boot0, "argocd", "app", "terminate-op", target)
+				fmt.Printf("%s terminate unexpected operation: app=%s\n", time.Now().Format(time.RFC3339), target.name)
+				stdout, stderr, err := ExecAt(boot0, "argocd", "app", "terminate-op", target.name)
 				if err != nil {
-					return fmt.Errorf("failed to terminate operation. app: %s, stdout: %s, stderr: %s, err: %v", target, stdout, stderr, err)
+					return fmt.Errorf("failed to terminate operation. app: %s, stdout: %s, stderr: %s, err: %v", target.name, stdout, stderr, err)
 				}
-				stdout, stderr, err = ExecAt(boot0, "argocd", "app", "sync", target)
+				stdout, stderr, err = ExecAt(boot0, "argocd", "app", "sync", target.name)
 				if err != nil {
-					return fmt.Errorf("failed to sync application. app: %s, stdout: %s, stderr: %s, err: %v", target, stdout, stderr, err)
+					return fmt.Errorf("failed to sync application. app: %s, stdout: %s, stderr: %s, err: %v", target.name, stdout, stderr, err)
 				}
 			}
 
-			return fmt.Errorf("%s is not initialized. argocd app get %s -o json: %s", target, target, appStdout)
+			return fmt.Errorf("%s is not initialized. argocd app get %s -o json: %s", target.name, target.name, appStdout)
 		}
 		return nil
 	}
@@ -496,118 +511,6 @@ func applyNetworkPolicy() {
 		}
 		return nil
 	}, 3*time.Minute).Should(Succeed())
-}
-
-// This step is purely optional.  This is only for making Argo CD synchronization faster.
-func applyCertManager() {
-	// Egress in internet-egress is a dependency of cert-manager
-	By("apply coil")
-	ExecSafeAt(boot0, "kustomize build neco-apps/coil/base | kubectl apply -f -")
-
-	By("apply cert-manager")
-	manifest, stderr, err := kustomizeBuild("../cert-manager/overlays/" + overlayName)
-	Expect(err).ShouldNot(HaveOccurred(), "failed to kustomize build: stderr=%s", stderr)
-
-	var nonCRDResources []*unstructured.Unstructured
-	y := k8sYaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(manifest)))
-	for {
-		data, err := y.Read()
-		if err == io.EOF {
-			break
-		}
-		Expect(err).ShouldNot(HaveOccurred())
-
-		resources := &unstructured.Unstructured{}
-		_, gvk, err := decUnstructured.Decode(data, nil, resources)
-		if err != nil {
-			continue
-		}
-		if gvk.Kind == "ClusterIssuer" {
-			continue
-		}
-		if gvk.Kind != "CustomResourceDefinition" {
-			nonCRDResources = append(nonCRDResources, resources)
-			continue
-		}
-
-		stdout, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "apply", "-f", "-")
-		Expect(err).ShouldNot(HaveOccurred(), "failed to apply crd: stdout=%s, stderr=%s", stdout, stderr)
-	}
-
-	for _, r := range nonCRDResources {
-		labels := r.GetLabels()
-		if labels == nil {
-			labels = make(map[string]string)
-		}
-		// ArgoCD will add this label, so adding this label here beforehand to speed up CI
-		labels["app.kubernetes.io/instance"] = "cert-manager"
-		r.SetLabels(labels)
-		data, err := r.MarshalJSON()
-		Expect(err).ShouldNot(HaveOccurred(), "failed to marshal json. err=%s", err)
-		stdout, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "apply", "-f", "-")
-		Expect(err).ShouldNot(HaveOccurred(), "failed to apply non-crd resource: stdout=%s, stderr=%s", stdout, stderr)
-	}
-
-	Eventually(func() error {
-		for _, name := range []string{"cert-manager", "cert-manager-cainjector", "cert-manager-webhook"} {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "cert-manager", "get", "deployments", name, "-o=json")
-			if err != nil {
-				return fmt.Errorf("%s, err: %w", stderr, err)
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-			if deployment.Status.ReadyReplicas != 1 {
-				return fmt.Errorf("cert-manager/%s is not ready: %d", name, deployment.Status.ReadyReplicas)
-			}
-		}
-		return nil
-	}, 3*time.Minute).Should(Succeed())
-}
-
-func applyWebhooksFrom(manifests []byte) {
-	var webhooks []*unstructured.Unstructured
-	y := k8sYaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(manifests)))
-	for {
-		data, err := y.Read()
-		if err == io.EOF {
-			break
-		}
-		ExpectWithOffset(1, err).ShouldNot(HaveOccurred())
-
-		res := &unstructured.Unstructured{}
-		_, gvk, err := decUnstructured.Decode(data, nil, res)
-		ExpectWithOffset(1, err).ShouldNot(HaveOccurred())
-
-		if gvk.Kind == "MutatingWebhookConfiguration" {
-			webhooks = append(webhooks, res)
-		}
-	}
-
-	for _, r := range webhooks {
-		data, err := r.MarshalJSON()
-		ExpectWithOffset(1, err).ShouldNot(HaveOccurred())
-
-		stdout, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "apply", "-f", "-")
-		ExpectWithOffset(1, err).ShouldNot(HaveOccurred(), "failed to apply webhook %s: stdout=%s, stderr=%s", r.GetName(), stdout, stderr)
-	}
-}
-
-// Since Argo CD 1.8, it does not check and wait for Applications to become ready.
-// This is normally okay except for some critical mutating webhooks.
-// To workaround this bootstrap problem, we need to apply webhooks manually first.
-func applyMutatingWebhooks() {
-	By("applying neco-admission webhooks")
-	manifests, stderr, err := kustomizeBuild("../neco-admission/base/")
-	Expect(err).ShouldNot(HaveOccurred(), "failed to kustomize build: stderr=%s", stderr)
-	applyWebhooksFrom(manifests)
-
-	By("applying TopoLVM webhooks")
-	manifests, stderr, err = kustomizeBuild("../topolvm/base/")
-	Expect(err).ShouldNot(HaveOccurred(), "failed to kustomize build: stderr=%s", stderr)
-	applyWebhooksFrom(manifests)
 }
 
 func setupArgoCD() {
