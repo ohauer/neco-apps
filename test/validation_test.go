@@ -180,6 +180,38 @@ func testAppProjectResources(t *testing.T) {
 }
 
 func testApplicationResources(t *testing.T) {
+	syncWaves := map[string]string{
+		"namespaces":             "1",
+		"argocd":                 "2",
+		"coil":                   "3",
+		"local-pv-provisioner":   "3",
+		"sealed-secrets":         "3",
+		"secrets":                "3",
+		"cert-manager":           "3",
+		"external-dns":           "3",
+		"metallb":                "3",
+		"ingress":                "4",
+		"neco-admission":         "4",
+		"pod-security-admission": "4",
+		"topolvm":                "4",
+		"unbound":                "5",
+		"argocd-ingress":         "5",
+		"bmc-reverse-proxy":      "5",
+		"customer-egress":        "5",
+		"elastic":                "5",
+		"moco":                   "5",
+		"rook":                   "5",
+		"sandbox":                "5",
+		"team-management":        "5",
+		"logging":                "6",
+		"monitoring":             "6",
+		"teleport":               "6",
+		"kube-metrics-adapter":   "7",
+		"prometheus-adapter":     "7",
+		"pvc-autoresizer":        "7",
+		"network-policy":         "8",
+	}
+
 	targetRevisions := map[string]string{
 		"gcp":      "release",
 		"gcp-rook": "release",
@@ -227,9 +259,17 @@ func testApplicationResources(t *testing.T) {
 					t.Error(err)
 				}
 
-				if app.Name == "prometheus-adapter" || app.GetLabels()["is-tenant"] == "true" {
+				if app.Name == "argocd-config" || app.Name == "prometheus-adapter" || app.GetLabels()["is-tenant"] == "true" {
 					// Target revision for tenant apps is maintained in team-management/template/settings.json.
 					continue
+				}
+
+				// Check the sync wave
+				if syncWaves[app.Name] == "" {
+					t.Errorf("expected sync-wave should be defined. application: %s", app.Name)
+				}
+				if app.GetAnnotations()["argocd.argoproj.io/sync-wave"] != syncWaves[app.Name] {
+					t.Errorf("invalid sync-wave. application: %s, sync-wave: %s (should be %s)", app.Name, app.GetAnnotations()["argocd.argoproj.io/sync-wave"], syncWaves[app.Name])
 				}
 
 				// Check the targetRevision
