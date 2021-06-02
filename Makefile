@@ -2,6 +2,7 @@
 
 HELM_VERSION = 3.6.0
 TANKA_VERSION = 0.15.1
+JSONNET_LIBS_K8S_ALPHA_VERSION = 1.20
 
 .PHONY: all
 all:
@@ -128,14 +129,22 @@ update-logging-loki:
 	tk env add environments/loki-canary --namespace=logging && \
 	jb install github.com/grafana/loki/production/ksonnet/loki@$(call upstream-tag,$(latest_tag)) && \
 	jb install github.com/grafana/loki/production/ksonnet/loki-canary@$(call upstream-tag,$(latest_tag)) && \
-	jb install github.com/jsonnet-libs/k8s-alpha/1.19 && \
-	echo "import 'github.com/jsonnet-libs/k8s-alpha/1.19/main.libsonnet'" > lib/k.libsonnet
+	jb install github.com/jsonnet-libs/k8s-alpha/$(JSONNET_LIBS_K8S_ALPHA_VERSION) && \
+	echo "import 'github.com/jsonnet-libs/k8s-alpha/$(JSONNET_LIBS_K8S_ALPHA_VERSION)/main.libsonnet'" > lib/k.libsonnet
 
 	cp logging/base/loki/main.jsonnet /tmp/loki/environments/loki/main.jsonnet
 	cp logging/base/loki-canary/main.jsonnet /tmp/loki/environments/loki-canary/main.jsonnet
 	rm -rf logging/base/loki/upstream/* logging/base/loki-canary/upstream/*
-	tk export logging/base/loki/upstream/ /tmp/loki/environments/loki/ -t '!.*/consul(-sidekick)?'
-	tk export logging/base/loki-canary/upstream/ /tmp/loki/environments/loki-canary/
+	cd /tmp/loki && \
+	tk export $(shell pwd)/logging/base/loki/upstream/ environments/loki/ -t '!.*/consul(-sidekick)?' && \
+	tk export $(shell pwd)/logging/base/loki-canary/upstream/ environments/loki-canary/
+
+	sed -i -E '/name:.*loki$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki*/kustomization.yaml
+
+	$(call get-latest-tag,memcached)
+	sed -i -E '/name:.*memcached$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml
+	$(call get-latest-tag,memcached-exporter)
+	sed -i -E '/name:.*memcached-exporter$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml
 
 .PHONY: update-machines-endpoints
 update-machines-endpoints:

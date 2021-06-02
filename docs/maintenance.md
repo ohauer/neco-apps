@@ -165,12 +165,15 @@ $ git diff
 ```
 
 ## logging
+
 ### loki, loki-canary
 
 Check [loki releases](https://github.com/grafana/loki/releases).
 
-Check [k8s-alpha](https://github.com/jsonnet-libs/k8s-alpha/) jsonnet library, rewrite the version in Makefile corresponding to using kubernetes version.
-If supported version is missing, use latest version instead.
+Check [k8s-alpha](https://github.com/jsonnet-libs/k8s-alpha/) jsonnet library to find the appropriate value for `JSONNET_LIBS_K8S_ALPHA_VERSION` in Makefile.
+If the library supports the currently used Kubernetes version, i.e. if the repository contains a directory with the name of the current Kubernetes version, then use that version as the value.
+If not, use the latest Kubernetes version that the library supports.
+In both cases, update `JSONNET_LIBS_K8S_ALPHA_VERSION` in Makefile if necessary.
 
 Update the manifests as follows:
 
@@ -193,6 +196,7 @@ helm search repo -l grafana | grep grafana/promtail
 PROMTAIL_CHART_VERSION=X.Y.Z
 helm template logging --namespace=logging grafana/promtail --version=${PROMTAIL_CHART_VERSION} > ${LOGGING_DIR}/base/promtail/upstream/promtail.yaml
 ```
+
 ### consul
 
 ```
