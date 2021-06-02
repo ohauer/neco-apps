@@ -14,11 +14,10 @@ spec:
       requests:
         cpu: "500m"
         memory: "1Gi"
-    ## send bug report https://github.com/rook/rook/issues/6789
-    # osd:
-    #   requests:
-    #     cpu: "500m"
-    #     memory: "2Gi"
+    osd:
+      requests:
+        cpu: "500m"
+        memory: "2Gi"
     prepareosd:
       requests:
         cpu: "500m"
@@ -66,11 +65,6 @@ spec:
     storageClassDeviceSets:
       - name: set1
         count: 18
-        ## send bug report https://github.com/rook/rook/issues/6789
-        resources:
-          requests:
-            cpu: "500m"
-            memory: "2Gi"
         tuneDeviceClass: true
         volumeClaimTemplates:
           - metadata:
