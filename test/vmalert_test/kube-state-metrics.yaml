@@ -10,6 +10,7 @@ tests:
         values: '0+9x30'
     alert_rule_test:
       - eval_time: 15m
+        alertname: KubeStateMetricsListErrors
         exp_alerts: []
       - eval_time: 16m
         alertname: KubeStateMetricsListErrors
@@ -29,6 +30,7 @@ tests:
         values: '0+9x30'
     alert_rule_test:
       - eval_time: 15m
+        alertname: KubeStateMetricsWatchErrors
         exp_alerts: []
       - eval_time: 16m
         alertname: KubeStateMetricsWatchErrors
