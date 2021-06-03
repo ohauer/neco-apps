@@ -146,6 +146,16 @@ update-logging-loki:
 	$(call get-latest-tag,memcached-exporter)
 	sed -i -E '/name:.*memcached-exporter$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml
 
+.PHONY: update-logging-promtail
+update-logging-promtail:
+	$(call get-latest-tag,promtail)
+	sed -i -E '/name:.*promtail$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/promtail/kustomization.yaml
+
+.PHONY: update-logging-consul
+update-logging-consul:
+	$(call get-latest-tag,consul)
+	sed -i -E '/name:.*consul$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/consul/kustomization.yaml
+
 .PHONY: update-machines-endpoints
 update-machines-endpoints:
 	$(call get-latest-tag,machines-endpoints)
