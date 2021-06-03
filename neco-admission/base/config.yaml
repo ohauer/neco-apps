@@ -26,6 +26,10 @@ ArgoCDApplicationValidator:
     - projects:
         - maneki
         - tenant-app-of-apps
+      repository: https://github.com/cybozu-private/es-cluster-allocator.git
+    - projects:
+        - maneki
+        - tenant-app-of-apps
       repository: https://github.com/cybozu-private/maneki-apps.git
     - projects:
         - default
