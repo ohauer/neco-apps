@@ -29,6 +29,13 @@ function(settings) [{
             'tenant-app-of-apps',
           ],
         },
+        {
+          repository: 'https://github.com/cybozu-private/es-cluster-allocator.git',
+          projects: [
+            'maneki',
+            'tenant-app-of-apps',
+          ],
+        },
       ] + std.map(function(x) {
         repository: utility.get_app(settings, x).repo,
         projects: if x == 'tenant-apps' then [
