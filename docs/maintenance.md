@@ -112,7 +112,7 @@ Check [releases](https://github.com/zalando-incubator/kube-metrics-adapter/relea
 Update the manifests as follows:
 
 ```console
-$ make setup   # for the first time to install Helm
+$ make setup   # install/updaet Helm; if a newer Helm is required, update HELM_VERSION in Makefile first
 $ make update-kube-metrics-adapter
 $ git diff kube-metrics-adapter
 ```
@@ -179,7 +179,7 @@ In both cases, update `JSONNET_LIBS_K8S_ALPHA_VERSION` in Makefile if necessary.
 Update the manifests as follows:
 
 ```console
-$ make setup   # for the first time to install tanka and jb.
+$ make setup   # install/update Tanka and jsonnet-builder; if a newer Tanka is required, update TANKA_VERSION in Makefile first
 $ make update-logging-loki
 $ git diff logging
 ```
@@ -335,7 +335,7 @@ This make target also updates grafana_plugins_init.
 
 Run the following command.
 
-```yaml
+```console
 $ make update-grafana
 ```
 
@@ -527,7 +527,7 @@ $ make teleport
 
 ## topolvm
 
-Check [releases](https://github.com/cybozu-go/topolvm/releases) for changes.
+Check [releases](https://github.com/topolvm/topolvm/releases) for changes.
 
 Update the manifest as follows:
 

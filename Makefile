@@ -14,6 +14,7 @@ update-argocd:
 	curl -sLf -o argocd/base/upstream/install.yaml \
 		https://raw.githubusercontent.com/argoproj/argo-cd/$(call upstream-tag,$(latest_tag))/manifests/install.yaml
 	sed -i -E '/name:.*argocd$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' argocd/base/kustomization.yaml
+	sed -i -e 's/ARGOCD_VERSION *:=.*/ARGOCD_VERSION := $(subst v,,$(call upstream-tag,$(latest_tag)))/' test/Makefile
 	$(call get-latest-tag,dex)
 	sed -i -E '/name:.*dex$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' argocd/base/kustomization.yaml
 	$(call get-latest-tag,redis)
