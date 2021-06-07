@@ -200,6 +200,11 @@ update-pod-security-admission:
 	curl -sfL -o pod-security-admission/base/upstream/install.yaml \
 		https://github.com/cybozu-go/pod-security-admission/releases/download/$(latest_gh)/install.yaml
 
+.PHONY: update-pushgateway
+update-pushgateway:
+	$(call get-latest-tag,pushgateway)
+	sed -i -E '/name:.*pushgateway$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
+
 .PHONY: update-pvc-autoresizer
 update-pvc-autoresizer:
 	$(call get-latest-gh,topolvm/pvc-autoresizer)

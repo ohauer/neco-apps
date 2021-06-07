@@ -18,7 +18,8 @@ How to maintain neco-apps
 - [metallb](#metallb)
 - [moco](#moco)
 - [monitoring](#monitoring)
-  - [pushgateway, promtool](#pushgateway-promtool)
+  - [pushgateway](#pushgateway)
+  - [promtool](#promtool)
   - [kube-state-metrics](#kube-state-metrics)
   - [grafana-operator](#grafana-operator)
   - [Grafana](#grafana)
@@ -280,20 +281,29 @@ $ git diff
 
 ## monitoring
 
-### pushgateway, promtool
+### pushgateway
 
+Check [releases](https://github.com/prometheus/pushgateway/releases) for changes.
+
+Update the image tag as follows.
+
+```console
+$ make update-pushgateway
+$ git diff
+```
+
+If you find that the tests for Pushgateway fail due to the stale manifests, then update the manifests.
 There is no official kubernetes manifests for pushgateway.
-So, check changes in release notes on github and helm charts like bellow.
+We generate manifests from the Helm charts for reference as follows, and create/update simplified manifests in `monitoring/base/pushgateway`.
 
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm search repo -l prometheus-community
-helm template prom prometheus-community/prometheus --version=11.5.0 > prom-2.18.1.yaml
-helm template prom prometheus-community/prometheus --version=11.16.7 > prom-2.21.0.yaml
-diff prom-2.18.1.yaml prom-2.21.0.yaml
+# use the latest version
+helm template prom prometheus-community/prometheus --version=x.y.z > prom.yaml
 ```
 
-Then edit `monitoring/base/kustomization.yaml` to update the image tags.
+### promtool
 
 Update `PROMTOOL_VERSION` in `test/Makefile`.
 
