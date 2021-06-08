@@ -7060,6 +7060,10 @@ spec:
                 - warnings
                 - workDirUsage
                 type: object
+              cloned:
+                description: Cloned indicates if the initial cloning from an external
+                  source has been completed.
+                type: boolean
               conditions:
                 description: Conditions is an array of conditions.
                 items:
@@ -7537,7 +7541,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ghcr.io/cybozu-go/moco:0.9.4
+        image: ghcr.io/cybozu-go/moco:0.9.5
         livenessProbe:
           httpGet:
             path: /healthz
