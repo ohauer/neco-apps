@@ -54,7 +54,7 @@ spec:
         - name: VM_VMAGENTDEFAULT_VERSION
           value: "1.60.0.1"
         - name: VM_VMAGENTDEFAULT_CONFIGRELOADIMAGE
-          value: quay.io/cybozu/prometheus-config-reloader:0.47.1.1
+          value: quay.io/cybozu/prometheus-config-reloader:0.42.1.1
         - name: VM_VMSINGLEDEFAULT_IMAGE
           value: quay.io/cybozu/victoriametrics-vmsingle
         - name: VM_VMSINGLEDEFAULT_VERSION
