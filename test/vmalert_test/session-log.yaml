@@ -1,0 +1,17 @@
+rule_files:
+  - ../../monitoring/base/victoriametrics/rules/converted/session-log-alertrule.yaml
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'up{job="session-log-s3gw"}'
+        values: '0+0x15'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: SessionLogS3GWDown
+        exp_alerts:
+          - exp_labels:
+              severity: error
+            exp_annotations:
+              runbook: TBD
+              summary: session-log s3gw is down.

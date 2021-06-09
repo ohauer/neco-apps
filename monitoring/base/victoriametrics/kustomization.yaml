@@ -67,6 +67,8 @@ resources:
   - rules/rook-alertrule.yaml
   - rules/sabakan-alertrule.yaml
   - rules/sabakan-scrape.yaml
+  - rules/session-log-alertrule.yaml
+  - rules/session-log-scrape.yaml
   - rules/teleport-alertrule.yaml
   - rules/teleport-scrape.yaml
   - rules/topolvm-scrape.yaml
