@@ -36,6 +36,8 @@ var requiredResources = []string{
 	"certificaterequests.cert-manager.io",
 	"certificates.cert-manager.io",
 	"issuers.cert-manager.io",
+	"challenges.acme.cert-manager.io",
+	"orders.acme.cert-manager.io",
 
 	// ECK
 	"apmservers.apm.k8s.elastic.co",
@@ -88,9 +90,7 @@ var viewableResources = []string{
 	"hostendpoints.crd.projectcalico.org",
 
 	// Cert-manager
-	"challenges.acme.cert-manager.io",
 	"clusterissuers.cert-manager.io",
-	"orders.acme.cert-manager.io",
 
 	// Coil
 	"egresses.coil.cybozu.com",
