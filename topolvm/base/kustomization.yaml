@@ -12,13 +12,14 @@ resources:
 - upstream/overlays/daemonset-scheduler/scheduler.yaml
 - pdb.yaml
 - priorityclass.yaml
+- storageclass.yaml
 
 patchesStrategicMerge:
 - crd.yaml
 - lvmd.yaml
 - node.yaml
 - scheduler.yaml
-- storageclass.yaml
+- provisioner.yaml
 
 configMapGenerator:
   - name: lvmd
