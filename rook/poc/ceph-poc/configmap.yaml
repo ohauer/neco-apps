@@ -12,3 +12,6 @@ data:
     
     [osd]
     bluefs_buffered_io = false
+
+    [rgw]
+    rgw_dynamic_resharding = false
