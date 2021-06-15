@@ -19,8 +19,11 @@ spec:
           args:
           - --listen=:20080
           - --use-path-style
-          - --hosts-allow=10.72.48.0/24 # bastion subnet for boot servers
+          - --hosts-allow=$(BASTION_BOOTSERVER_SUBNET)
           - --hosts-deny=0.0.0.0/0,::/0
+          env:
+          - name: BASTION_BOOTSERVER_SUBNET
+            value: 10.72.48.0/24
           envFrom:
           - configMapRef:
               name: session-log
