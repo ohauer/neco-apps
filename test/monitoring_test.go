@@ -261,9 +261,6 @@ func testGrafanaOperator() {
 			}
 			stdout, stderr, err := ExecInNetns("external", "curl", "--resolve", grafanaFQDN+":443:"+ip, "-kL", "-u", "admin:AUJUl1K2xgeqwMdZ3XlEFc1QhgEQItODMNzJwQme", "https://"+grafanaFQDN+"/api/search?type=dash-db")
 			if err != nil {
-				return fmt.Errorf("unable to get admin stats, stderr: %s, err: %v", stderr, err)
-			}
-			if err != nil {
 				return fmt.Errorf("unable to get dashboards, stderr: %s, err: %v", stderr, err)
 			}
 			var dashboards []struct {
@@ -387,7 +384,7 @@ func testVMCommonClusterComponents(setType vmSetType) {
 				_, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "exec",
 					podName, "curl", "http://localhost:9093/-/healthy")
 				if err != nil {
-					return fmt.Errorf("unable to curl http://%s:9093/-/halthy, stderr: %s, err: %v", podName, stderr, err)
+					return fmt.Errorf("unable to curl http://%s:9093/-/healthy, stderr: %s, err: %v", podName, stderr, err)
 				}
 			}
 			return nil
