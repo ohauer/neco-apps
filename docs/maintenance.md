@@ -33,6 +33,7 @@ How to maintain neco-apps
 - [pvc-autoresizer](#pvc-autoresizer)
 - [rook](#rook)
   - [ceph](#ceph)
+- [s3gw](#s3gw)
 - [sealed-secrets](#sealed-secrets)
 - [teleport](#teleport)
 - [topolvm](#topolvm)
@@ -492,6 +493,15 @@ Update `spec.cephVersion.image` field in CephCluster CR.
 
 - rook/base/ceph-hdd/cluster.yaml
 - rook/base/ceph-ssd/cluster.yaml
+
+## s3gw
+
+Update image tags as follows,
+
+```console
+$ make update-s3gw
+$ git diff
+```
 
 ## sealed-secrets
 

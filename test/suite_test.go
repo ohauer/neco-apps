@@ -116,4 +116,5 @@ func runTest() {
 	Context("sealed-secret", testSealedSecret)
 	Context("customer-egress", testCustomerEgress)
 	Context("pod-security-admission", testPodSecurityAdmission)
+	Context("session-log", testSessionLog)
 }

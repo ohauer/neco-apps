@@ -1,0 +1,8 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: session-log
+  namespace: session-log
+spec:
+  generateBucketName: session-log
+  storageClassName: ceph-hdd-bucket
