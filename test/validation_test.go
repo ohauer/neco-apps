@@ -205,6 +205,7 @@ func testApplicationResources(t *testing.T) {
 		"team-management":        "5",
 		"logging":                "6",
 		"monitoring":             "6",
+		"session-log":            "6",
 		"teleport":               "6",
 		"kube-metrics-adapter":   "7",
 		"prometheus-adapter":     "7",

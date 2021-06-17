@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3gw
+  namespace: session-log
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: s3gw
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: s3gw
+    spec:
+      containers:
+        - name: s3gw
+          image: quay.io/cybozu/s3gw:1.0.0
+          args:
+          - --listen=:20080
+          - --use-path-style
+          - --hosts-allow=$(BASTION_BOOTSERVER_SUBNET)
+          - --hosts-deny=0.0.0.0/0,::/0
+          env:
+          - name: BASTION_BOOTSERVER_SUBNET
+            value: 10.72.48.0/24
+          envFrom:
+          - configMapRef:
+              name: session-log
+          - secretRef:
+              name: session-log
+          ports:
+          - name: http
+            containerPort: 20080
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: s3gw
+  namespace: session-log
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: s3gw
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: s3gw
+  namespace: session-log
+  labels:
+    app.kubernetes.io/name: s3gw
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: s3gw
+  ports:
+  - name: http
+    port: 80
+    targetPort: http

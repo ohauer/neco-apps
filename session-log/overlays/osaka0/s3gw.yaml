@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s3gw
+  namespace: session-log
+spec:
+  template:
+    spec:
+      containers:
+        - name: s3gw
+          env:
+          - name: BASTION_BOOTSERVER_SUBNET
+            value: 10.78.48.0/24

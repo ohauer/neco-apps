@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: session-log
+  namespace: monitoring
+spec:
+  groups:
+    - name: session-log
+      rules:
+        - alert: SessionLogS3GWDown
+          expr: |
+            absent(up{job="session-log-s3gw"} == 1)
+          labels:
+            severity: error
+          for: 15m
+          annotations:
+            summary: session-log s3gw is down.
+            runbook: TBD

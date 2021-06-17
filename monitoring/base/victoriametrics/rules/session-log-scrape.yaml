@@ -1,0 +1,16 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: session-log-s3gw
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [session-log]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: s3gw
+  endpoints:
+  - port: http
+    relabelConfigs:
+      - replacement: session-log-s3gw
+        targetLabel: job
