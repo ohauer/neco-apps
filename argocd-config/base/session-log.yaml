@@ -1,11 +1,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: unbound
+  name: session-log
   namespace: argocd
   annotations:
     argocd.argoproj.io/manifest-generate-paths: ..
-    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-wave: "6"
   finalizers:
   - resources-finalizer.argocd.argoproj.io
 spec:
@@ -13,10 +13,10 @@ spec:
   source:
     repoURL: https://github.com/cybozu-go/neco-apps.git
     targetRevision: release
-    path: unbound/base
+    path: session-log/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: internet-egress
+    namespace: session-log
   syncPolicy:
     automated:
       prune: true
