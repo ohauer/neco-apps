@@ -80,7 +80,7 @@ spec:
         emptyDir: {}
       - name: teleport-enterprise-license
         secret:
-          secretName: teleport-enterprise-license-m5bffgtbh6
+          secretName: teleport-enterprise-license-dc27mhtbmc
       - name: teleport-role-volume
         configMap:
           name: teleport-role
