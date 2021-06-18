@@ -215,6 +215,11 @@ update-pvc-autoresizer:
 	cp -r /tmp/pvc-autoresizer/config/* pvc-autoresizer/base/upstream
 	rm -rf /tmp/pvc-autoresizer
 
+.PHONY: update-s3gw
+update-s3gw:
+	$(call get-latest-tag,s3gw)
+	sed -i -E 's,quay.io/cybozu/s3gw:.*$$,quay.io/cybozu/s3gw:$(latest_tag),' session-log/base/s3gw.yaml
+
 .PHONY: update-sealed-secrets
 update-sealed-secrets:
 	$(call get-latest-tag,sealed-secrets)
