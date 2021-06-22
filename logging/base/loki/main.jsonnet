@@ -32,6 +32,10 @@ loki {
     loki+: {
       auth_enabled: false,
 
+      frontend+: {
+        tail_proxy_url: 'http://querier.logging.svc:3100'
+      },
+
       ingester+: {
         lifecycler+: {
           ring+: {
