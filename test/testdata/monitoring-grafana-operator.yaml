@@ -14,6 +14,7 @@ spec:
   routes:
     - conditions:
         - prefix: /
+      enableWebsockets: true
       services:
         - name: grafana-service
           port: 3000
