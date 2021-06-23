@@ -14,6 +14,7 @@ spec:
   routes:
     - conditions:
         - prefix: /
+      enableWebsockets: true
       timeoutPolicy:
         response: 2m
         idle: 5m
