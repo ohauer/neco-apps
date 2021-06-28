@@ -16,34 +16,23 @@ function(settings) [{
           ],
         },
         {
-          repository: 'https://github.com/cybozu-private/neco-apps-secret.git',
-          projects: [
+          repositoryPrefix: 'https://github.com/cybozu-private',
+          projects: std.setDiff(std.set(utility.get_teams(settings) + [
             'default',
-          ],
+            'tenant-apps',
+            'tenant-app-of-apps',
+          ]), ['neco-devusers']),
         },
         {
-          repository: 'https://github.com/garoon-private/static-deployment.git',
+          repositoryPrefix: 'https://github.com/garoon-private',
           projects: [
             'garoon',
             'maneki',
             'tenant-app-of-apps',
           ],
         },
-        {
-          repository: 'https://github.com/cybozu-private/es-cluster-allocator.git',
-          projects: [
-            'maneki',
-            'tenant-app-of-apps',
-          ],
-        },
-      ] + std.map(function(x) {
-        repository: utility.get_app(settings, x).repo,
-        projects: if x == 'tenant-apps' then [
-          'tenant-apps',
-          'tenant-app-of-apps',
-        ] else std.set([utility.get_app(settings, x).team, 'maneki', 'tenant-app-of-apps']),
-      }, utility.get_apps(settings)),
-      function(x) x.repository
+      ],
+      function(x) if std.objectHas(x, 'repositoryPrefix') then 'A' + x.repositoryPrefix else 'B' + x.repository
     ),
   },
 }]
