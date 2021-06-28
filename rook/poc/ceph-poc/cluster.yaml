@@ -61,12 +61,6 @@ spec:
     ssl: true
   priorityClassNames:
     osd: node-bound
-  # expand livenessProve.initialDelaySeconds for osds since an osd's initialize process is so slow.
-  healthCheck:
-    livenessProbe:
-      osd:
-        probe:
-          initialDelaySeconds: 180
   storage:
     storageClassDeviceSets:
       - name: hdd
