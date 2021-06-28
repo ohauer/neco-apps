@@ -2,52 +2,23 @@
 ArgoCDApplicationValidator:
   rules:
     - projects:
+        - cydec
+        - dbre
+        - default
+        - ept
+        - garoon
+        - maneki
+        - tenant-app-of-apps
+        - tenant-apps
+      repositoryPrefix: https://github.com/cybozu-private
+    - projects:
+        - garoon
+        - maneki
+        - tenant-app-of-apps
+      repositoryPrefix: https://github.com/garoon-private
+    - projects:
         - default
       repository: https://github.com/cybozu-go/neco-apps.git
-    - projects:
-        - cydec
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/cybozu-private/cydec-apps.git
-    - projects:
-        - dbre
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/cybozu-private/dbre-apps
-    - projects:
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/cybozu-private/elasticsearch-apps.git
-    - projects:
-        - ept
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/cybozu-private/ept-apps.git
-    - projects:
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/cybozu-private/es-cluster-allocator.git
-    - projects:
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/cybozu-private/maneki-apps.git
-    - projects:
-        - default
-      repository: https://github.com/cybozu-private/neco-apps-secret.git
-    - projects:
-        - tenant-apps
-        - tenant-app-of-apps
-      repository: https://github.com/cybozu-private/neco-tenant-apps.git
-    - projects:
-        - garoon
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/garoon-private/garoon-apps.git
-    - projects:
-        - garoon
-        - maneki
-        - tenant-app-of-apps
-      repository: https://github.com/garoon-private/static-deployment.git
     - projects:
         - default
       repository: https://prometheus-community.github.io/helm-charts
