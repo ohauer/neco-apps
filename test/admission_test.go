@@ -91,9 +91,9 @@ func testAdmission() {
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 		ExecSafeAt(boot0, "kubectl", "delete", "application", "valid")
 
-		By("denying to create Application which points to maneki-apps repo and belongs to default project")
+		By("denying to create Application which points to invalid repo and belongs to default project")
 		buf.Reset()
-		err = tmpl.Execute(buf, tmplParams{"invalid", "default", "https://github.com/cybozu-private/maneki-apps.git"})
+		err = tmpl.Execute(buf, tmplParams{"invalid", "default", "https://github.com/cybozu-go/invalid-apps.git"})
 		Expect(err).NotTo(HaveOccurred())
 		stdout, stderr, err = ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).To(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
