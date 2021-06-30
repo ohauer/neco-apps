@@ -44,7 +44,7 @@ patchesJson6902:
       value: 5
     - op: replace
       path: /spec/storage/storageClassDeviceSets/0/volumeClaimTemplates/0/spec/resources/requests/storage
-      value: 5Gi
+      value: 10Gi
 - target:
     group: ceph.rook.io
     version: v1
