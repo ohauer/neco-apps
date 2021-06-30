@@ -207,7 +207,7 @@ func testClusterStable() {
 					case "rook-ceph-osd":
 						num_osd++
 					case "rook-ceph-rgw":
-						num_rgw++
+						num_rgw += int(*deployment.Spec.Replicas)
 					}
 
 					rookVersion, ok := deployment.Labels["rook-version"]
@@ -317,6 +317,12 @@ func testMGRPodsSpreadAll() {
 	for _, namespace := range []string{"ceph-hdd", "ceph-ssd", "ceph-poc"} {
 		testDaemonPodsSpread("MGR", "app=rook-ceph-mgr", namespace, 2, 1, 1)
 	}
+}
+
+func testRGWPodsSpreadAll() {
+	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw", "ceph-hdd", 2, 1, 1)
+	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-hdd-index", "ceph-poc", 2, 1, 1)
+	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-ssd-index", "ceph-poc", 2, 1, 1)
 }
 
 func testOSDPodsSpread() {
@@ -482,6 +488,7 @@ func testRookCeph() {
 		testOSDPodsSpread()
 		testMONPodsSpreadAll()
 		testMGRPodsSpreadAll()
+		testRGWPodsSpreadAll()
 		testRookRGW()
 		testRookRBDAll()
 	})
