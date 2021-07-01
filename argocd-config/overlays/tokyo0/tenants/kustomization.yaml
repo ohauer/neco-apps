@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - elasticsearch-apps.yaml
   - garoon-apps.yaml
+  - hazama-apps.yaml
   - maneki-apps.yaml
   - tenant-apps.yaml
