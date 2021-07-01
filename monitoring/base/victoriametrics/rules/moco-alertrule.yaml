@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: moco
+  namespace: monitoring
+spec:
+  groups:
+    - name: moco
+      rules:
+        - alert: MocoControllerDown
+          expr: |
+            absent(up{job="moco-controller"} == 1)
+          labels:
+            severity: error
+          for: 15m
+          annotations:
+            summary: moco controller is down.
+            runbook: TBD
