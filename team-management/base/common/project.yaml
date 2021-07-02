@@ -46,6 +46,12 @@ spec:
         - p, proj:tenant-app-of-apps:garoon-apps, applications, sync, tenant-app-of-apps/garoon-apps, allow
     - groups:
         - cybozu-private:maneki
+      name: hazama-apps
+      policies:
+        - p, proj:tenant-app-of-apps:hazama-apps, applications, get, tenant-app-of-apps/hazama-apps, allow
+        - p, proj:tenant-app-of-apps:hazama-apps, applications, sync, tenant-app-of-apps/hazama-apps, allow
+    - groups:
+        - cybozu-private:maneki
       name: maneki-apps
       policies:
         - p, proj:tenant-app-of-apps:maneki-apps, applications, get, tenant-app-of-apps/maneki-apps, allow
