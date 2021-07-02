@@ -37,6 +37,15 @@
       "repo": "https://github.com/garoon-private/garoon-apps.git",
       "team": "garoon"
     },
+    "hazama-apps": {
+      "destinations": {
+        "osaka0": "release",
+        "stage0": "master",
+        "tokyo0": "release"
+      },
+      "repo": "https://github.com/cybozu-private/hazama-apps.git",
+      "team": "maneki"
+    },
     "maneki-apps": {
       "destinations": {
         "osaka0": "release",
