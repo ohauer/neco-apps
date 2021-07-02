@@ -6,5 +6,6 @@ resources:
   - elasticsearch-apps.yaml
   - ept-apps.yaml
   - garoon-apps.yaml
+  - hazama-apps.yaml
   - maneki-apps.yaml
   - tenant-apps.yaml
