@@ -20,7 +20,15 @@ spec:
   preservePoolsOnDelete: true
   gateway:
     port: 80
-    instances: 1
+    instances: 2
+    placement:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app: rook-ceph-rgw
+              rook_object_store: ceph-poc-object-store-ssd-index
+          topologyKey: topology.kubernetes.io/zone
     resources:
       requests:
         cpu: "500m"
@@ -61,7 +69,15 @@ spec:
   preservePoolsOnDelete: true
   gateway:
     port: 80
-    instances: 1
+    instances: 2
+    placement:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app: rook-ceph-rgw
+              rook_object_store: ceph-poc-object-store-hdd-index
+          topologyKey: topology.kubernetes.io/zone
     resources:
       requests:
         cpu: "500m"
