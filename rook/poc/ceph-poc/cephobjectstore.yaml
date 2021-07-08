@@ -20,7 +20,7 @@ spec:
   preservePoolsOnDelete: true
   gateway:
     port: 80
-    instances: 2
+    instances: 3 # TODO: current rook implementation requires at least 3 instances to make PDB.
     placement:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -69,7 +69,7 @@ spec:
   preservePoolsOnDelete: true
   gateway:
     port: 80
-    instances: 2
+    instances: 3 # TODO: current rook implementation requires at least 3 instances to make PDB.
     placement:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

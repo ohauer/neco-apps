@@ -1,0 +1,11 @@
+# TODO: current rook does not create PDB for MGR, so we create it manually.
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: rook-ceph-mgr-workaround
+  namespace: ceph-hdd
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: rook-ceph-mgr
