@@ -8,6 +8,7 @@ resources:
   - cluster.yaml
   - configmap.yaml
   - deployment.yaml
+  - mgr-pdb.yaml
   - role.yaml
   - rolebinding.yaml
   - serviceaccount.yaml
