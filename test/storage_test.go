@@ -320,9 +320,9 @@ func testMGRPodsSpreadAll() {
 }
 
 func testRGWPodsSpreadAll() {
-	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw", "ceph-hdd", 2, 1, 1)
-	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-hdd-index", "ceph-poc", 2, 1, 1)
-	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-ssd-index", "ceph-poc", 2, 1, 1)
+	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw", "ceph-hdd", 3, 1, 1)
+	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-hdd-index", "ceph-poc", 3, 1, 1)
+	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-ssd-index", "ceph-poc", 3, 1, 1)
 }
 
 func testOSDPodsSpread() {

@@ -69,6 +69,10 @@ spec:
     ssl: true
   priorityClassNames:
     osd: node-bound
+  disruptionManagement:
+    managePodBudgets: true
+    osdMaintenanceTimeout: 60 # rebooting worker nodes takes about 60 minutes.
+    pgHealthCheckTimeout: 0
   # extend livenessProve.initialDelaySeconds for osds since an osd's initialize process is so slow.
   healthCheck:
     livenessProbe:
