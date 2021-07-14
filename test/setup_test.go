@@ -126,7 +126,7 @@ func testSetup() {
 			createNamespaceIfNotExists("sandbox", false)
 
 			By("creating namespace and secrets for teleport")
-			stdout, stderr, err := ExecAt(boot0, "env", "ETCDCTL_API=3", "etcdctl", "--cert=/etc/etcd/backup.crt", "--key=/etc/etcd/backup.key",
+			stdout, stderr, err := ExecAt(boot0, "etcdctl", "--cert=/etc/etcd/backup.crt", "--key=/etc/etcd/backup.key",
 				"get", "--print-value-only", "/neco/teleport/auth-token")
 			Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
 			teleportToken := strings.TrimSpace(string(stdout))
