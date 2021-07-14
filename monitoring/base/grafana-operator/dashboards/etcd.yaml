@@ -530,7 +530,7 @@ spec:
                         "steppedLine": false,
                         "targets": [
                             {
-                                "expr": "etcd_debugging_mvcc_db_total_size_in_bytes{job='$Job'}",
+                                "expr": "etcd_mvcc_db_total_size_in_bytes{job='$Job'}",
                                 "format": "time_series",
                                 "hide": false,
                                 "interval": "",
