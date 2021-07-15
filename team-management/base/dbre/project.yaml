@@ -8,6 +8,10 @@ spec:
   destinations:
     - namespace: app-cybozu-com-mysql
       server: '*'
+    - namespace: app-cybozu-com-mysql-replica
+      server: '*'
+    - namespace: app-cybozu-com-mysql-restore
+      server: '*'
     - namespace: dev-*
       server: '*'
     - namespace: sandbox
