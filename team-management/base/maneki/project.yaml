@@ -10,6 +10,10 @@ spec:
       server: '*'
     - namespace: app-cybozu-com-mysql
       server: '*'
+    - namespace: app-cybozu-com-mysql-replica
+      server: '*'
+    - namespace: app-cybozu-com-mysql-restore
+      server: '*'
     - namespace: app-elasticsearch
       server: '*'
     - namespace: app-endpoint-discovery
