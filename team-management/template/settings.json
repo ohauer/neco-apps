@@ -70,7 +70,9 @@
       "app-gorush"
     ],
     "dbre": [
-      "app-cybozu-com-mysql"
+      "app-cybozu-com-mysql",
+      "app-cybozu-com-mysql-replica",
+      "app-cybozu-com-mysql-restore"
     ],
     "ept": [
       "app-ept-monitoring",
