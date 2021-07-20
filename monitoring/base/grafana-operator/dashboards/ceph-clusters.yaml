@@ -1127,7 +1127,7 @@ spec:
                 "pluginVersion": "7.5.6",
                 "targets": [
                     {
-                        "expr": "count (ceph_osd_up{namespace=\"$namespace\"}) - count (ceph_osd_in{namespace=\"$namespace\"})",
+                        "expr": "count (ceph_osd_in{namespace=\"$namespace\"} == 0.0) OR vector(0)",
                         "format": "time_series",
                         "instant": true,
                         "interval": "$interval",
