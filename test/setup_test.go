@@ -75,23 +75,37 @@ func prepareNodes() {
 }
 
 func createNamespaceIfNotExists(ns string, privileged bool) {
+	var policy string
+	if privileged {
+		policy = "privileged"
+	}
+	createNamespaceIfNotExistsWithPolicy(ns, policy)
+}
+
+// createNamespaceIfNotExistsWithPolicy creates the namespace with the policy.
+// If the policy of the existing namespace is different from the specified policy, the policy of the namespace will be updated.
+// If the policy argument is an empty string, the policy label will be deleted. (i.e. = default policy)
+func createNamespaceIfNotExistsWithPolicy(ns string, policy string) {
 	_, _, err := ExecAt(boot0, "kubectl", "get", "namespace", ns)
-	if err == nil {
-		return
+	if err != nil {
+		ExecSafeAt(boot0, "kubectl", "create", "namespace", ns)
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "sa", "default", "-n", ns)
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+			return nil
+		}).Should(Succeed())
 	}
 
-	ExecSafeAt(boot0, "kubectl", "create", "namespace", ns)
-	Eventually(func() error {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "sa", "default", "-n", ns)
-		if err != nil {
-			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-		}
-		return nil
-	}).Should(Succeed())
-	if privileged {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "--overwrite", "namespace/"+ns, "pod-security.cybozu.com/policy=privileged")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+	var labelArg string
+	if policy != "" {
+		labelArg = "pod-security.cybozu.com/policy=" + policy
+	} else {
+		labelArg = "pod-security.cybozu.com/policy-"
 	}
+	stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "--overwrite", "namespace/"+ns, labelArg)
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 }
 
 // testSetup tests setup of Argo CD

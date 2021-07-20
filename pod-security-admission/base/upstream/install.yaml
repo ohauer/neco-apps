@@ -76,7 +76,7 @@ spec:
         - --config-path=/etc/pod-security-admission/config.yaml
         command:
         - /pod-security-admission
-        image: quay.io/cybozu/pod-security-admission:0.1.0
+        image: quay.io/cybozu/pod-security-admission:0.2.0
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
