@@ -1,0 +1,82 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: psa-mutating-webhook-configuration
+webhooks:
+- name: baseline.mpod.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: pod-security.cybozu.com/policy
+      operator: NotIn
+      values:
+      - privileged
+      - traceable
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: psa-webhook-service
+      namespace: psa-system
+      path: /mutate-traceable
+  failurePolicy: Fail
+  name: traceable.mpod.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: pod-security.cybozu.com/policy
+      operator: In
+      values:
+      - traceable
+  reinvocationPolicy: IfNeeded
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+  sideEffects: None
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  annotations:
+    cert-manager.io/inject-ca-from: psa-system/psa-serving-cert
+  name: psa-validating-webhook-configuration
+webhooks:
+- name: baseline.vpod.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: pod-security.cybozu.com/policy
+      operator: NotIn
+      values:
+      - privileged
+      - traceable
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: psa-webhook-service
+      namespace: psa-system
+      path: /validate-traceable
+  failurePolicy: Fail
+  name: traceable.vpod.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: pod-security.cybozu.com/policy
+      operator: In
+      values:
+      - traceable
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+  sideEffects: None

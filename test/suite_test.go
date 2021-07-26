@@ -85,6 +85,7 @@ func prepareTest() {
 	Context("preparing teleport", prepareTeleport)
 	Context("preparing customer-egress", prepareCustomerEgress)
 	Context("preparing sealed-secret", prepareSealedSecret)
+	Context("preparing pod-security-admission", preparePodSecurityAdmission)
 	Context("preparing network-policy", prepareNetworkPolicy) // this must be the last preparation.
 }
 
