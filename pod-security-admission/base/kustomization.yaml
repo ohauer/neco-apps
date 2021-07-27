@@ -7,3 +7,4 @@ patchesStrategicMerge:
   - certificate.yaml
   - configmap.yaml
   - namespace.yaml
+  - webhook.yaml
