@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: psa-test-hostpath
+spec:
+  containers:
+  - name: ubuntu
+    image: quay.io/cybozu/ubuntu:20.04
+    command: ["pause"]
+    volumeMounts:
+    - name: sys-kernel-tracing
+      mountPath: /sys/kernel/tracing
+  securityContext:
+    runAsUser: 10000
+    runAsGroup: 10000
+  volumes:
+  - name: sys-kernel-tracing
+    hostPath:
+      path: /sys/kernel/tracing
