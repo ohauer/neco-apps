@@ -83,6 +83,7 @@ rules:
   - networking.x-k8s.io
   resources:
   - backendpolicies
+  - gatewayclasses
   - gateways
   - httproutes
   - tcproutes
@@ -96,6 +97,8 @@ rules:
   - networking.x-k8s.io
   resources:
   - backendpolicies/status
+  - gatewayclasses/status
+  - gateways/status
   - httproutes/status
   - tcproutes/status
   - tlsroutes/status
