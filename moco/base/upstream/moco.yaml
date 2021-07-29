@@ -9476,6 +9476,14 @@ spec:
     subresources:
       status: {}
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/name: moco
+  name: moco-controller-manager
+  namespace: moco-system
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -9818,7 +9826,7 @@ roleRef:
   name: moco-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: default
+  name: moco-controller-manager
   namespace: moco-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -9833,7 +9841,7 @@ roleRef:
   name: moco-manager-role
 subjects:
 - kind: ServiceAccount
-  name: default
+  name: moco-controller-manager
   namespace: moco-system
 ---
 apiVersion: v1
@@ -9877,7 +9885,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: ghcr.io/cybozu-go/moco:0.10.4
+        image: ghcr.io/cybozu-go/moco:0.10.5
         livenessProbe:
           httpGet:
             path: /healthz
@@ -9917,6 +9925,7 @@ spec:
           readOnly: true
       securityContext:
         runAsNonRoot: true
+      serviceAccountName: moco-controller-manager
       terminationGracePeriodSeconds: 10
       volumes:
       - name: cert
