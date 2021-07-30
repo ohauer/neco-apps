@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: accurate
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/manifest-generate-paths: ..
+    argocd.argoproj.io/sync-wave: "7"
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/cybozu-go/neco-apps.git
+    targetRevision: release
+    path: accurate/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: accurate
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+  - group: cert-manager.io
+    kind: Certificate
+    jsonPointers:
+    - /spec/duration
+    - /spec/renewBefore

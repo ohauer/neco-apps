@@ -1,0 +1,5 @@
+resources:
+- manager.yaml
+
+patchesStrategicMerge:
+- config_patch.yaml

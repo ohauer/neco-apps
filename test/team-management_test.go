@@ -28,6 +28,9 @@ var secretResources = []string{
 
 // requiredResources is a list of namespace resources that the Neco has explicitly provided to unprivileged teams.
 var requiredResources = []string{
+	// Accurate
+	"subnamespaces.accurate.cybozu.com",
+
 	// Calico
 	"networkpolicies.crd.projectcalico.org",
 	"networksets.crd.projectcalico.org",
