@@ -216,6 +216,7 @@ func testApplicationResources(t *testing.T) {
 		"kube-metrics-adapter":   "7",
 		"prometheus-adapter":     "7",
 		"pvc-autoresizer":        "7",
+		"accurate":               "7",
 		"network-policy":         "8",
 	}
 
