@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: accurate
+  namespace: monitoring
+spec:
+  groups:
+    - name: accurate
+      rules:
+        - alert: AccurateDown
+          expr: |
+            absent(up{job="accurate"} == 1)
+          labels:
+            severity: error
+          for: 15m
+          annotations:
+            summary: accurate controller is down.
+            runbook: TBD
