@@ -44,10 +44,10 @@ func testAccurate() {
 	It("should check Accurate", func() {
 		By("adding labels and annotations to be propagated")
 		for _, k := range accuratePropagatedNamespaceLabels {
-			ExecSafeAt(boot0, "kubectl", "label", "namespace", accurateParentNamespaceName, k+"=to-be-propagated")
+			ExecSafeAt(boot0, "kubectl", "label", "namespace", accurateParentNamespaceName, k+"=neco")
 		}
 		for _, k := range accuratePropagatedNamespaceAnnotations {
-			ExecSafeAt(boot0, "kubectl", "annotate", "namespace", accurateParentNamespaceName, k+"=to-be-propagated")
+			ExecSafeAt(boot0, "kubectl", "annotate", "namespace", accurateParentNamespaceName, k+"=neco")
 		}
 
 		By("creating child namespace by SubNamespace")
@@ -71,7 +71,7 @@ func testAccurate() {
 				return fmt.Errorf("namespace labels are not propagated")
 			}
 			for _, k := range accuratePropagatedNamespaceLabels {
-				if meta.ObjectMeta.Labels[k] != "to-be-propagated" {
+				if meta.ObjectMeta.Labels[k] != "neco" {
 					return fmt.Errorf("namespace label '%s' is not propagated", k)
 				}
 			}
@@ -79,7 +79,7 @@ func testAccurate() {
 				return fmt.Errorf("namespace annotations are not propagated")
 			}
 			for _, k := range accuratePropagatedNamespaceAnnotations {
-				if meta.ObjectMeta.Annotations[k] != "to-be-propagated" {
+				if meta.ObjectMeta.Annotations[k] != "neco" {
 					return fmt.Errorf("namespace annotation '%s' is not propagated", k)
 				}
 			}
