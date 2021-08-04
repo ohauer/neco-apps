@@ -66,39 +66,48 @@
     }
   },
   "namespaces": {
-    "cydec": [
-      "app-gorush"
-    ],
-    "dbre": [
-      "app-cybozu-com-mysql",
-      "app-cybozu-com-mysql-replica",
-      "app-cybozu-com-mysql-restore"
-    ],
-    "ept": [
-      "app-ept-monitoring",
-      "app-ept-plantuml",
-      "app-ept-wiki"
-    ],
-    "garoon": [
-      "app-garoon-monitoring",
-      "app-garoon-static"
-    ],
-    "maneki": [
-      "app-comconv-earthlab",
-      "app-elasticsearch",
-      "app-endpoint-discovery",
-      "app-es-cluster-allocator",
-      "app-forest-archive",
-      "app-forest-certs",
-      "app-kodama",
-      "app-maneki-static-cybozu-com",
-      "app-misc",
-      "app-monitoring",
-      "app-monitoring-elasticstack",
-      "app-oauth-redirector",
-      "app-octodns",
-      "maneki"
-    ],
-    "neco-devusers": []
+    "cydec": {
+      "app-gorush": {}
+    },
+    "dbre": {
+      "app-cybozu-com-mysql": {},
+      "app-cybozu-com-mysql-replica": {},
+      "app-cybozu-com-mysql-restore": {}
+    },
+    "ept": {
+      "app-ept-monitoring": {},
+      "app-ept-plantuml": {},
+      "app-ept-wiki": {}
+    },
+    "garoon": {
+      "app-garoon-monitoring": {},
+      "app-garoon-static": {}
+    },
+    "maneki": {
+      "app-comconv-earthlab": {},
+      "app-elasticsearch": {},
+      "app-endpoint-discovery": {},
+      "app-es-cluster-allocator": {},
+      "app-forest-archive": {},
+      "app-forest-certs": {},
+      "app-kodama": {},
+      "app-maneki": {
+        "accurate.cybozu.com/type": "root"
+      },
+      "app-maneki-static-cybozu-com": {},
+      "app-misc": {},
+      "app-monitoring": {},
+      "app-monitoring-elasticstack": {},
+      "app-oauth-redirector": {},
+      "app-octodns": {},
+      "dev-maneki": {
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      },
+      "maneki": {
+        "app.kubernetes.io/name": "maneki"
+      }
+    },
+    "neco-devusers": {}
   }
 }

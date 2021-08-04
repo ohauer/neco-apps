@@ -44,7 +44,11 @@
 
   // get_team_namespaces retrieves the array of namespaces associated to a team.
   get_team_namespaces(settings, team)::
-    settings.namespaces[team],
+    std.objectFields(settings.namespaces[team]),
+
+  // get_team_namespace_labels retrieves the labels for the namespace.
+  get_team_namespace_labels(settings, team, namespace)::
+    settings.namespaces[team][namespace],
 
   // get_all_namespaces retrieves the array of all namespaces associated to the tenant teams.
   get_all_namespaces(settings)::

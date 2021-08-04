@@ -22,7 +22,7 @@ function(team, namespaces) [
       ] + std.map(function(x) {
         namespace: x,
         server: '*',
-      }, namespaces), function(x) x.namespace),
+      }, std.filter(function(x) !std.startsWith(x, 'dev-'), namespaces)), function(x) x.namespace),
       namespaceResourceBlacklist: [
         {
           group: '',
