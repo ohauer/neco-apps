@@ -160,9 +160,11 @@ var prohibitedClusterResources = []string{
 	"volumereplicationclasses.replication.storage.openshift.io",
 
 	// VictoriaMetrics operator
+	"vmauths.operator.victoriametrics.com",
 	"vmclusters.operator.victoriametrics.com",
 	"vmnodescrapes.operator.victoriametrics.com",
 	"vmsingles.operator.victoriametrics.com",
+	"vmusers.operator.victoriametrics.com",
 }
 
 var (
