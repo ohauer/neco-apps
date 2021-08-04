@@ -1,0 +1,11 @@
+apiVersion: accurate.cybozu.com/v1
+kind: SubNamespace
+metadata:
+  namespace: testapp
+  name: child1
+---
+apiVersion: accurate.cybozu.com/v1
+kind: SubNamespace
+metadata:
+  namespace: testapp
+  name: child2
