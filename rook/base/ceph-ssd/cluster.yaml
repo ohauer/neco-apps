@@ -73,6 +73,15 @@ spec:
     managePodBudgets: false
     osdMaintenanceTimeout: 60 # rebooting worker nodes takes about 60 minutes.
     pgHealthCheckTimeout: 0
+  healthCheck:
+    daemonHealth:
+      # Ensure that mon waits for failover for up to one hour when restarting a node.
+      # Rook checks the timeout twice when nodes reboot, set 1800 seconds as the timeout value.
+      # NOTE:
+      # A bug may cause Rook to perform a timeout check only once during a node reboot.
+      # However, this is not a problem since most node reboots are completed within 30 minutes.
+      mon:
+        timeout: "1800s"
   storage:
     storageClassDeviceSets:
       - name: set1
