@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- upstream/default
+patchesStrategicMerge:
+- namespace.yaml
+
+configMapGenerator:
+- name: accurate-config
+  namespace: accurate
+  files:
+  - config.yaml
+
+images:
+- name: ghcr.io/cybozu-go/accurate
+  newTag: 0.1.0
