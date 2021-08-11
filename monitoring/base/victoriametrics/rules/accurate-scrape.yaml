@@ -1,0 +1,16 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: accurate
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [accurate]
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+  podMetricsEndpoints:
+  - port: metrics
+    relabelConfigs:
+      - replacement: accurate
+        targetLabel: job

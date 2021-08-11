@@ -1,0 +1,31 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: accurate-parent
+  name: propagated
+  annotations:
+    accurate.cybozu.com/propagate: create
+rules: []
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: accurate-parent
+  name: propagated
+  annotations:
+    accurate.cybozu.com/propagate: create
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: propagated
+subjects: []
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: accurate-parent
+  name: propagated
+  annotations:
+    accurate.cybozu.com/propagate: create
+type: Opaque
+data: {}
