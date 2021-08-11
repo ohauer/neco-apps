@@ -1,14 +1,12 @@
-function(team, namespace) [
+local utility = import '../../../utility.libsonnet';
+function(settings, team, namespace) [
+  local labels = utility.get_team_namespace_labels(settings, team, namespace);
   {
     apiVersion: 'v1',
     kind: 'Namespace',
     metadata: {
       name: namespace,
-      // This label may be unused.
-      // It is written here for backward compatibility.
-      [if team == 'maneki' && namespace == 'maneki' then 'labels']: {
-        'app.kubernetes.io/name': 'maneki',
-      },
+      [if std.length(labels) > 0 then 'labels']: labels,
     },
   },
   {

@@ -76,7 +76,7 @@ format-settings:
 	# jq "with_entries()" iterates over key-value pairs ({ .key:, .value: }) of an object.
 	# Thus, jq "with_entries(.values |= sort)" sorts all the arrays of an object members.
 	mkdir -p $(TEMP_DIR)
-	$(YQ) eval 'sortKeys(..)' settings.json -j | jq '.namespaces |= with_entries(.value |= sort)' > $(TEMP_DIR)/settings.json
+	$(YQ) eval 'sortKeys(..)' settings.json -j > $(TEMP_DIR)/settings.json
 	mv $(TEMP_DIR)/settings.json settings.json
 	rm -rf $(TEMP_DIR)
 

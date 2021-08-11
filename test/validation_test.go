@@ -122,6 +122,10 @@ func testAppProjectResources(t *testing.T) {
 				// Skip. sandbox ns does not have team label.
 				continue
 			}
+			if strings.HasPrefix(meta.Name, "dev-") {
+				// Skip. All namespaces start with dev- are allowed to tenant teams.
+				continue
+			}
 
 			team := meta.Labels["team"]
 			namespacesByTeam[team] = append(namespacesByTeam[team], meta.Name)
