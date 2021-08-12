@@ -336,6 +336,19 @@ func applyAndWaitForApplications(commitID string) {
 		fmt.Printf(" %4.1f: %s\n", app.syncWave, app.name)
 	}
 
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/1714
+	if doUpgrade {
+		Eventually(func() error {
+			_, _, err := ExecAt(boot0, "argocd", "app", "sync", "pvc-autoresizer", "--force", "--timeout", "300")
+			if err != nil {
+				ExecAt(boot0, "argocd", "app", "terminate-op", "pvc-autoresizer")
+				return err
+			}
+			return nil
+		}, 40*time.Minute).Should(Succeed())
+	}
+
 	By("waiting initialization")
 	checkAllAppsSynced := func() error {
 		for _, target := range appList {
