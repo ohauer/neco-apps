@@ -29,6 +29,8 @@ resources:
   - vmagent-largeset.yaml
   - vmalert-largeset.yaml
   - vmcluster-largeset.yaml
+  - rules/accurate-alertrule.yaml
+  - rules/accurate-scrape.yaml
   - rules/argocd-alertrule.yaml
   - rules/argocd-scrape.yaml
   - rules/cert-manager-alertrule.yaml

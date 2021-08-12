@@ -1,6 +1,7 @@
 How to maintain neco-apps
 =========================
 
+- [accurate](#accurate)
 - [argocd](#argocd)
 - [bmc-reverse-proxy](#bmc-reverse-proxy)
 - [cert-manager](#cert-manager)
@@ -37,6 +38,17 @@ How to maintain neco-apps
 - [sealed-secrets](#sealed-secrets)
 - [teleport](#teleport)
 - [topolvm](#topolvm)
+
+## accurate
+
+Check [releases](https://github.com/cybozu-go/accurate/releases) for changes.
+
+Update the manifest as follows:
+
+```console
+$ make update-accurate
+$ git diff
+```
 
 ## argocd
 
