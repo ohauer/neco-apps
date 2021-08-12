@@ -1,0 +1,16 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: pvc-autoresizer
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [pvc-autoresizer]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: pvc-autoresizer
+  podMetricsEndpoints:
+  - port: metrics
+    relabelConfigs:
+      - replacement: pvc-autoresizer
+        targetLabel: job
