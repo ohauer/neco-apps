@@ -338,14 +338,6 @@ func applyAndWaitForApplications(commitID string) {
 
 	By("waiting initialization")
 	checkAllAppsSynced := func() error {
-		// This block should be removed after https://github.com/cybozu-go/neco-apps/pull/1536 is applied.
-		if doUpgrade {
-			stdout, stderr, err := ExecAt(boot0, "argocd", "relogin", "--password", loadArgoCDPassword())
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-		}
-
 		for _, target := range appList {
 			appStdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", target.name)
 			if err != nil {
