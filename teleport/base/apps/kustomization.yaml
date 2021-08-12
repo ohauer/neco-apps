@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - vmalertmanager-largeset.yaml
   - vmalertmanager-smallset.yaml
+  - vmalertmanager-app-monitoring.yaml
