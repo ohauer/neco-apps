@@ -56,6 +56,9 @@ var requiredResources = []string{
 	"grafanadatasources.integreatly.org",
 	"grafanas.integreatly.org",
 
+	// meows
+	"runnerpools.meows.cybozu.com",
+
 	// MOCO
 	"mysqlclusters.moco.cybozu.com",
 	"backuppolicies.moco.cybozu.com",

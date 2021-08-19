@@ -1,0 +1,16 @@
+apiVersion: meows.cybozu.com/v1alpha1
+kind: RunnerPool
+metadata:
+  name: {{.RunnerPoolName}}
+  namespace: meows-runner
+spec:
+  repositoryName: meows-ci
+  replicas: 1
+  slackAgent:
+    serviceName: slack-agent.meows.svc
+    channel: "#test1"
+  template:
+    metadata:
+      annotations:
+        egress.coil.cybozu.com/internet-egress: nat
+    image: quay.io/cybozu/meows-runner:latest

@@ -9,6 +9,7 @@ patchesStrategicMerge:
 - external-dns.yaml
 - local-pv-provisioner.yaml
 - logging.yaml
+- meows.yaml
 - metallb.yaml
 - monitoring.yaml
 - namespaces.yaml
