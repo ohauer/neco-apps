@@ -8,6 +8,7 @@ How to maintain neco-apps
 - [customer-egress (Squid and unbound)](#customer-egress-squid-and-unbound)
 - [elastic (ECK)](#elastic-eck)
 - [external-dns](#external-dns)
+- [meows](#meows)
 - [kube-metrics-adapter](#kube-metrics-adapter)
 - [ingress (Contour & Envoy)](#ingress-contour--envoy)
 - [local-pv-provisioner](#local-pv-provisioner)
@@ -115,6 +116,15 @@ Update the manifests as follows:
 
 ```console
 $ make update-external-dns
+$ git diff
+```
+
+## meows
+
+Check [releases](https://github.com/cybozu-go/meows/releases).
+
+```console
+$ make update-meows
 $ git diff
 ```
 

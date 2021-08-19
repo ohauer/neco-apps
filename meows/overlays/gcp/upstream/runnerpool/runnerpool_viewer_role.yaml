@@ -1,0 +1,22 @@
+# permissions for end users to view runnerpools.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: runnerpool-viewer-role
+  labels:
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
+rules:
+- apiGroups:
+  - meows.cybozu.com
+  resources:
+  - runnerpools
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - meows.cybozu.com
+  resources:
+  - runnerpools/status
+  verbs:
+  - get

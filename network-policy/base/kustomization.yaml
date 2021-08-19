@@ -22,6 +22,7 @@ resources:
   - global-policies/controller-manager.yaml
   - global-policies/egress-all-allow.yaml
   - global-policies/egress-backyard-deny.yaml
+  - global-policies/egress-meows-runner.yaml
   - global-policies/ingress-all-deny.yaml
   - global-policies/ingress-cluster-allow.yaml
   - global-policies/network-set.yaml

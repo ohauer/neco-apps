@@ -173,6 +173,16 @@ update-machines-endpoints:
 	sed -i -E 's,image: quay.io/cybozu/machines-endpoints:.*$$,image: quay.io/cybozu/machines-endpoints:$(latest_tag),' bmc-reverse-proxy/base/machines-endpoints/cronjob.yaml
 	sed -i -E 's,image: quay.io/cybozu/machines-endpoints:.*$$,image: quay.io/cybozu/machines-endpoints:$(latest_tag),' monitoring/base/machines-endpoints/cronjob.yaml
 
+.PHONY: update-meows
+update-meows:
+	$(call get-latest-gh,cybozu-go/meows)
+	rm -rf /tmp/meows
+	cd /tmp; git clone --depth 1 -b "$(latest_gh)" https://github.com/cybozu-go/meows.git
+	rm -rf meows/overlays/gcp/upstream/*
+	cp -r /tmp/meows/config/* meows/overlays/gcp/upstream
+	rm -rf /tmp/meows
+	sed -i -E '/name:.*meows-controller$$/!b;n;s/newTag:.*$$/newTag: $(patsubst v%,%,$(latest_gh))/' meows/overlays/gcp/kustomization.yaml
+
 .PHONY: update-metallb
 update-metallb:
 	$(call get-latest-tag,metallb)
