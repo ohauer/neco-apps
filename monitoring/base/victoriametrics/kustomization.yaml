@@ -54,6 +54,7 @@ resources:
   - rules/local-pv-provisioner-scrape.yaml
   - rules/logging-alertrule.yaml
   - rules/logging-scrape.yaml
+  - rules/meows-scrape.yaml
   - rules/metallb-alertrule.yaml
   - rules/metallb-scrape.yaml
   - rules/moco-scrape.yaml

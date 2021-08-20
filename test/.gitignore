@@ -8,6 +8,7 @@
 /squid.yml
 /vendor
 account.json
+meows-secret.json
 argocd-password.txt
 current-secret.yaml
 expected-secret-*.yaml

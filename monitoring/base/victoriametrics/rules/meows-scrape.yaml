@@ -1,0 +1,35 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: meows
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [meows]
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/name: meows
+  podMetricsEndpoints:
+  - port: metrics
+    relabelConfigs:
+      - replacement: meows
+        targetLabel: job
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: meows-runner
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: runner
+      app.kubernetes.io/name: meows
+  podMetricsEndpoints:
+  - port: metrics
+    relabelConfigs:
+      - replacement: meows-runner
+        targetLabel: job
