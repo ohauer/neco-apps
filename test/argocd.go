@@ -45,9 +45,18 @@ type ComparedTo struct {
 }
 
 type ApplicationSource struct {
-	RepoURL        string `json:"repoURL" protobuf:"bytes,1,opt,name=repoURL"`
-	Path           string `json:"path,omitempty" protobuf:"bytes,2,opt,name=path"`
-	TargetRevision string `json:"targetRevision,omitempty" protobuf:"bytes,4,opt,name=targetRevision"`
+	RepoURL        string                 `json:"repoURL" protobuf:"bytes,1,opt,name=repoURL"`
+	Path           string                 `json:"path,omitempty" protobuf:"bytes,2,opt,name=path"`
+	TargetRevision string                 `json:"targetRevision,omitempty" protobuf:"bytes,4,opt,name=targetRevision"`
+	Helm           *ApplicationSourceHelm `json:"helm,omitempty" protobuf:"bytes,7,opt,name=helm"`
+	Chart          string                 `json:"chart,omitempty" protobuf:"bytes,12,opt,name=chart"`
+}
+
+type ApplicationSourceHelm struct {
+	ValueFiles  []string `json:"valueFiles,omitempty" protobuf:"bytes,1,opt,name=valueFiles"`
+	ReleaseName string   `json:"releaseName,omitempty" protobuf:"bytes,3,opt,name=releaseName"`
+	Values      string   `json:"values,omitempty" protobuf:"bytes,4,opt,name=values"`
+	Version     string   `json:"version,omitempty" protobuf:"bytes,6,opt,name=version"`
 }
 
 type HealthStatus struct {

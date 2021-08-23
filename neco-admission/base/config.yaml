@@ -22,3 +22,6 @@ ArgoCDApplicationValidator:
     - projects:
         - default
       repository: https://prometheus-community.github.io/helm-charts
+    - projects:
+        - default
+      repository: https://topolvm.github.io/pvc-autoresizer
