@@ -203,3 +203,8 @@ func saveArgoCDPassword(password string) {
 	err := os.WriteFile(argoCDPasswordFile, []byte(password), os.FileMode(0644))
 	Expect(err).NotTo(HaveOccurred())
 }
+
+func fileCreateSafeAt(host, filepath, value string) {
+	stdout, stderr, err := ExecAtWithInput(host, []byte(value), "dd", fmt.Sprintf("of=%s", filepath))
+	Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
+}

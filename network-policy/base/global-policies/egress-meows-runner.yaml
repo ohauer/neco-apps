@@ -1,0 +1,40 @@
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: egress-meows-runner
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  order: 100.0
+  selector: app.kubernetes.io/name == 'meows' && app.kubernetes.io/component == 'runner'
+  types:
+    - Egress
+  egress:
+    - action: Allow
+      protocol: UDP
+      destination:
+        selector: app.kubernetes.io/name == 'coil' && app.kubernetes.io/component == 'egress' && app.kubernetes.io/instance == 'nat'
+        namespaceSelector: projectcalico.org/name == 'internet-egress'
+        ports:
+          - 5555
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: app.kubernetes.io/name == 'meows' && app.kubernetes.io/component == 'slack-agent'
+        ports:
+          - 8080
+    - action: Allow
+      protocol: TCP
+      destination:
+        selector: role == 'node'
+        ports:
+          - 53
+    - action: Allow
+      protocol: UDP
+      destination:
+        selector: role == 'node'
+        ports:
+          - 53
+    - action: Deny
+      destination:
+        selector: role == 'private'

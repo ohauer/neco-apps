@@ -110,60 +110,109 @@ func createNamespaceIfNotExistsWithPolicy(ns string, policy string) {
 
 // testSetup tests setup of Argo CD
 func testSetup() {
-	if !doUpgrade {
-		It("should create secrets of account.json", func() {
-			By("loading account.json")
-			data, err := os.ReadFile("account.json")
-			Expect(err).ShouldNot(HaveOccurred())
+	It("should create secrets of account.json", func() {
+		if doUpgrade {
+			Skip("No need to create it when upgrading")
+		}
 
-			By("creating namespace and secrets for external-dns")
-			createNamespaceIfNotExists("external-dns", false)
-			_, _, err = ExecAt(boot0, "kubectl", "--namespace=external-dns", "get", "secret", "clouddns")
-			if err != nil {
-				_, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "--namespace=external-dns",
-					"create", "secret", "generic", "clouddns", "--from-file=account.json=/dev/stdin")
-				Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
-			}
+		By("loading account.json")
+		data, err := os.ReadFile("account.json")
+		Expect(err).ShouldNot(HaveOccurred())
 
-			By("creating namespace and secrets for cert-manager")
-			createNamespaceIfNotExists("cert-manager", true)
-			_, _, err = ExecAt(boot0, "kubectl", "--namespace=cert-manager", "get", "secret", "clouddns")
-			if err != nil {
-				_, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "--namespace=cert-manager",
-					"create", "secret", "generic", "clouddns", "--from-file=account.json=/dev/stdin")
-				Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
-			}
+		By("creating namespace and secrets for external-dns")
+		createNamespaceIfNotExists("external-dns", false)
+		_, _, err = ExecAt(boot0, "kubectl", "--namespace=external-dns", "get", "secret", "clouddns")
+		if err != nil {
+			_, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "--namespace=external-dns",
+				"create", "secret", "generic", "clouddns", "--from-file=account.json=/dev/stdin")
+			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+		}
+
+		By("creating namespace and secrets for cert-manager")
+		createNamespaceIfNotExists("cert-manager", true)
+		_, _, err = ExecAt(boot0, "kubectl", "--namespace=cert-manager", "get", "secret", "clouddns")
+		if err != nil {
+			_, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "--namespace=cert-manager",
+				"create", "secret", "generic", "clouddns", "--from-file=account.json=/dev/stdin")
+			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+		}
+	})
+
+	It("should create secrets for teleport", func() {
+		if doUpgrade {
+			Skip("No need to create it when upgrading")
+		}
+
+		By("creating namespace and secrets")
+		createNamespaceIfNotExists("teleport", false)
+		stdout, stderr, err := ExecAt(boot0, "etcdctl", "--cert=/etc/etcd/backup.crt", "--key=/etc/etcd/backup.key",
+			"get", "--print-value-only", "/neco/teleport/auth-token")
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
+		teleportToken := strings.TrimSpace(string(stdout))
+		teleportTmpl := template.Must(template.New("").Parse(setupTeleportYAML))
+		buf := bytes.NewBuffer(nil)
+		err = teleportTmpl.Execute(buf, struct {
+			Token string
+		}{
+			Token: teleportToken,
 		})
+		Expect(err).NotTo(HaveOccurred())
+		stdout, stderr, err = ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-n", "teleport", "-f", "-")
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
+	})
 
-		It("should prepare secrets", func() {
-			By("creating namespace and secrets for grafana")
-			createNamespaceIfNotExists("sandbox", false)
+	It("should create secrets for meows", func() {
+		if overlayName == "neco-dev" {
+			Skip("No need to create it when overlay is neco-dev")
+		}
+		_, _, err := ExecAt(boot0, "kubectl", "get", "namespace", "meows")
+		if err == nil {
+			Skip("No need to create it when exist namespace")
+		}
+		// TODO: replace the above condition after https://github.com/cybozu-go/neco-apps/pull/1710 is released.
+		// if doUpgrade {
+		// 	Skip("No need to create it when upgrading")
+		// }
 
-			By("creating namespace and secrets for teleport")
-			stdout, stderr, err := ExecAt(boot0, "etcdctl", "--cert=/etc/etcd/backup.crt", "--key=/etc/etcd/backup.key",
-				"get", "--print-value-only", "/neco/teleport/auth-token")
-			Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
-			teleportToken := strings.TrimSpace(string(stdout))
-			teleportTmpl := template.Must(template.New("").Parse(setupTeleportYAML))
-			buf := bytes.NewBuffer(nil)
-			err = teleportTmpl.Execute(buf, struct {
-				Token string
-			}{
-				Token: teleportToken,
-			})
-			Expect(err).NotTo(HaveOccurred())
-			createNamespaceIfNotExists("teleport", false)
-			stdout, stderr, err = ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-n", "teleport", "-f", "-")
-			Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
-		})
-	} else {
-		It("should clear privileged label to sandbox namespace", func() {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "--overwrite", "namespace/sandbox", "pod-security.cybozu.com/policy-")
-			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-		})
-	}
+		By("loading meows-secret.json")
+		data, err := os.ReadFile("meows-secret.json")
+		Expect(err).NotTo(HaveOccurred())
+		env := make(map[string]string)
+		err = json.Unmarshal(data, &env)
+		Expect(err).NotTo(HaveOccurred())
 
-	It("should prepare general purpose namespace for dctest", func() {
+		By("creating temporally file for secrets")
+		fileCreateSafeAt(boot0, "github_app_id", env["github_app_id"])
+		fileCreateSafeAt(boot0, "github_app_installation_id", env["github_app_installation_id"])
+		fileCreateSafeAt(boot0, "github_app_private_key", env["github_app_private_key"])
+
+		fileCreateSafeAt(boot0, "slack_api_token", env["slack_api_token"])
+		fileCreateSafeAt(boot0, "slack_bot_token", env["slack_bot_token"])
+
+		By("creating meows namespace")
+		createNamespaceIfNotExists("meows", false)
+
+		By("creating secrets for controller in meows")
+		_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "generic", "github-app-secret",
+			"-n", "meows",
+			"--from-file=app-id=github_app_id",
+			"--from-file=app-installation-id=github_app_installation_id",
+			"--from-file=app-private-key=github_app_private_key",
+		)
+
+		By("creating secret for slack-agent in meows")
+		_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "generic", "slack-app-secret",
+			"-n", "meows",
+			"--from-file=SLACK_APP_TOKEN=slack_api_token",
+			"--from-file=SLACK_BOT_TOKEN=slack_bot_token",
+		)
+	})
+
+	It("should create sandbox namespace", func() {
+		createNamespaceIfNotExists("sandbox", false)
+	})
+
+	It("should create general purpose namespace for dctest", func() {
 		createNamespaceIfNotExists("dctest", true)
 	})
 
