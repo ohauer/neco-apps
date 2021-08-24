@@ -9,8 +9,8 @@ resources:
   - ./upstream/agent
   - ./upstream/runnerpool/runnerpool_editor_role.yaml
   - ./upstream/runnerpool/runnerpool_viewer_role.yaml
+  - ./clusterrole.yaml
   - ./namespace.yaml
 patchesStrategicMerge:
   - ./crd.yaml
   - ./deployment.yaml
-
