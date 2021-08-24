@@ -387,14 +387,6 @@ func applyAndWaitForApplications(commitID string) {
 
 	By("waiting initialization")
 	checkAllAppsSynced := func() error {
-		// This block should be removed after https://github.com/cybozu-go/neco-apps/pull/1536 is applied.
-		if doUpgrade {
-			stdout, stderr, err := ExecAt(boot0, "argocd", "relogin", "--password", loadArgoCDPassword())
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-		}
-
 		for _, target := range appList {
 			appStdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", target.name)
 			if err != nil {
@@ -405,18 +397,25 @@ func applyAndWaitForApplications(commitID string) {
 			if err != nil {
 				return fmt.Errorf("stdout: %s, err: %v", appStdout, err)
 			}
-			switch app.Name {
-			case "prometheus-adapter":
-			// These reference upstream Helm chart versions, so no need to check commitID.
-			default:
-				if app.Status.Sync.ComparedTo.Source.TargetRevision != commitID {
-					return errors.New(target.name + " does not have correct target yet")
-				}
+
+			// Skip checking since the target revision is not matching neco-apps commit id when the target is Helm.
+			if app.Spec.Source.Helm == nil && app.Status.Sync.ComparedTo.Source.TargetRevision != commitID {
+				return errors.New(target.name + " does not have correct target yet")
 			}
 			if app.Status.Sync.Status == SyncStatusCodeSynced &&
 				app.Status.Health.Status == HealthStatusHealthy &&
 				app.Operation == nil {
 				continue
+			}
+
+			// TODO: remove this block after release the PR bellow
+			// https://github.com/cybozu-go/neco-apps/pull/1714
+			if doUpgrade && app.Name == "pvc-autoresizer" {
+				_, _, err := ExecAt(boot0, "argocd", "app", "sync", "pvc-autoresizer", "--force", "--timeout", "300")
+				if err != nil {
+					ExecAt(boot0, "argocd", "app", "terminate-op", "pvc-autoresizer")
+					return err
+				}
 			}
 
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.

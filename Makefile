@@ -3,6 +3,7 @@
 HELM_VERSION = 3.6.0
 TANKA_VERSION = 0.15.1
 JSONNET_LIBS_K8S_ALPHA_VERSION = 1.20
+YQ_VERSION = 4.11.2
 
 .PHONY: all
 all:
@@ -228,12 +229,8 @@ update-pushgateway:
 
 .PHONY: update-pvc-autoresizer
 update-pvc-autoresizer:
-	$(call get-latest-gh,topolvm/pvc-autoresizer)
-	rm -rf /tmp/pvc-autoresizer
-	cd /tmp; git clone --depth 1 -b $(latest_gh) https://github.com/topolvm/pvc-autoresizer
-	rm -rf pvc-autoresizer/base/upstream/*
-	cp -r /tmp/pvc-autoresizer/config/* pvc-autoresizer/base/upstream
-	rm -rf /tmp/pvc-autoresizer
+	$(call get-latest-helm,pvc-autoresizer,https://topolvm.github.io/pvc-autoresizer)
+	yq eval -i '.spec.source.targetRevision = "$(latest_helm)"' argocd-config/base/pvc-autoresizer.yaml
 
 .PHONY: update-s3gw
 update-s3gw:
@@ -303,6 +300,11 @@ define get-latest-gh
 $(eval latest_gh := $(shell curl -sf https://api.github.com/repos/$1/releases/latest | jq -r '.tag_name'))
 endef
 
+# usage get-latest-helm REPO URL
+define get-latest-helm
+$(eval latest_helm := $(shell helm repo add $1 $2 >/dev/null; helm repo update >/dev/null; helm search repo $1 -o json | jq -r .[0].version))
+endef
+
 .PHONY: setup
 setup:
 	# helm
@@ -317,3 +319,9 @@ setup:
 
 	# jb
 	go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
+
+	# yq
+	curl -o /tmp/yq.tar.gz -fsL https://github.com/mikefarah/yq/releases/download/v$(YQ_VERSION)/yq_linux_amd64.tar.gz
+	tar --strip-components=1 -C $$(go env GOPATH)/bin -xzf /tmp/yq.tar.gz
+	mv $$(go env GOPATH)/bin/yq_linux_amd64 $$(go env GOPATH)/bin/yq
+	rm -f /tmp/yq.tar.gz
