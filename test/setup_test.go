@@ -162,15 +162,15 @@ func testSetup() {
 	})
 
 	It("should create secrets for meows", func() {
-		if overlayName == "neco-dev" {
-			Skip("No need to create it when overlay is neco-dev")
+		if meowsDisabled() {
+			Skip("meows is disabled")
 		}
 		if doUpgrade {
 			Skip("No need to create it when upgrading")
 		}
 
 		By("loading meows-secret.json")
-		data, err := os.ReadFile("meows-secret.json")
+		data, err := os.ReadFile(meowsSecretFile)
 		Expect(err).NotTo(HaveOccurred())
 		env := make(map[string]string)
 		err = json.Unmarshal(data, &env)
@@ -180,7 +180,6 @@ func testSetup() {
 		fileCreateSafeAt(boot0, "github_app_id", env["github_app_id"])
 		fileCreateSafeAt(boot0, "github_app_installation_id", env["github_app_installation_id"])
 		fileCreateSafeAt(boot0, "github_app_private_key", env["github_app_private_key"])
-
 		fileCreateSafeAt(boot0, "slack_api_token", env["slack_api_token"])
 		fileCreateSafeAt(boot0, "slack_bot_token", env["slack_bot_token"])
 
@@ -224,7 +223,9 @@ func testSetup() {
 			applyNetworkPolicy()
 			setupArgoCD()
 		}
-
+		if meowsDisabled() {
+			ExecSafeAt(boot0, "sed", "-i", "/meows.yaml/d", "./neco-apps/argocd-config/overlays/gcp/kustomization.yaml")
+		}
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/overlays/"+overlayName+"/*.yaml")
 		applyAndWaitForApplications(commitID)
