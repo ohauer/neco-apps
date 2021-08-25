@@ -50,6 +50,8 @@ spec:
               mountPath: /sys/fs/
             - $patch: delete
               mountPath: /var/log/calico/cni
+            - $patch: delete
+              mountPath: /host/etc/cni/net.d
       volumes:
         - name: etc-service-enabled
           emptyDir: {}
