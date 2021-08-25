@@ -165,14 +165,9 @@ func testSetup() {
 		if overlayName == "neco-dev" {
 			Skip("No need to create it when overlay is neco-dev")
 		}
-		_, _, err := ExecAt(boot0, "kubectl", "get", "namespace", "meows")
-		if err == nil {
-			Skip("No need to create it when exist namespace")
+		if doUpgrade {
+			Skip("No need to create it when upgrading")
 		}
-		// TODO: replace the above condition after https://github.com/cybozu-go/neco-apps/pull/1710 is released.
-		// if doUpgrade {
-		// 	Skip("No need to create it when upgrading")
-		// }
 
 		By("loading meows-secret.json")
 		data, err := os.ReadFile("meows-secret.json")
