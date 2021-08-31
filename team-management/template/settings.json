@@ -74,7 +74,8 @@
       "app-cybozu-com-mysql-replica": {},
       "app-cybozu-com-mysql-restore": {},
       "dev-dbre": {
-        "accurate.cybozu.com/type": "root"
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
       }
     },
     "ept": {
