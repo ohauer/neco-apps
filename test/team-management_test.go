@@ -114,6 +114,8 @@ var viewableResources = []string{
 	"limitranges",
 	"resourcequotas",
 	"certificatesigningrequests.certificates.k8s.io",
+	"pods.metrics.k8s.io",
+	"nodes.metrics.k8s.io",
 }
 
 // prohibitedResources is a list of namespace resources that are not allowed to be created or viewed by unprivileged teams.
