@@ -7,5 +7,6 @@ resources:
   - app-cybozu-com-mysql-replica.yaml
   - app-cybozu-com-mysql-restore.yaml
   - app-cybozu-com-mysql.yaml
+  - dev-dbre.yaml
   - elastic-serviceaccount.yaml
   - project.yaml
