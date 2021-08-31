@@ -72,7 +72,11 @@
     "dbre": {
       "app-cybozu-com-mysql": {},
       "app-cybozu-com-mysql-replica": {},
-      "app-cybozu-com-mysql-restore": {}
+      "app-cybozu-com-mysql-restore": {},
+      "dev-dbre": {
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
     },
     "ept": {
       "app-ept-monitoring": {},
