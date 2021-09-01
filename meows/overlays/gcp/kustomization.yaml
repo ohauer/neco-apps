@@ -14,3 +14,4 @@ resources:
 patchesStrategicMerge:
   - ./crd.yaml
   - ./deployment.yaml
+  - ./webhook.yaml
