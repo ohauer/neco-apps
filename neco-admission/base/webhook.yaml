@@ -154,6 +154,14 @@ webhooks:
     - DELETE
     resources:
     - elasticsearches
+  - apiGroups:
+    - accurate.cybozu.com
+    apiVersions:
+    - v1
+    operations:
+    - DELETE
+    resources:
+    - subnamespaces
 - name: vservice.kb.io
   clientConfig:
     service:
