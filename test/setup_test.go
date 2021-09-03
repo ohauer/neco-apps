@@ -403,14 +403,10 @@ func applyAndWaitForApplications(commitID string) {
 				continue
 			}
 
-			// TODO: remove this block after release the PR bellow
-			// https://github.com/cybozu-go/neco-apps/pull/1714
-			if doUpgrade && app.Name == "pvc-autoresizer" {
-				_, _, err := ExecAt(boot0, "argocd", "app", "sync", "pvc-autoresizer", "--force", "--timeout", "300")
-				if err != nil {
-					ExecAt(boot0, "argocd", "app", "terminate-op", "pvc-autoresizer")
-					return err
-				}
+			// TODO: remove this block after release
+			if doUpgrade && app.Name == "pod-security-admission" {
+				ExecAt(boot0, "kubectl", "annotate", "namespace", "psa-system", "admission.cybozu.com/i-am-sure-to-delete=psa-system")
+				// ignore error
 			}
 
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.
