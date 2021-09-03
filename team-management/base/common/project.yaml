@@ -63,6 +63,7 @@ spec:
         - cybozu-private:garoon
         - cybozu-private:maneki
         - cybozu-private:neco-devusers
+        - cybozu-private:network
       name: tenant-apps
       policies:
         - p, proj:tenant-app-of-apps:tenant-apps, applications, get, tenant-app-of-apps/tenant-apps, allow
@@ -107,6 +108,7 @@ spec:
         - cybozu-private:maneki
         - cybozu-private:neco
         - cybozu-private:neco-devusers
+        - cybozu-private:network
       name: admin
       policies:
         - p, proj:tenant-apps:admin, applications, *, tenant-apps/*, allow
