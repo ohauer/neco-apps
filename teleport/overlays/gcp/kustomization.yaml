@@ -16,6 +16,7 @@ patchesStrategicMerge:
   - nodes/maneki.yaml
   - nodes/neco-devusers.yaml
   - nodes/neco.yaml
+  - nodes/network.yaml
   - statefulset.yaml
 resources:
   - ../../base

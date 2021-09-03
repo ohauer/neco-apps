@@ -13,4 +13,5 @@ resources:
   - maneki.yaml
   - neco-devusers.yaml
   - neco.yaml
+  - network.yaml
   - serviceaccount.yaml
