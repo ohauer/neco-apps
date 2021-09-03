@@ -112,6 +112,12 @@
         "app.kubernetes.io/name": "maneki"
       }
     },
-    "neco-devusers": {}
+    "neco-devusers": {},
+    "network": {
+      "dev-network": {
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
+    }
   }
 }

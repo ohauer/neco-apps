@@ -8,6 +8,7 @@ ArgoCDApplicationValidator:
         - ept
         - garoon
         - maneki
+        - network
         - tenant-app-of-apps
         - tenant-apps
       repositoryPrefix: https://github.com/cybozu-private
