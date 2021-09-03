@@ -403,6 +403,12 @@ func applyAndWaitForApplications(commitID string) {
 				continue
 			}
 
+			// TODO: remove this block after release
+			if doUpgrade && app.Name == "pod-security-admission" {
+				ExecAt(boot0, "kubectl", "annotate", "namespace", "psa-system", "admission.cybozu.com/i-am-sure-to-delete=psa-system")
+				// ignore error
+			}
+
 			// TODO: remove this block after release the PR bellow
 			// https://github.com/cybozu-go/neco-apps/pull/1714
 			if doUpgrade && app.Name == "pvc-autoresizer" {

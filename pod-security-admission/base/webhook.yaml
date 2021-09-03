@@ -17,7 +17,7 @@ webhooks:
   clientConfig:
     service:
       name: psa-webhook-service
-      namespace: psa-system
+      namespace: kube-system
       path: /mutate-traceable
   failurePolicy: Fail
   name: traceable.mpod.kb.io
@@ -43,7 +43,7 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: psa-system/psa-serving-cert
+    cert-manager.io/inject-ca-from: kube-system/psa-serving-cert
   name: psa-validating-webhook-configuration
 webhooks:
 - name: baseline.vpod.kb.io
@@ -60,7 +60,7 @@ webhooks:
   clientConfig:
     service:
       name: psa-webhook-service
-      namespace: psa-system
+      namespace: kube-system
       path: /validate-traceable
   failurePolicy: Fail
   name: traceable.vpod.kb.io
