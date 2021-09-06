@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: psa-pod-security-admission-config
-  namespace: psa-system
+  namespace: kube-system
 data:
   config.yaml: |
     - name: baseline

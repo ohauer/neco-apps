@@ -1,12 +1,4 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  labels:
-    control-plane: controller-manager
-    pod-security.cybozu.com/policy: privileged
-  name: psa-system
----
-apiVersion: v1
 data:
   controller_manager_config.yaml: |
     apiVersion: controller-runtime.sigs.k8s.io/v1alpha1
@@ -23,7 +15,7 @@ data:
 kind: ConfigMap
 metadata:
   name: psa-manager-config
-  namespace: psa-system
+  namespace: kube-system
 ---
 apiVersion: v1
 data:
@@ -39,13 +31,13 @@ data:
 kind: ConfigMap
 metadata:
   name: psa-pod-security-admission-config
-  namespace: psa-system
+  namespace: kube-system
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: psa-webhook-service
-  namespace: psa-system
+  namespace: kube-system
 spec:
   ports:
   - port: 443
@@ -59,7 +51,7 @@ metadata:
   labels:
     control-plane: controller-manager
   name: psa-controller-manager
-  namespace: psa-system
+  namespace: kube-system
 spec:
   replicas: 1
   selector:
@@ -76,7 +68,7 @@ spec:
         - --config-path=/etc/pod-security-admission/config.yaml
         command:
         - /pod-security-admission
-        image: quay.io/cybozu/pod-security-admission:0.2.0
+        image: quay.io/cybozu/pod-security-admission:0.2.1
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
@@ -133,11 +125,11 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: psa-serving-cert
-  namespace: psa-system
+  namespace: kube-system
 spec:
   dnsNames:
-  - psa-webhook-service.psa-system.svc
-  - psa-webhook-service.psa-system.svc.cluster.local
+  - psa-webhook-service.kube-system.svc
+  - psa-webhook-service.kube-system.svc.cluster.local
   issuerRef:
     kind: Issuer
     name: psa-selfsigned-issuer
@@ -147,7 +139,7 @@ apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
   name: psa-selfsigned-issuer
-  namespace: psa-system
+  namespace: kube-system
 spec:
   selfSigned: {}
 ---
@@ -155,7 +147,7 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: psa-system/psa-serving-cert
+    cert-manager.io/inject-ca-from: kube-system/psa-serving-cert
   name: psa-mutating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
@@ -164,7 +156,7 @@ webhooks:
   clientConfig:
     service:
       name: psa-webhook-service
-      namespace: psa-system
+      namespace: kube-system
       path: /mutate-baseline
   failurePolicy: Fail
   name: baseline.mpod.kb.io
@@ -191,7 +183,7 @@ webhooks:
   clientConfig:
     service:
       name: psa-webhook-service
-      namespace: psa-system
+      namespace: kube-system
       path: /mutate-restricted
   failurePolicy: Fail
   name: restricted.mpod.kb.io
@@ -217,7 +209,7 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
   annotations:
-    cert-manager.io/inject-ca-from: psa-system/psa-serving-cert
+    cert-manager.io/inject-ca-from: kube-system/psa-serving-cert
   name: psa-validating-webhook-configuration
 webhooks:
 - admissionReviewVersions:
@@ -226,7 +218,7 @@ webhooks:
   clientConfig:
     service:
       name: psa-webhook-service
-      namespace: psa-system
+      namespace: kube-system
       path: /validate-baseline
   failurePolicy: Fail
   name: baseline.vpod.kb.io
@@ -252,7 +244,7 @@ webhooks:
   clientConfig:
     service:
       name: psa-webhook-service
-      namespace: psa-system
+      namespace: kube-system
       path: /validate-restricted
   failurePolicy: Fail
   name: restricted.vpod.kb.io
