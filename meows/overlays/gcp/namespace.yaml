@@ -4,7 +4,6 @@ metadata:
   name: meows
   labels:
     team: neco
-    meows.cybozu.com/pod-mutate: ignore
 ---
 apiVersion: v1
 kind: Namespace
@@ -13,3 +12,4 @@ metadata:
   labels:
     team: neco
     pod-security.cybozu.com/policy: privileged
+    meows.cybozu.com/pod-mutate: "true"
