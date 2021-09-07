@@ -5,4 +5,3 @@ resources:
 patchesStrategicMerge:
 - cert-manager.yaml
 - external-dns.yaml
-- meows.yaml
