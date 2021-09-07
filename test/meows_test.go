@@ -15,10 +15,22 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-const runnerNS = "meows-runner"
+const (
+	meowsRunnerNS   = "meows-runner"
+	meowsSecretFile = "meows-secret.json"
+)
+
+func meowsDisabled() bool {
+	_, err := os.Stat(meowsSecretFile)
+	return err != nil
+}
 
 func prepareMeows() {
 	It("should create runner pool", func() {
+		if meowsDisabled() {
+			Skip("meows is disabled")
+		}
+
 		hostname, err := os.Hostname()
 		Expect(err).NotTo(HaveOccurred())
 
@@ -28,13 +40,17 @@ func prepareMeows() {
 			"RunnerPoolName": "runnerpool-" + hostname,
 		})
 
-		_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "--namespace", runnerNS, "-f", "-")
+		_, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "--namespace", meowsRunnerNS, "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stderr: %s", stderr)
 	})
 }
 
 func testMeows() {
 	It("should deploy meows-controller", func() {
+		if meowsDisabled() {
+			Skip("meows is disabled")
+		}
+
 		Eventually(func() error {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=meows",
 				"get", "deployment/meows-controller", "-o=json")
@@ -55,6 +71,10 @@ func testMeows() {
 	})
 
 	It("should deploy slack-agent", func() {
+		if meowsDisabled() {
+			Skip("meows is disabled")
+		}
+
 		Eventually(func() error {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=meows",
 				"get", "deployment/slack-agent", "-o=json")
@@ -75,6 +95,10 @@ func testMeows() {
 	})
 
 	It("should deploy runner pool", func() {
+		if meowsDisabled() {
+			Skip("meows is disabled")
+		}
+
 		hostname, err := os.Hostname()
 		Expect(err).NotTo(HaveOccurred())
 		Eventually(func() error {
@@ -109,7 +133,7 @@ func testMeows() {
 
 		By("getting runner pod list")
 		runnerPodList := new(corev1.PodList)
-		stdout := ExecSafeAt(boot0, "kubectl", "get", "pods", "-n", runnerNS, "-l=app.kubernetes.io/name=meows,app.kubernetes.io/component=runner", "-o=json")
+		stdout := ExecSafeAt(boot0, "kubectl", "get", "pods", "-n", meowsRunnerNS, "-l=app.kubernetes.io/name=meows,app.kubernetes.io/component=runner", "-o=json")
 		err = json.Unmarshal(stdout, runnerPodList)
 		Expect(err).ShouldNot(HaveOccurred())
 
