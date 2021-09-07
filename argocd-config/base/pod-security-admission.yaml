@@ -16,7 +16,7 @@ spec:
     path: pod-security-admission/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: psa-system
+    namespace: kube-system
   syncPolicy:
     automated:
       prune: true
