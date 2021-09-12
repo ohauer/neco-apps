@@ -210,7 +210,10 @@ func testSetup() {
 		}
 
 		_, err := os.Stat(ghcrTokenFile)
-		if err != nil {
+		if err == nil {
+			By("creating init-template namespace")
+			createNamespaceIfNotExists("init-template", false)
+
 			By("loading ghcr.io token")
 			data, err := os.ReadFile(ghcrTokenFile)
 			Expect(err).NotTo(HaveOccurred())
@@ -233,7 +236,10 @@ func testSetup() {
 		}
 
 		_, err = os.Stat(quayTokenFile)
-		if err != nil {
+		if err == nil {
+			By("creating init-template namespace")
+			createNamespaceIfNotExists("init-template", false)
+
 			By("loading quay.io token")
 			data, err := os.ReadFile(quayTokenFile)
 			Expect(err).NotTo(HaveOccurred())
