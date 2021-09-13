@@ -6,3 +6,14 @@ metadata:
 spec:
   destinations:
   - 10.176.0.0/16  # Forest Dev Farm14-mgmt
+---
+apiVersion: coil.cybozu.com/v2
+kind: Egress
+metadata:
+  name: network-nat
+  namespace: domestic-egress
+spec:
+  destinations:
+  - 10.72.0.0/20   # Neco Switch
+  - 10.72.31.0/24  # Neco PDU
+  - 10.176.0.0/16  # Forest Dev Farm14-mgmt
