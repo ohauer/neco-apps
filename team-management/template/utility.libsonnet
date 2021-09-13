@@ -48,7 +48,17 @@
 
   // get_team_namespace_labels retrieves the labels for the namespace.
   get_team_namespace_labels(settings, team, namespace)::
-    settings.namespaces[team][namespace],
+    if std.objectHas(settings.namespaces[team][namespace], 'labels') then
+      settings.namespaces[team][namespace].labels
+    else
+      {},
+
+  // get_team_namespace_annotations retrieves the annotations for the namespace.
+  get_team_namespace_annotations(settings, team, namespace)::
+    if std.objectHas(settings.namespaces[team][namespace], 'annotations') then
+      settings.namespaces[team][namespace].annotations
+    else
+      {},
 
   // get_all_namespaces retrieves the array of all namespaces associated to the tenant teams.
   get_all_namespaces(settings)::
