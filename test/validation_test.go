@@ -72,10 +72,10 @@ func testNamespaceResources(t *testing.T) {
 			return
 		}
 
-		// `sandbox` namespace should not have a team label.
-		if meta.Name == "sandbox" {
+		// `sandbox` and `init-template` namespaces should not have a team label.
+		if meta.Name == "sandbox" || meta.Name == "init-template" {
 			if _, ok := meta.Labels["team"]; ok {
-				t.Errorf("sandbox ns has team label: value=%s", meta.Labels["team"])
+				t.Errorf("%s ns has team label: value=%s", meta.Name, meta.Labels["team"])
 			}
 			return
 		}
@@ -223,6 +223,7 @@ func testApplicationResources(t *testing.T) {
 		"pvc-autoresizer":        "7",
 		"accurate":               "7",
 		"meows":                  "7",
+		"init-template":          "7",
 		"network-policy":         "8",
 	}
 
