@@ -16,6 +16,7 @@ patchesStrategicMerge:
 - external-dns.yaml
 - meows.yaml
 - ingress.yaml
+- init-template.yaml
 - kube-metrics-adapter.yaml
 - local-pv-provisioner.yaml
 - logging.yaml

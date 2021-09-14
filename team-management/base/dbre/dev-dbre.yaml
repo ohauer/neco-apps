@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   labels:
+    accurate.cybozu.com/template: init-template
     accurate.cybozu.com/type: root
     development: "true"
   name: dev-dbre
