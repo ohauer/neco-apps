@@ -484,4 +484,20 @@ func testTeamManagement() {
 		stdout, stderr, err = ExecAt(boot0, "kubectl", "alpha", "debug", "-i", "-n", "maneki", "neco-ephemeral-test", "--image=quay.io/cybozu/ubuntu-debug:20.04", "--target=neco-ephemeral-test", "--as=test", "--as-group=maneki", "--as-group=system:authenticated", "--", "echo a")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 	})
+
+	It("should propagate secrets from the init-template namespace", func() {
+		By("creating a secret")
+		ExecSafeAt(boot0, "kubectl", "create", "-n", "init-template", "secret", "generic", "test-secret")
+		ExecSafeAt(boot0, "kubectl", "annotate", "-n", "init-template", "secret", "test-secret", "accurate.cybozu.com/propagate=update")
+
+		By("waiting the secret to be propagated")
+		Eventually(func() error {
+			_, _, err := ExecAt(boot0, "kubectl", "get", "-n", "app-maneki", "secret", "test-secret")
+			if err != nil {
+				return err
+			}
+
+			return nil
+		}).Should(Succeed())
+	})
 }
