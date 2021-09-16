@@ -80,9 +80,18 @@
       }
     },
     "ept": {
+      "app-ept": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "app-ept-monitoring": {},
       "app-ept-plantuml": {},
-      "app-ept-wiki": {}
+      "app-ept-wiki": {},
+      "dev-ept": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
     },
     "garoon": {
       "app-garoon-monitoring": {},

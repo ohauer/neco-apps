@@ -18,6 +18,8 @@ spec:
       server: '*'
     - namespace: app-endpoint-discovery
       server: '*'
+    - namespace: app-ept
+      server: '*'
     - namespace: app-ept-monitoring
       server: '*'
     - namespace: app-ept-plantuml
