@@ -74,14 +74,24 @@
       "app-cybozu-com-mysql-replica": {},
       "app-cybozu-com-mysql-restore": {},
       "dev-dbre": {
+        "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
         "development": "true"
       }
     },
     "ept": {
+      "app-ept": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "app-ept-monitoring": {},
       "app-ept-plantuml": {},
-      "app-ept-wiki": {}
+      "app-ept-wiki": {},
+      "dev-ept": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
     },
     "garoon": {
       "app-garoon-monitoring": {},
@@ -96,6 +106,7 @@
       "app-forest-certs": {},
       "app-kodama": {},
       "app-maneki": {
+        "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
       "app-maneki-static-cybozu-com": {},
@@ -105,6 +116,7 @@
       "app-oauth-redirector": {},
       "app-octodns": {},
       "dev-maneki": {
+        "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
         "development": "true"
       },
@@ -115,6 +127,7 @@
     "neco-devusers": {},
     "network": {
       "dev-network": {
+        "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
         "development": "true"
       }

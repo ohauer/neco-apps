@@ -1,0 +1,80 @@
+apiVersion: meows.cybozu.com/v1alpha1
+kind: RunnerPool
+metadata:
+  name: dctest-runner
+  namespace: meows-runner
+spec:
+  repositoryName: neco-tenant-apps
+  replicas: 3
+  slackAgent:
+    serviceName: slack-agent.meows.svc
+    channel: "#neco"
+  setupCommand: ["sh", "-ex", "/home/actions/bootstrap.sh"]
+  template:
+    metadata:
+      annotations:
+        egress.coil.cybozu.com/internet-egress: nat
+    image: quay.io/cybozu/dctest-meows-runner:0.3.1.2
+    securityContext:
+      privileged: true
+    env:
+    - name: NECO_BRANCH
+      value: "release"
+    - name: NECO_APPS_BRANCH
+      value: "release"
+    - name: EXTEND_DURATION
+      value: "30m"
+    volumeMounts:
+        - name: scratch
+          mountPath: /var/scratch
+        - name: bird
+          mountPath: /var/run/bird
+        - name: modules
+          mountPath: /lib/modules
+        - name: dev
+          mountPath: /dev
+          readOnly: false
+        - name: secrets
+          mountPath: /secrets
+          readOnly: true
+    volumes:
+        - name: bird
+          emptyDir: {}
+        - name: modules
+          hostPath:
+            path: /lib/modules
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: scratch
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                storageClassName: topolvm-provisioner
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: 300Gi
+        - name: secrets
+          secret:
+            secretName: clouddns
+---
+apiVersion: meows.cybozu.com/v1alpha1
+kind: RunnerPool
+metadata:
+  name: default-runner
+  namespace: meows-runner
+spec:
+  repositoryName: neco-tenant-apps
+  replicas: 5
+  slackAgent:
+    serviceName: slack-agent.meows.svc
+    channel: "#neco"
+  template:
+    metadata:
+      annotations:
+        egress.coil.cybozu.com/internet-egress: nat
+    image: quay.io/cybozu/dctest-meows-runner:0.3.1.2
+    env:
+    - name: EXTEND_DURATION
+      value: "30m"
