@@ -1,4 +1,11 @@
 {
+  "allowed_namespaces": {
+    "ept": [
+      "app-ept-monitoring",
+      "app-ept-plantuml",
+      "app-ept-wiki"
+    ]
+  },
   "apps": {
     "cydec-apps": {
       "destinations": {},
@@ -84,9 +91,6 @@
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
-      "app-ept-monitoring": {},
-      "app-ept-plantuml": {},
-      "app-ept-wiki": {},
       "dev-ept": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",

@@ -13,7 +13,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
@@ -85,109 +84,6 @@ func testNamespaceResources(t *testing.T) {
 			t.Errorf("%s ns doesn't have team label", meta.Name)
 		}
 	})
-}
-
-func testAppProjectResources(t *testing.T) {
-	// Verify the destination namespaces in the AppPorject for unprivileged team are listed correctly.
-	targetDir := filepath.Join(manifestDir, "team-management", "base")
-
-	namespacesByTeam := map[string][]string{}
-	namespacesInAppProject := map[string][]string{}
-
-	stdout, stderr, err := kustomizeBuild(targetDir)
-	if err != nil {
-		t.Fatalf("kustomize build failed. path: %s, stderr: %s, err: %v", targetDir, stderr, err)
-	}
-	y := k8sYaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(stdout)))
-	for {
-		data, err := y.Read()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			t.Fatal(err)
-		}
-
-		var meta struct {
-			metav1.TypeMeta   `json:",inline"`
-			metav1.ObjectMeta `json:"metadata,omitempty"`
-		}
-		err = yaml.Unmarshal(data, &meta)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		// Make lists from each resources.
-		switch meta.Kind {
-		case "Namespace":
-			if meta.Name == "sandbox" {
-				// Skip. sandbox ns does not have team label.
-				continue
-			}
-			if strings.HasPrefix(meta.Name, "dev-") {
-				// Skip. All namespaces start with dev- are allowed to tenant teams.
-				continue
-			}
-
-			team := meta.Labels["team"]
-			namespacesByTeam[team] = append(namespacesByTeam[team], meta.Name)
-
-		case "AppProject":
-			if meta.Name == "default" || meta.Name == "tenant-app-of-apps" || meta.Name == "tenant-apps" {
-				// Skip. default app and tenant-app-of-apps app are privileged.
-				continue
-			}
-
-			var proj AppProject
-			err = yaml.Unmarshal(data, &proj)
-			if err != nil {
-				t.Fatal(err)
-			}
-
-			var namespaces []string
-			for _, dest := range proj.Spec.Destinations {
-				// The namespaces with dev- prefix is maneged by tenant teams via neco-tenant-apps.
-				// As dev-* is to enable Argo CD to deploy resources to such namespaces, ignore this.
-				if dest.Namespace == "dev-*" {
-					continue
-				}
-				namespaces = append(namespaces, dest.Namespace)
-			}
-
-			// Some dev teams do not have their namespaces and are only accessible for sandbox and dev-* namespaces.
-			if len(namespaces) == 1 && namespaces[0] == "sandbox" {
-				continue
-			}
-
-			sort.Strings(namespaces)
-			namespacesInAppProject[proj.Name] = namespaces
-		}
-	}
-
-	for team, namespaces := range namespacesByTeam {
-		namespaces = append(namespaces, "sandbox")
-		sort.Strings(namespaces)
-		namespacesByTeam[team] = namespaces
-	}
-
-	// List the all tenant namespaces.
-	allNamespacesForTenantTeam := []string{}
-	nsSet := map[string]bool{}
-	for _, namespaces := range namespacesByTeam {
-		for _, ns := range namespaces {
-			nsSet[ns] = true
-		}
-	}
-	for ns := range nsSet {
-		allNamespacesForTenantTeam = append(allNamespacesForTenantTeam, ns)
-	}
-	sort.Strings(allNamespacesForTenantTeam)
-
-	// The Maneki team can deploy to all tenant namespaces.
-	namespacesByTeam["maneki"] = allNamespacesForTenantTeam
-
-	if !cmp.Equal(namespacesByTeam, namespacesInAppProject) {
-		t.Errorf("namespaces in AppProjects are not listed correctly: %s", cmp.Diff(namespacesByTeam, namespacesInAppProject))
-	}
 }
 
 func testApplicationResources(t *testing.T) {
@@ -735,7 +631,6 @@ func TestValidation(t *testing.T) {
 		t.Skip("SSH_PRIVKEY envvar is defined as running e2e test")
 	}
 
-	t.Run("AppProjectNamespaces", testAppProjectResources)
 	t.Run("ApplicationTargetRevision", testApplicationResources)
 	t.Run("CRDStatus", testCRDStatus)
 	t.Run("NamespaceLabels", testNamespaceResources)

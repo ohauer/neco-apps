@@ -369,6 +369,20 @@ func testSetup() {
 }
 
 func applyAndWaitForApplications(commitID string) {
+	// TODO: remove this block after #1775 is released
+	By("grafting ept namespaces")
+	if doUpgrade {
+		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "none")
+		nss := []string{"app-ept-monitoring", "app-ept-plantuml", "app-ept-wiki"}
+		for _, ns := range nss {
+			_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
+			if err == nil {
+				ExecSafeAt(boot0, "kubectl", "label", "ns", ns, "app.kubernetes.io/instance-")
+				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "app-ept")
+			}
+		}
+	}
+
 	By("creating Argo CD app")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "argocd", "app", "create", "argocd-config",
@@ -509,6 +523,25 @@ func applyAndWaitForApplications(commitID string) {
 			time.Sleep(1 * time.Second)
 		}
 	}, 60*time.Minute).Should(Succeed())
+
+	// TODO: remove this block after #1775 is released
+	if doUpgrade {
+		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "automated", "--auto-prune", "--self-heal")
+
+		Eventually(func() error {
+			st := time.Now()
+			for {
+				if time.Since(st) > 15*time.Second {
+					return nil
+				}
+				err := checkAllAppsSynced()
+				if err != nil {
+					return err
+				}
+				time.Sleep(1 * time.Second)
+			}
+		}, 60*time.Minute).Should(Succeed())
+	}
 }
 
 // Sometimes synchronization fails when argocd applies network policies.

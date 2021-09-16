@@ -54,6 +54,14 @@
   get_all_namespaces(settings)::
     std.flattenArrays(std.map(function(x) self.get_team_namespaces(settings, x), self.get_teams(settings))),
 
+  // get_allowed_namespaces retrieves the array of namespaces allowed to a team.
+  get_allowed_namespaces(settings, team)::
+    if std.objectHas(settings.allowed_namespaces, team) then settings.allowed_namespaces[team] else [],
+
+  // get_all_allowed_namespaces retrieves the array of all namespaces allowed to the tenant teams.
+  get_all_allowed_namespaces(settings)::
+    std.flattenArrays(std.map(function(x) self.get_allowed_namespaces(settings, x), self.get_teams(settings))),
+
   // get_apps retrieves the array of tenant apps.
   get_apps(settings)::
     std.objectFields(settings.apps),
