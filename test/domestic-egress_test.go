@@ -1,0 +1,90 @@
+package test
+
+import (
+	_ "embed"
+	"encoding/json"
+	"fmt"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+)
+
+//go:embed testdata/domestic-egress.yaml
+var domesticEgressYAML []byte
+
+func prepareDomesticEgress() {
+	It("should create ubuntu pod on sandbox and team=network ns", func() {
+		stdout, stderr, err := ExecAtWithInput(boot0, domesticEgressYAML, "kubectl", "apply", "-f", "-")
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+	})
+}
+
+func testDomesticEgress() {
+	It("should deploy coil egress successfully", func() {
+		Eventually(func() error {
+			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=domestic-egress",
+				"get", "deployment/network-nat", "-o=json")
+			if err != nil {
+				return err
+			}
+			deployment := new(appsv1.Deployment)
+			err = json.Unmarshal(stdout, deployment)
+			if err != nil {
+				return err
+			}
+
+			if int(deployment.Status.ReadyReplicas) != 2 {
+				return fmt.Errorf("ReadyReplicas is not 2: %d", int(deployment.Status.ReadyReplicas))
+			}
+			return nil
+		}).Should(Succeed())
+
+		By("should not access to Neco switch from Pods in namespaces that are not team=network")
+		ns := "dctest"
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", ns, "get", "pods", "-l", "app=ubuntu-domestic-egress-test", "-o", "json")
+			if err != nil {
+				return fmt.Errorf("stderr: %s: %w", string(stderr), err)
+			}
+			podList := &corev1.PodList{}
+			if err := json.Unmarshal(stdout, podList); err != nil {
+				return err
+			}
+			if len(podList.Items) != 1 {
+				return fmt.Errorf("podList length is not 1: %d", len(podList.Items))
+			}
+			podName := podList.Items[0].Name
+			// 10.72.2.0 is neco switch
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", ns, "exec", podName, "--", "ping", "-c", "1", "-W", "3", "10.72.2.0")
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+			return nil
+		}).ShouldNot(Succeed())
+
+		By("should access to Neco switch from Pods in namespaces that are team=network")
+		ns = "dev-network"
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", ns, "get", "pods", "-l", "app=ubuntu-domestic-egress-test", "-o", "json")
+			if err != nil {
+				return fmt.Errorf("stderr: %s: %w", string(stderr), err)
+			}
+			podList := &corev1.PodList{}
+			if err := json.Unmarshal(stdout, podList); err != nil {
+				return err
+			}
+			if len(podList.Items) != 1 {
+				return fmt.Errorf("podList length is not 1: %d", len(podList.Items))
+			}
+			podName := podList.Items[0].Name
+			// 10.72.2.0 is neco switch
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", ns, "exec", podName, "--", "ping", "-c", "1", "-W", "3", "10.72.2.0")
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+			return nil
+		}).Should(Succeed())
+	})
+}
