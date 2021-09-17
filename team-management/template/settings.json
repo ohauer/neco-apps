@@ -74,11 +74,9 @@
       "app-cybozu-com-mysql-replica": {},
       "app-cybozu-com-mysql-restore": {},
       "dev-dbre": {
-        "labels": {
-          "accurate.cybozu.com/template": "init-template",
-          "accurate.cybozu.com/type": "root",
-          "development": "true"
-        }
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
       }
     },
     "ept": {
@@ -108,10 +106,8 @@
       "app-forest-certs": {},
       "app-kodama": {},
       "app-maneki": {
-        "labels": {
-          "accurate.cybozu.com/template": "init-template",
-          "accurate.cybozu.com/type": "root"
-        }
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
       },
       "app-maneki-static-cybozu-com": {},
       "app-misc": {},
@@ -120,29 +116,20 @@
       "app-oauth-redirector": {},
       "app-octodns": {},
       "dev-maneki": {
-        "labels": {
-          "accurate.cybozu.com/template": "init-template",
-          "accurate.cybozu.com/type": "root",
-          "development": "true"
-        }
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
       },
       "maneki": {
-        "labels": {
-          "app.kubernetes.io/name": "maneki"
-        }
+        "app.kubernetes.io/name": "maneki"
       }
     },
     "neco-devusers": {},
     "network": {
       "dev-network": {
-        "annotations": {
-          "admission.cybozu.com/min-policy-order": "600"
-        },
-        "labels": {
-          "accurate.cybozu.com/template": "init-template",
-          "accurate.cybozu.com/type": "root",
-          "development": "true"
-        }
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
       }
     }
   }

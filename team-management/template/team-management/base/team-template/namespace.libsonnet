@@ -1,7 +1,6 @@
 local utility = import '../../../utility.libsonnet';
 function(settings, team, namespace)
   local labels = utility.get_team_namespace_labels(settings, team, namespace);
-  local annotations = utility.get_team_namespace_annotations(settings, team, namespace);
   [
     {
       apiVersion: 'v1',
@@ -9,7 +8,6 @@ function(settings, team, namespace)
       metadata: {
         name: namespace,
         [if std.length(labels) > 0 then 'labels']: labels,
-        [if std.length(annotations) > 0 then 'annotations']: annotations,
       },
     },
     {
