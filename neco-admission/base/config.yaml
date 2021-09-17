@@ -26,3 +26,6 @@ ArgoCDApplicationValidator:
     - projects:
         - default
       repository: https://topolvm.github.io/pvc-autoresizer
+    - projects:
+        - default
+      repository: https://topolvm.github.io/topolvm

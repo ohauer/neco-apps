@@ -10,7 +10,6 @@ import (
 	. "github.com/onsi/gomega"
 	"github.com/prometheus/common/model"
 	corev1 "k8s.io/api/core/v1"
-	policyv1beta1 "k8s.io/api/policy/v1beta1"
 )
 
 //go:embed testdata/topolvm.yaml
@@ -25,23 +24,6 @@ func prepareTopoLVM() {
 
 func testTopoLVM() {
 	It("should work TopoLVM pod and auto-resizer", func() {
-		By("checking PodDisruptionBudget for controller Deployment")
-		Eventually(func() error {
-			pdb := policyv1beta1.PodDisruptionBudget{}
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "poddisruptionbudgets", "controller-pdb", "-n", "topolvm-system", "-o", "json")
-			if err != nil {
-				return fmt.Errorf("failed to get TopoLVM pdb: %s: %w", stderr, err)
-			}
-
-			if err := json.Unmarshal(stdout, &pdb); err != nil {
-				return err
-			}
-			if pdb.Status.CurrentHealthy != 2 {
-				return fmt.Errorf("too few healthy pods: %d", pdb.Status.CurrentHealthy)
-			}
-			return nil
-		}).Should(Succeed())
-
 		By("checking the test pod is running")
 		Eventually(func() error {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "-n", "dctest", "pods", "topolvm-test", "-o", "json")

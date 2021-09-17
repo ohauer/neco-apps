@@ -10,7 +10,7 @@ spec:
     matchNames: [topolvm-system]
   selector:
     matchLabels:
-      app.kubernetes.io/name: node
+      app.kubernetes.io/name: topolvm-node
   podMetricsEndpoints:
   - relabelConfigs:
       - replacement: topolvm
