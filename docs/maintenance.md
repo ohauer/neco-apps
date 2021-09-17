@@ -219,6 +219,7 @@ Generate manifests from the Helm charts and check the changes as follows.
 ```
 LOGGING_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/logging
 helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
 helm search repo -l grafana | grep grafana/promtail
 # Example output with a header line:
 #   NAME                            CHART VERSION   APP VERSION     DESCRIPTION

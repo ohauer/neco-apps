@@ -4,11 +4,12 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: logging-promtail
+  namespace: logging
   labels:
-    helm.sh/chart: promtail-3.5.1
+    helm.sh/chart: promtail-3.8.1
     app.kubernetes.io/name: promtail
     app.kubernetes.io/instance: logging
-    app.kubernetes.io/version: "2.2.1"
+    app.kubernetes.io/version: "2.3.0"
     app.kubernetes.io/managed-by: Helm
 ---
 # Source: promtail/templates/secret.yaml
@@ -16,11 +17,12 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: logging-promtail
+  namespace: logging
   labels:
-    helm.sh/chart: promtail-3.5.1
+    helm.sh/chart: promtail-3.8.1
     app.kubernetes.io/name: promtail
     app.kubernetes.io/instance: logging
-    app.kubernetes.io/version: "2.2.1"
+    app.kubernetes.io/version: "2.3.0"
     app.kubernetes.io/managed-by: Helm
 stringData:
   promtail.yaml: |
@@ -37,279 +39,30 @@ stringData:
     
     scrape_configs:
       # See also https://github.com/grafana/loki/blob/master/production/ksonnet/promtail/scrape_config.libsonnet for reference
-      
-      # Pods with a label 'app.kubernetes.io/name'
-      - job_name: kubernetes-pods-app-kubernetes-io-name
+      - job_name: kubernetes-pods
         pipeline_stages:
           - cri: {}
         kubernetes_sd_configs:
           - role: pod
         relabel_configs:
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_label_app_kubernetes_io_name
-            target_label: app
-          - action: drop
-            regex: ''
-            source_labels:
-              - app
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_label_app_kubernetes_io_component
-            target_label: component
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_node_name
-            target_label: node_name
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_namespace
-            target_label: namespace
-          - action: replace
-            replacement: $1
-            separator: /
-            source_labels:
-            - namespace
-            - app
-            target_label: job
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_name
-            target_label: pod
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_container_name
-            target_label: container
-          - action: replace
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_uid
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-          - action: replace
-            regex: true/(.*)
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_annotation_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-      
-      # Pods with a label 'app'
-      - job_name: kubernetes-pods-app
-        pipeline_stages:
-          - cri: {}
-        kubernetes_sd_configs:
-          - role: pod
-        relabel_configs:
-          # Drop pods with label 'app.kubernetes.io/name'. They are already considered above
-          - action: drop
-            regex: .+
-            source_labels:
-              - __meta_kubernetes_pod_label_app_kubernetes_io_name
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_label_app
-            target_label: app
-          - action: drop
-            regex: ''
-            source_labels:
-              - app
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_label_component
-            target_label: component
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_node_name
-            target_label: node_name
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_namespace
-            target_label: namespace
-          - action: replace
-            replacement: $1
-            separator: /
-            source_labels:
-            - namespace
-            - app
-            target_label: job
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_name
-            target_label: pod
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_container_name
-            target_label: container
-          - action: replace
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_uid
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-          - action: replace
-            regex: true/(.*)
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_annotation_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-      
-      # Pods with direct controllers, such as StatefulSet
-      - job_name: kubernetes-pods-direct-controllers
-        pipeline_stages:
-          - cri: {}
-        kubernetes_sd_configs:
-          - role: pod
-        relabel_configs:
-          # Drop pods with label 'app.kubernetes.io/name' or 'app'. They are already considered above
-          - action: drop
-            regex: .+
-            separator: ''
-            source_labels:
+          - source_labels:
+              - __meta_kubernetes_pod_controller_name
+            regex: ([0-9a-z-.]+?)(-[0-9a-f]{8,10})?
+            action: replace
+            target_label: __tmp_controller_name
+          - source_labels:
               - __meta_kubernetes_pod_label_app_kubernetes_io_name
               - __meta_kubernetes_pod_label_app
-          - action: drop
-            regex: '[0-9a-z-.]+-[0-9a-f]{8,10}'
-            source_labels:
-              - __meta_kubernetes_pod_controller_name
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_controller_name
-            target_label: app
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_node_name
-            target_label: node_name
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_namespace
-            target_label: namespace
-          - action: replace
-            replacement: $1
-            separator: /
-            source_labels:
-            - namespace
-            - app
-            target_label: job
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_name
-            target_label: pod
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_container_name
-            target_label: container
-          - action: replace
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_uid
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-          - action: replace
-            regex: true/(.*)
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_annotation_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-      
-      # Pods with indirect controllers, such as Deployment
-      - job_name: kubernetes-pods-indirect-controller
-        pipeline_stages:
-          - cri: {}
-        kubernetes_sd_configs:
-          - role: pod
-        relabel_configs:
-          # Drop pods with label 'app.kubernetes.io/name' or 'app'. They are already considered above
-          - action: drop
-            regex: .+
-            separator: ''
-            source_labels:
-              - __meta_kubernetes_pod_label_app_kubernetes_io_name
-              - __meta_kubernetes_pod_label_app
-          - action: keep
-            regex: '[0-9a-z-.]+-[0-9a-f]{8,10}'
-            source_labels:
-              - __meta_kubernetes_pod_controller_name
-          - action: replace
-            regex: '([0-9a-z-.]+)-[0-9a-f]{8,10}'
-            source_labels:
-              - __meta_kubernetes_pod_controller_name
-            target_label: app
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_node_name
-            target_label: node_name
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_namespace
-            target_label: namespace
-          - action: replace
-            replacement: $1
-            separator: /
-            source_labels:
-            - namespace
-            - app
-            target_label: job
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_name
-            target_label: pod
-          - action: replace
-            source_labels:
-            - __meta_kubernetes_pod_container_name
-            target_label: container
-          - action: replace
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_uid
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-          - action: replace
-            regex: true/(.*)
-            replacement: /var/log/pods/*$1/*.log
-            separator: /
-            source_labels:
-            - __meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_annotation_kubernetes_io_config_hash
-            - __meta_kubernetes_pod_container_name
-            target_label: __path__
-      # All remaining pods not yet covered
-      - job_name: kubernetes-other
-        pipeline_stages:
-          - cri: {}
-        kubernetes_sd_configs:
-          - role: pod
-        relabel_configs:
-          # Drop what has already been covered
-          - action: drop
-            regex: .+
-            separator: ''
-            source_labels:
-              - __meta_kubernetes_pod_label_app_kubernetes_io_name
-              - __meta_kubernetes_pod_label_app
-          - action: drop
-            regex: .+
-            source_labels:
-              - __meta_kubernetes_pod_controller_name
-          - action: replace
-            source_labels:
+              - __tmp_controller_name
               - __meta_kubernetes_pod_name
+            regex: ^;*([^;]+)(;.*)?$
+            action: replace
             target_label: app
-          - action: replace
-            source_labels:
+          - source_labels:
+              - __meta_kubernetes_pod_label_app_kubernetes_io_component
               - __meta_kubernetes_pod_label_component
+            regex: ^;*([^;]+)(;.*)?$
+            action: replace
             target_label: component
           - action: replace
             source_labels:
@@ -357,10 +110,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: logging-promtail
   labels:
-    helm.sh/chart: promtail-3.5.1
+    helm.sh/chart: promtail-3.8.1
     app.kubernetes.io/name: promtail
     app.kubernetes.io/instance: logging
-    app.kubernetes.io/version: "2.2.1"
+    app.kubernetes.io/version: "2.3.0"
     app.kubernetes.io/managed-by: Helm
 rules:
   - apiGroups:
@@ -382,10 +135,10 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: logging-promtail
   labels:
-    helm.sh/chart: promtail-3.5.1
+    helm.sh/chart: promtail-3.8.1
     app.kubernetes.io/name: promtail
     app.kubernetes.io/instance: logging
-    app.kubernetes.io/version: "2.2.1"
+    app.kubernetes.io/version: "2.3.0"
     app.kubernetes.io/managed-by: Helm
 subjects:
   - kind: ServiceAccount
@@ -401,11 +154,12 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: logging-promtail
+  namespace: logging
   labels:
-    helm.sh/chart: promtail-3.5.1
+    helm.sh/chart: promtail-3.8.1
     app.kubernetes.io/name: promtail
     app.kubernetes.io/instance: logging
-    app.kubernetes.io/version: "2.2.1"
+    app.kubernetes.io/version: "2.3.0"
     app.kubernetes.io/managed-by: Helm
 spec:
   selector:
@@ -420,7 +174,7 @@ spec:
         app.kubernetes.io/name: promtail
         app.kubernetes.io/instance: logging
       annotations:
-        checksum/config: ce0cce8038b6dc40b05c3ec61cff34b8135b8264185d40b849ad9a3b748a8144
+        checksum/config: 73d806516749604eeda22d6393732b8ef3dc6e0aad03f9c3172f96e4c0e15ee7
     spec:
       serviceAccountName: logging-promtail
       securityContext:
@@ -428,7 +182,7 @@ spec:
         runAsUser: 0
       containers:
         - name: promtail
-          image: "docker.io/grafana/promtail:2.2.1"
+          image: "docker.io/grafana/promtail:2.3.0"
           imagePullPolicy: IfNotPresent
           args:
             - "-config.file=/etc/promtail/promtail.yaml"
@@ -470,6 +224,9 @@ spec:
       tolerations:
         - effect: NoSchedule
           key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
           operator: Exists
       volumes:
         - name: config
