@@ -258,6 +258,7 @@ Generate manifests from the Helm charts and check the changes as follows.
 ```
 LOGGING_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/logging
 helm repo add hashicorp https://helm.releases.hashicorp.com
+helm repo update
 helm search repo hashicorp/consul
 helm template logging --namespace=logging hashicorp/consul -f ${LOGGING_DIR}/base/consul/values.yaml > ${LOGGING_DIR}/base/consul/upstream/consul.yaml
 cd ${LOGGING_DIR}
