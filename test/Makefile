@@ -78,7 +78,10 @@ dctest-upgrade: install.yaml
 	if [  "$(SUITE)" = "prepare" ]; then \
 		git worktree remove /tmp/neco-apps; \
 		git worktree add /tmp/neco-apps $(BASE_BRANCH) && \
-		cp account.json meows-secret.json /tmp/neco-apps/test && \
+		cp account.json /tmp/neco-apps/test && \
+		cp meows-secret.json /tmp/neco-apps/test || true && \
+		cp ghcr_token /tmp/neco-apps/test || true && \
+		cp quay_token /tmp/neco-apps/test || true && \
 		if grep -q BOOTSTRAP /tmp/neco-apps/test/env.go; then \
 			$(MAKE) -C /tmp/neco-apps/test setup dctest BOOTSTRAP=1 COMMIT_ID=$(BASE_BRANCH); \
 		else \
