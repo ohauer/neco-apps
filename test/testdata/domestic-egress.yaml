@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu-domestic-egress-test
+  namespace: dctest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu-domestic-egress-test
+  template:
+    metadata:
+      annotations:
+        egress.coil.cybozu.com/domestic-egress: network-nat
+      labels:
+        app: ubuntu-domestic-egress-test
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        sysctls:
+        - name: net.ipv4.ping_group_range
+          value: 0 10000
+      containers:
+      - args:
+        - pause
+        image: quay.io/cybozu/ubuntu-debug:20.04
+        name: ubuntu
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu-domestic-egress-test
+  namespace: dev-network
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu-domestic-egress-test
+  template:
+    metadata:
+      annotations:
+        egress.coil.cybozu.com/domestic-egress: network-nat
+      labels:
+        app: ubuntu-domestic-egress-test
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        sysctls:
+        - name: net.ipv4.ping_group_range
+          value: 0 10000
+      containers:
+      - args:
+        - pause
+        image: quay.io/cybozu/ubuntu-debug:20.04
+        name: ubuntu
