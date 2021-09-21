@@ -23,7 +23,7 @@ patchesStrategicMerge:
   - patch-kube-state-metrics.yaml
 images:
   - name: quay.io/cybozu/pushgateway
-    newTag: 1.4.0.1
+    newTag: 1.4.1.1
   - name: k8s.gcr.io/kube-state-metrics/kube-state-metrics
     newName: quay.io/cybozu/kube-state-metrics
     newTag: 2.2.0.1
