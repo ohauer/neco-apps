@@ -25,3 +25,19 @@ spec:
   sessionAffinityConfig:
     clientIP:
       timeoutSeconds: 43200  # 12 hours
+---
+apiVersion: coil.cybozu.com/v2
+kind: Egress
+metadata:
+  name: network-nat
+  namespace: domestic-egress
+spec:
+  replicas: 2
+  destinations:
+  - 10.0.3.0/24
+  - 10.72.0.0/20   # Neco Switch
+  - 10.72.31.0/24  # Neco PDU
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 43200  # 12 hours
