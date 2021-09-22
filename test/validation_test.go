@@ -213,7 +213,8 @@ func testApplicationResources(t *testing.T) {
 		"moco":                   "5",
 		"rook":                   "5",
 		"sandbox":                "5",
-		"team-management":        "5",
+		"accurate":               "6",
+		"init-template":          "6",
 		"logging":                "6",
 		"monitoring":             "6",
 		"session-log":            "6",
@@ -221,9 +222,8 @@ func testApplicationResources(t *testing.T) {
 		"kube-metrics-adapter":   "7",
 		"prometheus-adapter":     "7",
 		"pvc-autoresizer":        "7",
-		"accurate":               "7",
 		"meows":                  "7",
-		"init-template":          "7",
+		"team-management":        "7",
 		"network-policy":         "8",
 	}
 
