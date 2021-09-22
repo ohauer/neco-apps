@@ -26,6 +26,8 @@ import (
 
 const (
 	argoCDPasswordFile = "./argocd-password.txt"
+	ghcrTokenFile      = "ghcr_token"
+	quayTokenFile      = "quay_token"
 )
 
 var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
@@ -200,6 +202,64 @@ func testSetup() {
 			"--from-file=SLACK_APP_TOKEN=slack_api_token",
 			"--from-file=SLACK_BOT_TOKEN=slack_bot_token",
 		)
+	})
+
+	It("should create secrets to access ghcr.io and quay.io private repositories", func() {
+		if doUpgrade {
+			Skip("No need to create it when upgrading")
+		}
+
+		_, err := os.Stat(ghcrTokenFile)
+		if err == nil {
+			By("creating init-template namespace")
+			createNamespaceIfNotExists("init-template", false)
+
+			By("loading ghcr.io token")
+			data, err := os.ReadFile(ghcrTokenFile)
+			Expect(err).NotTo(HaveOccurred())
+			token := strings.TrimSpace(string(data))
+
+			By("creating a secret for ghcr.io")
+			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-ghcr",
+				"-n", "init-template",
+				"--docker-server=ghcr.io",
+				"--docker-username=cybozu-neco",
+				"--docker-password="+token,
+				"--docker-email=neco@cybozu.com",
+			)
+
+			By("annotate secret to propagate")
+			_ = ExecSafeAt(boot0, "kubectl", "annotate", "secrets", "image-pull-secret-ghcr",
+				"-n", "init-template",
+				"accurate.cybozu.com/propagate=create",
+			)
+		}
+
+		_, err = os.Stat(quayTokenFile)
+		if err == nil {
+			By("creating init-template namespace")
+			createNamespaceIfNotExists("init-template", false)
+
+			By("loading quay.io token")
+			data, err := os.ReadFile(quayTokenFile)
+			Expect(err).NotTo(HaveOccurred())
+			token := strings.TrimSpace(string(data))
+
+			By("creating a secret for quay.io")
+			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-quay",
+				"-n", "init-template",
+				"--docker-server=quay.io",
+				"--docker-username=cybozu-neco",
+				"--docker-password="+token,
+				"--docker-email=neco@cybozu.com",
+			)
+
+			By("annotate secret to propagate")
+			_ = ExecSafeAt(boot0, "kubectl", "annotate", "secrets", "image-pull-secret-quay",
+				"-n", "init-template",
+				"accurate.cybozu.com/propagate=create",
+			)
+		}
 	})
 
 	It("should create sandbox namespace", func() {
