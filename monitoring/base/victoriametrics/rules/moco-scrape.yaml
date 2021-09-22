@@ -24,7 +24,8 @@ spec:
   namespaceSelector:
     any: true
   selector:
-    app.kubernetes.io/name: mysql
+    matchLabels:
+      app.kubernetes.io/name: mysql
   podMetricsEndpoints:
   - port: agent-metrics
     relabelConfigs:
@@ -46,7 +47,8 @@ spec:
   namespaceSelector:
     any: true
   selector:
-    app.kubernetes.io/name: mysql
+    matchLabels:
+      app.kubernetes.io/name: mysql
   podMetricsEndpoints:
   - port: mysqld-metrics
     relabelConfigs:
