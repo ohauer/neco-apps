@@ -24,6 +24,12 @@ spec:
       value: "release"
     - name: EXTEND_DURATION
       value: "30m"
+    resources:
+      requests:
+        cpu: 15000m
+        memory: 100Gi
+      limits:
+        cpu: 20000m
     volumeMounts:
         - name: scratch
           mountPath: /var/scratch
@@ -58,23 +64,3 @@ spec:
         - name: secrets
           secret:
             secretName: clouddns
----
-apiVersion: meows.cybozu.com/v1alpha1
-kind: RunnerPool
-metadata:
-  name: default-runner
-  namespace: meows-runner
-spec:
-  repositoryName: neco-tenant-apps
-  replicas: 5
-  slackAgent:
-    serviceName: slack-agent.meows.svc
-    channel: "#neco"
-  template:
-    metadata:
-      annotations:
-        egress.coil.cybozu.com/internet-egress: nat
-    image: quay.io/cybozu/dctest-meows-runner:0.3.1.2
-    env:
-    - name: EXTEND_DURATION
-      value: "30m"
