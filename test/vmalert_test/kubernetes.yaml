@@ -518,13 +518,19 @@ tests:
               summary: Job test1/test-job is taking more than one hour to complete.
   - interval: 1m
     input_series:
-      - series: 'kube_job_failed{job="kube-state-metrics",namespace="test1",job_name="test-job"}'
-        values: '0+0x14 1+0x16'
-      - series: 'kube_job_failed{job="kube-state-metrics",namespace="test2",job_name="test-job"}'
-        values: '0+0x14 1+0x16'
+      - series: 'kube_job_status_failed{job="kube-state-metrics",namespace="test1",job_name="test-job1"}'
+        values: '1+0x30'
+      - series: 'kube_job_status_succeeded{job="kube-state-metrics",namespace="test1",job_name="test-job2"}'
+        values: '1+0x30'
       - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="neco", namespace="test1"}'
         values: '1+0x30'
-      - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="tenant", namespace="test2"}'
+      - series: 'kube_job_status_start_time{job_name="test-job1", namespace="test1"}'
+        values: '50+0x30'
+      - series: 'kube_job_status_start_time{job_name="test-job2", namespace="test1"}'
+        values: '30+0x30'
+      - series: 'kube_job_owner{job_name="test-job1",owner_name="cron1",namespace="test1"}'
+        values: '1+0x30'
+      - series: 'kube_job_owner{job_name="test-job2",owner_name="cron1",namespace="test1"}'
         values: '1+0x30'
     alert_rule_test:
       - eval_time: 30m
@@ -533,11 +539,30 @@ tests:
           - exp_labels:
               severity: error
               namespace: test1
-              job: kube-state-metrics
-              job_name: test-job
+              owner_name: cron1
             exp_annotations:
               runbook: TBD
-              summary: Job test1/test-job failed to complete.
+              summary: Job test1/cron1 failed to complete.
+  - interval: 1m
+    input_series:
+      - series: 'kube_job_status_failed{job="kube-state-metrics",namespace="test1",job_name="test-job1"}'
+        values: '1+0x30'
+      - series: 'kube_job_status_succeeded{job="kube-state-metrics",namespace="test1",job_name="test-job2"}'
+        values: '1+0x30'
+      - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="neco", namespace="test1"}'
+        values: '1+0x30'
+      - series: 'kube_job_status_start_time{job_name="test-job1", namespace="test1"}'
+        values: '30+0x30'
+      - series: 'kube_job_status_start_time{job_name="test-job2", namespace="test1"}'
+        values: '50+0x30'
+      - series: 'kube_job_owner{job_name="test-job1",owner_name="cron1",namespace="test1"}'
+        values: '1+0x30'
+      - series: 'kube_job_owner{job_name="test-job2",owner_name="cron1",namespace="test1"}'
+        values: '1+0x30'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: KubeJobFailed
+        exp_alerts: []
   - interval: 1m
     input_series:
       - series: 'kube_node_status_condition{job="kube-state-metrics", condition="Ready", status="true", node="10.0.0.1"}'
