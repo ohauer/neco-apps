@@ -8,4 +8,4 @@ images:
   - name: quay.io/cybozu/squid
     newTag: 4.15.2
   - name: quay.io/cybozu/unbound
-    newTag: 1.13.1.1
+    newTag: 1.13.2.1
