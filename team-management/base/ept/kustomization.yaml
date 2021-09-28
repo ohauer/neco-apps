@@ -4,9 +4,6 @@ commonLabels:
   team: ept
 kind: Kustomization
 resources:
-  - app-ept-monitoring.yaml
-  - app-ept-plantuml.yaml
-  - app-ept-wiki.yaml
   - app-ept.yaml
   - dev-ept.yaml
   - elastic-serviceaccount.yaml
