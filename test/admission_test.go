@@ -18,8 +18,14 @@ var admissionPodYAML []byte
 //go:embed testdata/admission-networkpolicy.yaml
 var admissionNetworkPolicyYAML []byte
 
-//go:embed testdata/admission-httpproxy.yaml
-var admissionHTTPProxyYAML []byte
+//go:embed testdata/admission-httpproxy-bad.yaml
+var admissionHTTPProxyBadYAML []byte
+
+//go:embed testdata/admission-httpproxy-bad-bastion.yaml
+var admissionHTTPProxyBadBastionYAML []byte
+
+//go:embed testdata/admission-httpproxy-annotated.yaml
+var admissionHTTPProxyAnnotatedYAML []byte
 
 //go:embed testdata/admission-application.yaml
 var admissionApplicationYAML string
@@ -32,24 +38,43 @@ func testAdmission() {
 	})
 
 	It("should default/validate Contour HTTPProxy", func() {
-		By("creating HTTPProxy without annotations")
-		stdout, stderr, err := ExecAtWithInput(boot0, admissionHTTPProxyYAML, "kubectl", "apply", "-f", "-")
+		By("creating HTTPProxy with annotations")
+		stdout, stderr, err := ExecAtWithInput(boot0, admissionHTTPProxyAnnotatedYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "get", "-n", "default", "httpproxy/bad", "-o", "json")
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "get", "-n", "default", "httpproxy/annotated", "-o", "json")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 
 		hp := &unstructured.Unstructured{}
 		err = json.Unmarshal(stdout, hp)
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, err: %v", stdout, err)
-		Expect(hp.GetAnnotations()).To(HaveKeyWithValue("kubernetes.io/ingress.class", "forest"))
+		Expect(hp.GetAnnotations()).To(HaveKeyWithValue("kubernetes.io/ingress.class", "bastion"))
 
 		By("updating HTTPProxy to remove annotations")
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "annotate", "-n", "default", "httpproxy/bad", "kubernetes.io/ingress.class-")
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "annotate", "-n", "default", "httpproxy/annotated", "kubernetes.io/ingress.class-")
 		Expect(err).To(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
 
-		stdout, stderr, err = ExecAtWithInput(boot0, admissionHTTPProxyYAML, "kubectl", "delete", "-f", "-")
+		stdout, stderr, err = ExecAtWithInput(boot0, admissionHTTPProxyAnnotatedYAML, "kubectl", "delete", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+
+		By("creating HTTPProxy without annotations nor a field")
+		stdout, stderr, err = ExecAtWithInput(boot0, admissionHTTPProxyBadYAML, "kubectl", "apply", "-f", "-")
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "get", "-n", "default", "httpproxy/bad", "-o", "json")
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+
+		hp = &unstructured.Unstructured{}
+		err = json.Unmarshal(stdout, hp)
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, err: %v", stdout, err)
+		ingress, ok, err := unstructured.NestedString(hp.UnstructuredContent(), "spec", "ingressClassName")
+		Expect(err).NotTo(HaveOccurred(), "stdout: %s, err: %v", stdout, err)
+		Expect(ok).To(BeTrue())
+		Expect(ingress).To(Equal("forest"))
+
+		By("updating HTTPProxy to change ingressClassName field")
+		stdout, stderr, err = ExecAtWithInput(boot0, admissionHTTPProxyBadBastionYAML, "kubectl", "apply", "-f", "-")
+		Expect(err).To(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
 	})
 
 	It("should validate Application", func() {
