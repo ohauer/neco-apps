@@ -446,21 +446,21 @@ spec:
           for: 1h
           labels:
             severity: warning
-        - alert: KubeOwnerJobFailed
+        - alert: KubeCronJobFailed
           annotations:
-            summary: OwnerJob {{ $labels.namespace }}/{{ $labels.owner_name }} failed to complete.
+            summary: CronJob {{ $labels.namespace }}/{{ $labels.owner_name }} failed to complete.
             runbook: TBD
           expr: |
             max(
               kube_job_status_start_time
-                * on (job_name,namespace) group_left(owner_name) kube_job_owner 
+                * on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_kind="CronJob"}
                 * on(namespace) group_left kube_namespace_labels{label_team="neco"} 
                 * on (job_name, namespace) group_right(owner_name) kube_job_status_failed{job="kube-state-metrics"} 
             ) by(namespace, owner_name)
               > 
             max(
               kube_job_status_start_time 
-                * on (job_name,namespace) group_left(owner_name) kube_job_owner 
+                * on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_kind="CronJob"} 
                 * on(namespace) group_left kube_namespace_labels{label_team="neco"} 
                 * on (job_name, namespace) group_right(owner_name) kube_job_status_succeeded{job="kube-state-metrics"} 
             ) by(namespace, owner_name)
@@ -473,7 +473,7 @@ spec:
             runbook: TBD
           expr: |
             (kube_job_status_failed{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}
-              * on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_name="<none>"}) > 0
+              * on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_kind!="CronJob"}) > 0
           for: 15m
           labels:
             severity: error
