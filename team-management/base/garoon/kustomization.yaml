@@ -6,5 +6,7 @@ kind: Kustomization
 resources:
   - app-garoon-monitoring.yaml
   - app-garoon-static.yaml
+  - app-garoon.yaml
+  - dev-garoon.yaml
   - elastic-serviceaccount.yaml
   - project.yaml

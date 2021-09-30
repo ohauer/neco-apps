@@ -74,12 +74,25 @@
   },
   "namespaces": {
     "cydec": {
-      "app-gorush": {}
+      "app-cydec": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
+      "app-gorush": {},
+      "dev-cydec": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
     },
     "dbre": {
       "app-cybozu-com-mysql": {},
       "app-cybozu-com-mysql-replica": {},
       "app-cybozu-com-mysql-restore": {},
+      "app-dbre": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "dev-dbre": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
@@ -98,8 +111,17 @@
       }
     },
     "garoon": {
+      "app-garoon": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "app-garoon-monitoring": {},
-      "app-garoon-static": {}
+      "app-garoon-static": {},
+      "dev-garoon": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
     },
     "maneki": {
       "app-comconv-earthlab": {},
