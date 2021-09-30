@@ -27,7 +27,7 @@ images:
   - name: k8s.gcr.io/kube-state-metrics/kube-state-metrics
     newName: quay.io/cybozu/kube-state-metrics
     newTag: 2.2.0.1
-  - name: quay.io/integreatly/grafana-operator
+  - name: quay.io/grafana-operator/grafana-operator
     newName: quay.io/cybozu/grafana-operator
     newTag: 3.10.3.1
   - name: quay.io/cybozu/heartbeat
