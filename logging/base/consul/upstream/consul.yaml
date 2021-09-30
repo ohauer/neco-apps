@@ -2,7 +2,7 @@
 # Source: consul/templates/server-disruptionbudget.yaml
 # PodDisruptionBudget to prevent degrading the server cluster through
 # voluntary cluster changes.
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: logging-consul-server
@@ -196,10 +196,10 @@ spec:
       terminationGracePeriodSeconds: 30
       serviceAccountName: logging-consul-server
       securityContext:
-        fsGroup: 1000
-        runAsGroup: 1000
+        fsGroup: 10000
+        runAsGroup: 10000
         runAsNonRoot: true
-        runAsUser: 100
+        runAsUser: 10000
       volumes:
         - name: config
           configMap:
@@ -212,6 +212,10 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.podIP
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
             - name: POD_IP
               valueFrom:
                 fieldRef:
@@ -220,6 +224,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: CONSUL_DISABLE_PERM_MGMT
+              value: "true"
             
           command:
             - "/bin/sh"
@@ -227,7 +233,13 @@ spec:
             - |
               CONSUL_FULLNAME="logging-consul"
 
-              exec /bin/consul agent \
+              mkdir -p /consul/extra-config
+              cp /consul/config/extra-from-values.json /consul/extra-config/extra-from-values.json
+              [ -n "${HOST_IP}" ] && sed -Ei "s|HOST_IP|${HOST_IP?}|g" /consul/extra-config/extra-from-values.json
+              [ -n "${POD_IP}" ] && sed -Ei "s|POD_IP|${POD_IP?}|g" /consul/extra-config/extra-from-values.json
+              [ -n "${HOSTNAME}" ] && sed -Ei "s|HOSTNAME|${HOSTNAME?}|g" /consul/extra-config/extra-from-values.json
+
+              exec /usr/local/bin/docker-entrypoint.sh consul agent \
                 -advertise="${ADVERTISE_IP}" \
                 -bind=0.0.0.0 \
                 -bootstrap-expect=3 \
@@ -241,6 +253,7 @@ spec:
                 -retry-join="${CONSUL_FULLNAME}-server-1.${CONSUL_FULLNAME}-server.${NAMESPACE}.svc:8301" \
                 -retry-join="${CONSUL_FULLNAME}-server-2.${CONSUL_FULLNAME}-server.${NAMESPACE}.svc:8301" \
                 -serf-lan-port=8301 \
+                -config-file=/consul/extra-config/extra-from-values.json \
                 -server
           volumeMounts:
             - name: data-logging
@@ -292,6 +305,8 @@ spec:
             requests:
               cpu: 100m
               memory: 100Mi
+          securityContext:
+            null
   volumeClaimTemplates:
     - metadata:
         name: data-logging

@@ -7,4 +7,4 @@ patchesStrategicMerge:
   - patch.yaml
 images:
   - name: quay.io/cybozu/loki
-    newTag: 2.2.1.1
+    newTag: 2.3.0.1

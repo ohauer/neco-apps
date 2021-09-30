@@ -69,6 +69,7 @@ var requiredResources = []string{
 	// VictoriaMetrics operator
 	"vmagents.operator.victoriametrics.com",
 	"vmalertmanagers.operator.victoriametrics.com",
+	"vmalertmanagerconfigs.operator.victoriametrics.com",
 	"vmalerts.operator.victoriametrics.com",
 	"vmpodscrapes.operator.victoriametrics.com",
 	"vmprobes.operator.victoriametrics.com",

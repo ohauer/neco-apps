@@ -219,6 +219,7 @@ Generate manifests from the Helm charts and check the changes as follows.
 ```
 LOGGING_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/logging
 helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
 helm search repo -l grafana | grep grafana/promtail
 # Example output with a header line:
 #   NAME                            CHART VERSION   APP VERSION     DESCRIPTION
@@ -257,6 +258,7 @@ Generate manifests from the Helm charts and check the changes as follows.
 ```
 LOGGING_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/logging
 helm repo add hashicorp https://helm.releases.hashicorp.com
+helm repo update
 helm search repo hashicorp/consul
 helm template logging --namespace=logging hashicorp/consul -f ${LOGGING_DIR}/base/consul/values.yaml > ${LOGGING_DIR}/base/consul/upstream/consul.yaml
 cd ${LOGGING_DIR}
@@ -542,7 +544,7 @@ The teleport manifests in neco-apps is created from scratch.
 Please check changes in [CHANGELOG.md](https://github.com/gravitational/teleport/blob/master/CHANGELOG.md) on github, the update of the upstream [Helm chart](https://github.com/gravitational/teleport/tree/master/examples/chart/teleport) and backport it.
 
 ```console
-$ git clone https://github.com/gravitational/teleport
+$ git clone https://github.com/gravitational/teleport.git
 $ cd teleport
 $ git diff vx.y.z...vX.Y.Z examples/chart/teleport
 ```
