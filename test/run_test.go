@@ -1,4 +1,4 @@
-// +build !kind
+//go:build !kind
 
 package test
 

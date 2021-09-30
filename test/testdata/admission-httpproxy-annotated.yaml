@@ -1,0 +1,16 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: annotated
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: bastion
+spec:
+  virtualhost:
+    fqdn: annotated.test-admission.gcp0.dev-ne.co
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: dummy
+          port: 80

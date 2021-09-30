@@ -192,7 +192,7 @@ metadata:
   namespace: kube-metrics-adapter
   labels:
     application: kube-metrics-adapter
-    version: v0.1.9
+    version: v0.1.10
 spec:
   replicas: 2
   selector:
@@ -202,12 +202,12 @@ spec:
     metadata:
       labels:
         application: kube-metrics-adapter
-        version: v0.1.9
+        version: v0.1.10
     spec:
       serviceAccountName: kube-metrics-adapter
       containers:
         - name: kube-metrics-adapter
-          image: registry.opensource.zalan.do/teapot/kube-metrics-adapter:v0.1.9
+          image: registry.opensource.zalan.do/teapot/kube-metrics-adapter:v0.1.10
           args:
             - --enable-external-metrics-api=true
             - --prometheus-server=http://prometheus.kube-system.svc.cluster.local
@@ -221,7 +221,7 @@ spec:
               memory: 100Mi
 ---
 # Source: kube-metrics-adapter/templates/external-metrics-apiservice.yaml
-apiVersion: apiregistration.k8s.io/v1beta1
+apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
   name: v1beta1.external.metrics.k8s.io

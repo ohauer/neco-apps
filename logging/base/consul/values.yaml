@@ -5,6 +5,11 @@ global:
 server:
   enabled: true
   storageClass: topolvm-provisioner
+  securityContext:
+    runAsNonRoot: true
+    runAsGroup: 10000
+    runAsUser: 10000
+    fsGroup: 10000
 
 ui:
   enabled: false
