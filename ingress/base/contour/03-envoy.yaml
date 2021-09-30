@@ -29,7 +29,7 @@ spec:
         args:
           - envoy
           - shutdown-manager
-        image: docker.io/projectcontour/contour:v1.17.1
+        image: docker.io/projectcontour/contour:v1.18.1
         imagePullPolicy: Always
         lifecycle:
           preStop:
@@ -45,6 +45,9 @@ spec:
           initialDelaySeconds: 3
           periodSeconds: 10
         name: shutdown-manager
+        volumeMounts:
+          - name: envoy-admin
+            mountPath: /admin
       - args:
         - -c
         - /config/envoy.json
@@ -53,7 +56,7 @@ spec:
         - --log-level info
         command:
         - envoy
-        image: docker.io/envoyproxy/envoy:v1.18.3
+        image: docker.io/envoyproxy/envoy:v1.19.1
         imagePullPolicy: IfNotPresent
         name: envoy
         env:
@@ -89,6 +92,8 @@ spec:
           - name: envoycert
             mountPath: /certs
             readOnly: true
+          - name: envoy-admin
+            mountPath: /admin
         lifecycle:
           preStop:
             httpGet:
@@ -108,7 +113,7 @@ spec:
         - --envoy-key-file=/certs/tls.key
         command:
         - contour
-        image: docker.io/projectcontour/contour:v1.17.1
+        image: docker.io/projectcontour/contour:v1.18.1
         imagePullPolicy: Always
         name: envoy-initconfig
         volumeMounts:
@@ -126,6 +131,8 @@ spec:
       serviceAccountName: envoy
       terminationGracePeriodSeconds: 300
       volumes:
+        - name: envoy-admin
+          emptyDir: {}
         - name: envoy-config
           emptyDir: {}
         - name: envoycert

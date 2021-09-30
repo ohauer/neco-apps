@@ -24,7 +24,7 @@ function(teams) [{
   images: [
     {
       name: 'quay.io/gravitational/teleport-ent',
-      newTag: '6.2.0',
+      newTag: '6.2.11',
     },
   ],
 }]

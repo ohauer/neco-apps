@@ -278,7 +278,7 @@ func testNetworkPolicy() {
 
 		By("adding an ubuntu-debug container as an ephemeral container to vmagent-smallset")
 		stdout, stderr, err = ExecAt(boot0,
-			"kubectl", "alpha", "debug", podName,
+			"kubectl", "debug", podName,
 			"-n=monitoring",
 			"--container=ubuntu",
 			"--image=quay.io/cybozu/ubuntu-debug:20.04",
@@ -303,7 +303,7 @@ func testNetworkPolicy() {
 
 		By("adding an ubuntu-debug container as an ephemeral container to vmagent-largeset")
 		stdout, stderr, err = ExecAt(boot0,
-			"kubectl", "alpha", "debug", podName,
+			"kubectl", "debug", podName,
 			"-n=monitoring",
 			"--container=ubuntu",
 			"--image=quay.io/cybozu/ubuntu-debug:20.04",
@@ -370,7 +370,7 @@ func testFiltersForInternetEgress(namespace string, localPodIP, nodeIP string, i
 
 	for _, pod := range squidPodList.Items {
 		stdout, stderr, err := ExecAt(boot0,
-			"kubectl", "alpha", "debug", pod.Name,
+			"kubectl", "debug", pod.Name,
 			"-n="+namespace,
 			"--container=ubuntu",
 			"--image=quay.io/cybozu/ubuntu-debug:20.04",
@@ -451,7 +451,7 @@ func testFiltersForInternetEgress(namespace string, localPodIP, nodeIP string, i
 
 	for _, pod := range unboundPodList.Items {
 		stdout, stderr, err := ExecAt(boot0,
-			"kubectl", "alpha", "debug", pod.Name,
+			"kubectl", "debug", pod.Name,
 			"-n="+namespace,
 			"--container=ubuntu",
 			"--image=quay.io/cybozu/ubuntu-debug:20.04",

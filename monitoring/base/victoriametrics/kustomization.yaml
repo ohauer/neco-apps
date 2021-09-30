@@ -9,6 +9,8 @@ resources:
   - upstream/rbac/vmalert_viewer_role.yaml
   - upstream/rbac/vmalertmanager_editor_role.yaml
   - upstream/rbac/vmalertmanager_viewer_role.yaml
+  - upstream/rbac/vmalertmanagerconfig_editor_role.yaml
+  - upstream/rbac/vmalertmanagerconfig_viewer_role.yaml
   - upstream/rbac/vmpodscrape_editor_role.yaml
   - upstream/rbac/vmpodscrape_viewer_role.yaml
   - upstream/rbac/vmprobe_editor_role.yaml

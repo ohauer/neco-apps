@@ -68,7 +68,7 @@ spec:
         - --config-path=/etc/pod-security-admission/config.yaml
         command:
         - /pod-security-admission
-        image: quay.io/cybozu/pod-security-admission:0.2.1
+        image: quay.io/cybozu/pod-security-admission:0.2.2
         imagePullPolicy: IfNotPresent
         lifecycle:
           preStop:
@@ -84,13 +84,12 @@ spec:
           periodSeconds: 20
         name: manager
         ports:
-        - containerPort: 9443
-          name: webhook-server
-          protocol: TCP
         - containerPort: 8080
           name: metrics
         - containerPort: 8081
           name: health
+        - containerPort: 9443
+          name: webhook
         readinessProbe:
           httpGet:
             path: /readyz

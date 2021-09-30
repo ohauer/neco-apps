@@ -69,6 +69,7 @@ var requiredResources = []string{
 	// VictoriaMetrics operator
 	"vmagents.operator.victoriametrics.com",
 	"vmalertmanagers.operator.victoriametrics.com",
+	"vmalertmanagerconfigs.operator.victoriametrics.com",
 	"vmalerts.operator.victoriametrics.com",
 	"vmpodscrapes.operator.victoriametrics.com",
 	"vmprobes.operator.victoriametrics.com",
@@ -481,7 +482,7 @@ func testTeamManagement() {
 		}).Should(Succeed())
 
 		By("adding a ephemeral container by unprivileged team")
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "alpha", "debug", "-i", "-n", "maneki", "neco-ephemeral-test", "--image=quay.io/cybozu/ubuntu-debug:20.04", "--target=neco-ephemeral-test", "--as=test", "--as-group=maneki", "--as-group=system:authenticated", "--", "echo a")
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "debug", "-i", "-n", "maneki", "neco-ephemeral-test", "--image=quay.io/cybozu/ubuntu-debug:20.04", "--target=neco-ephemeral-test", "--as=test", "--as-group=maneki", "--as-group=system:authenticated", "--", "echo a")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 	})
 
