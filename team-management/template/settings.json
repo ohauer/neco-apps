@@ -14,7 +14,9 @@
     },
     "dbre-apps": {
       "destinations": {
-        "stage0": "stage"
+        "osaka0": "release",
+        "stage0": "stage",
+        "tokyo0": "release"
       },
       "repo": "https://github.com/cybozu-private/dbre-apps",
       "team": "dbre"
