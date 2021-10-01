@@ -2,6 +2,8 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  labels:
+    cybozu.com/alert-group: dbre
   name: app-cybozu-com-mysql-replica
 ---
 apiVersion: rbac.authorization.k8s.io/v1
