@@ -14,7 +14,9 @@
     },
     "dbre-apps": {
       "destinations": {
-        "stage0": "stage"
+        "osaka0": "release",
+        "stage0": "stage",
+        "tokyo0": "release"
       },
       "repo": "https://github.com/cybozu-private/dbre-apps",
       "team": "dbre"
@@ -74,12 +76,25 @@
   },
   "namespaces": {
     "cydec": {
-      "app-gorush": {}
+      "app-cydec": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
+      "app-gorush": {},
+      "dev-cydec": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
     },
     "dbre": {
       "app-cybozu-com-mysql": {},
       "app-cybozu-com-mysql-replica": {},
       "app-cybozu-com-mysql-restore": {},
+      "app-dbre": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "dev-dbre": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
@@ -98,8 +113,17 @@
       }
     },
     "garoon": {
+      "app-garoon": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "app-garoon-monitoring": {},
-      "app-garoon-static": {}
+      "app-garoon-static": {},
+      "dev-garoon": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
     },
     "maneki": {
       "app-comconv-earthlab": {},
