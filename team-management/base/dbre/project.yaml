@@ -12,6 +12,8 @@ spec:
       server: '*'
     - namespace: app-cybozu-com-mysql-restore
       server: '*'
+    - namespace: app-dbre
+      server: '*'
     - namespace: dev-*
       server: '*'
     - namespace: sandbox
