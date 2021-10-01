@@ -10,4 +10,4 @@ patchesStrategicMerge:
   - validatingwebhookconfiguration.yaml
 images:
   - name: quay.io/cybozu/cert-manager
-    newTag: 1.5.3.1
+    newTag: 1.5.4.1
