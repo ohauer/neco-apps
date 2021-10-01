@@ -9,7 +9,8 @@ patchesStrategicMerge:
   - service.yaml
 images:
   - name: quay.io/cybozu/argocd
-    newTag: 2.1.2.1
+    newName: quay.io/umezawatakeshi/argocd
+    newTag: v2.1.2-fix1
   - name: quay.io/cybozu/dex
     newTag: 2.27.0.4
   - name: quay.io/cybozu/redis
