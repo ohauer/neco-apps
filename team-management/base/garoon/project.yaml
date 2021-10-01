@@ -6,6 +6,8 @@ metadata:
   namespace: argocd
 spec:
   destinations:
+    - namespace: app-garoon
+      server: '*'
     - namespace: app-garoon-monitoring
       server: '*'
     - namespace: app-garoon-static
