@@ -17,10 +17,8 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: ceph-hdd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+  # Disable auto-sync to prevent unexpected revert after manual operations.
+  syncPolicy: {}
   ignoreDifferences:
     # count may be changed manually
     - group: ceph.rook.io
