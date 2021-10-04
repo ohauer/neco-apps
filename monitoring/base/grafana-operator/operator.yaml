@@ -8,8 +8,8 @@ spec:
       containers:
         - name: grafana-operator
           args:
-            - --grafana-image=grafana/grafana
-            - --grafana-image-tag=8.1.5
+            - --grafana-image=quay.io/umezawatakeshi/grafana
+            - --grafana-image-tag=v8.1.5-test1
             - --grafana-plugins-init-container-image=quay.io/cybozu/grafana_plugins_init
             - --grafana-plugins-init-container-tag=0.0.3.3
             - --scan-all
