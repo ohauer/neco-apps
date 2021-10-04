@@ -88,8 +88,12 @@
       }
     },
     "dbre": {
-      "app-cybozu-com-mysql": {},
-      "app-cybozu-com-mysql-replica": {},
+      "app-cybozu-com-mysql": {
+        "cybozu.com/alert-group": "dbre"
+      },
+      "app-cybozu-com-mysql-replica": {
+        "cybozu.com/alert-group": "dbre"
+      },
       "app-cybozu-com-mysql-restore": {},
       "app-dbre": {
         "accurate.cybozu.com/template": "init-template",
