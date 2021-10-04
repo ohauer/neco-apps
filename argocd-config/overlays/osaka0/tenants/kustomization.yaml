@@ -7,4 +7,5 @@ resources:
   - garoon-apps.yaml
   - hazama-apps.yaml
   - maneki-apps.yaml
+  - network-apps.yaml
   - tenant-apps.yaml
