@@ -5,9 +5,9 @@ resources:
 patchesStrategicMerge:
 - ./deployment.yaml
 images:
-- name: metallb/speaker
+- name: quay.io/metallb/speaker
   newName: quay.io/cybozu/metallb
-  newTag: 0.9.6.1
-- name: metallb/controller
+  newTag: 0.10.2.1
+- name: quay.io/metallb/controller
   newName: quay.io/cybozu/metallb
-  newTag: 0.9.6.1
+  newTag: 0.10.2.1

@@ -14,6 +14,10 @@ spec:
       server: '*'
     - namespace: app-cybozu-com-mysql-restore
       server: '*'
+    - namespace: app-cydec
+      server: '*'
+    - namespace: app-dbre
+      server: '*'
     - namespace: app-elasticsearch
       server: '*'
     - namespace: app-endpoint-discovery
@@ -31,6 +35,8 @@ spec:
     - namespace: app-forest-archive
       server: '*'
     - namespace: app-forest-certs
+      server: '*'
+    - namespace: app-garoon
       server: '*'
     - namespace: app-garoon-monitoring
       server: '*'

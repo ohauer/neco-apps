@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://topolvm.github.io/pvc-autoresizer
     chart: pvc-autoresizer
-    targetRevision: 0.2.0
+    targetRevision: 0.3.0
     helm:
       version: v3
       values: |
