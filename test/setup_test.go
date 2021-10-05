@@ -214,18 +214,10 @@ func testSetup() {
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
 
-			By("loading ghcr.io token")
-			data, err := os.ReadFile(ghcrTokenFile)
-			Expect(err).NotTo(HaveOccurred())
-			token := strings.TrimSpace(string(data))
-
 			By("creating a secret for ghcr.io")
 			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-ghcr",
 				"-n", "init-template",
-				"--docker-server=ghcr.io",
-				"--docker-username=cybozu-neco",
-				"--docker-password="+token,
-				"--docker-email=neco@cybozu.com",
+				"--from-file=.dockerconfigjson="+ghcrTokenFile,
 			)
 
 			By("annotate secret to propagate")
@@ -240,18 +232,10 @@ func testSetup() {
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
 
-			By("loading quay.io token")
-			data, err := os.ReadFile(quayTokenFile)
-			Expect(err).NotTo(HaveOccurred())
-			token := strings.TrimSpace(string(data))
-
 			By("creating a secret for quay.io")
 			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-quay",
 				"-n", "init-template",
-				"--docker-server=quay.io",
-				"--docker-username=cybozu-neco",
-				"--docker-password="+token,
-				"--docker-email=neco@cybozu.com",
+				"--from-file=.dockerconfigjson="+quayTokenFile,
 			)
 
 			By("annotate secret to propagate")
@@ -369,16 +353,16 @@ func testSetup() {
 }
 
 func applyAndWaitForApplications(commitID string) {
-	// TODO: remove this block after #1775 is released
-	By("grafting ept namespaces")
+	// TODO: remove this block after #1798 is released
+	By("grafting garoon namespaces")
 	if doUpgrade {
 		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "none")
-		nss := []string{"app-ept-monitoring", "app-ept-plantuml", "app-ept-wiki"}
+		nss := []string{"app-garoon-monitoring", "app-garoon-static"}
 		for _, ns := range nss {
 			_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
 			if err == nil {
 				ExecSafeAt(boot0, "kubectl", "label", "ns", ns, "app.kubernetes.io/instance-")
-				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "app-ept")
+				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "app-garoon")
 			}
 		}
 	}
@@ -524,7 +508,7 @@ func applyAndWaitForApplications(commitID string) {
 		}
 	}, 60*time.Minute).Should(Succeed())
 
-	// TODO: remove this block after #1775 is released
+	// TODO: remove this block after #1798 is released
 	if doUpgrade {
 		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "automated", "--auto-prune", "--self-heal")
 

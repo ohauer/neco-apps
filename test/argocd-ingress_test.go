@@ -98,26 +98,29 @@ func testArgoCDIngress() {
 			return nil
 		}).Should(Succeed())
 
-		By("requesting to web UI with https")
-		output, err := exec.Command(
-			"curl", "-skL", "https://"+argocdFQDN,
-			"-o", "/dev/null",
-			"-w", "%{http_code}\n%{content_type}",
-		).Output()
-		Expect(err).ShouldNot(HaveOccurred(), "output: %s", output)
-		fmt.Printf("output: %v\n", string(output))
-		s := strings.Split(string(output), "\n")
-		Expect(s[0]).To(ContainSubstring(strconv.Itoa(http.StatusOK)))
-		Expect(s[1]).To(ContainSubstring("text/html; charset=utf-8"))
+		for _, path := range []string{"/", "/login", "/applications"} {
+			By("requesting to web UI with https path=" + path)
+			output, err := exec.Command(
+				"curl", "-skL", "https://"+argocdFQDN+path,
+				"-o", "/dev/null",
+				"-H", "Accept: text/html",
+				"-w", "%{http_code}\n%{content_type}",
+			).Output()
+			Expect(err).ShouldNot(HaveOccurred(), "output: %s", output)
+			fmt.Printf("output: %v\n", string(output))
+			s := strings.Split(string(output), "\n")
+			Expect(s[0]).To(ContainSubstring(strconv.Itoa(http.StatusOK)))
+			Expect(s[1]).To(ContainSubstring("text/html; charset=utf-8"))
+		}
 
 		By("requesting to argocd-dex-server via argocd-server with https")
-		output, err = exec.Command(
+		output, err := exec.Command(
 			"curl", "-skL", "https://"+argocdFQDN+"/api/dex/.well-known/openid-configuration",
 			"-o", "/dev/null",
 			"-w", "%{http_code}\n%{content_type}",
 		).Output()
 		Expect(err).ShouldNot(HaveOccurred(), "output: %s", output)
-		s = strings.Split(string(output), "\n")
+		s := strings.Split(string(output), "\n")
 		fmt.Printf("output: %v\n", string(output))
 		Expect(s[0]).To(ContainSubstring(strconv.Itoa(http.StatusOK)))
 		Expect(s[1]).To(ContainSubstring("application/json"))
