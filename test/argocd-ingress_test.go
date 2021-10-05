@@ -100,55 +100,95 @@ func testArgoCDIngress() {
 
 		for _, path := range []string{"/", "/login", "/applications"} {
 			By("requesting to web UI with https path=" + path)
-			output, err := exec.Command(
-				"curl", "-skL", "https://"+argocdFQDN+path,
-				"-o", "/dev/null",
-				"-H", "Accept: text/html",
-				"-w", "%{http_code}\n%{content_type}",
-			).Output()
-			Expect(err).ShouldNot(HaveOccurred(), "output: %s", output)
-			fmt.Printf("output: %v\n", string(output))
-			s := strings.Split(string(output), "\n")
-			Expect(s[0]).To(ContainSubstring(strconv.Itoa(http.StatusOK)))
-			Expect(s[1]).To(ContainSubstring("text/html; charset=utf-8"))
+			Eventually(func() error {
+				output, err := exec.Command(
+					"curl", "-skL", "https://"+argocdFQDN+path,
+					"-o", "/dev/null",
+					"-H", "Accept: text/html",
+					"-w", "%{http_code}\n%{content_type}",
+				).Output()
+				if err != nil {
+					return fmt.Errorf("output: %s, err: %v", output, err)
+				}
+				fmt.Printf("output: %v\n", string(output)) // DEBUG
+
+				s := strings.Split(string(output), "\n")
+				if !strings.Contains(s[0], strconv.Itoa(http.StatusOK)) {
+					return fmt.Errorf("http status is not 200: %s", s[0])
+				}
+				if !strings.Contains(s[1], "text/html; charset=utf-8") {
+					return fmt.Errorf("content type is not text/html: %s", s[1])
+				}
+				return nil
+			}).Should(Succeed())
 		}
 
 		By("requesting to argocd-dex-server via argocd-server with https")
-		output, err := exec.Command(
-			"curl", "-skL", "https://"+argocdFQDN+"/api/dex/.well-known/openid-configuration",
-			"-o", "/dev/null",
-			"-w", "%{http_code}\n%{content_type}",
-		).Output()
-		Expect(err).ShouldNot(HaveOccurred(), "output: %s", output)
-		s := strings.Split(string(output), "\n")
-		fmt.Printf("output: %v\n", string(output))
-		Expect(s[0]).To(ContainSubstring(strconv.Itoa(http.StatusOK)))
-		Expect(s[1]).To(ContainSubstring("application/json"))
+		Eventually(func() error {
+			output, err := exec.Command(
+				"curl", "-skL", "https://"+argocdFQDN+"/api/dex/.well-known/openid-configuration",
+				"-o", "/dev/null",
+				"-w", "%{http_code}\n%{content_type}",
+			).Output()
+			if err != nil {
+				return fmt.Errorf("output: %s, err: %v", output, err)
+			}
+			fmt.Printf("output: %v\n", string(output)) // DEBUG
+
+			s := strings.Split(string(output), "\n")
+			if !strings.Contains(s[0], strconv.Itoa(http.StatusOK)) {
+				return fmt.Errorf("http status is not 200: %s", s[0])
+			}
+			if !strings.Contains(s[1], "application/json") {
+				return fmt.Errorf("content type is not application/json: %s", s[1])
+			}
+			return nil
+		}).Should(Succeed())
 
 		By("requesting to argocd-server with gRPC")
-		output, err = exec.Command(
-			"curl", "-skL", "https://"+argocdFQDN+"/account.AccountService/Read",
-			"-H", "Content-Type: application/grpc",
-			"-o", "/dev/null",
-			"-w", "%{http_code}\n%{content_type}",
-		).Output()
-		Expect(err).ShouldNot(HaveOccurred(), "output: %s", output)
-		s = strings.Split(string(output), "\n")
-		fmt.Printf("output: %v\n", string(output))
-		Expect(s[0]).To(ContainSubstring(strconv.Itoa(http.StatusOK)))
-		Expect(s[1]).To(ContainSubstring("application/grpc"))
+		Eventually(func() error {
+			output, err := exec.Command(
+				"curl", "-skL", "https://"+argocdFQDN+"/account.AccountService/Read",
+				"-H", "Content-Type: application/grpc",
+				"-o", "/dev/null",
+				"-w", "%{http_code}\n%{content_type}",
+			).Output()
+			if err != nil {
+				return fmt.Errorf("output: %s, err: %v", output, err)
+			}
+			fmt.Printf("output: %v\n", string(output)) // DEBUG
+
+			s := strings.Split(string(output), "\n")
+			if !strings.Contains(s[0], strconv.Itoa(http.StatusOK)) {
+				return fmt.Errorf("http status is not 200: %s", s[0])
+			}
+			if !strings.Contains(s[1], "application/grpc") {
+				return fmt.Errorf("content type is not application/grpc: %s", s[1])
+			}
+			return nil
+		}).Should(Succeed())
 
 		By("requesting to argocd-server with gRPC-Web")
-		output, err = exec.Command(
-			"curl", "-skL", "https://"+argocdFQDN+"/application.ApplicationService/Read",
-			"-H", "Content-Type: application/grpc-web+proto",
-			"-o", "/dev/null",
-			"-w", "%{http_code}\n%{content_type}",
-		).Output()
-		Expect(err).ShouldNot(HaveOccurred(), "output:%s", output)
-		s = strings.Split(string(output), "\n")
-		fmt.Printf("output: %v\n", string(output))
-		Expect(s[0]).To(ContainSubstring(strconv.Itoa(http.StatusOK)))
-		Expect(s[1]).To(ContainSubstring("application/grpc-web+proto"))
+		Eventually(func() error {
+			output, err := exec.Command(
+				"curl", "-skL", "https://"+argocdFQDN+"/application.ApplicationService/Read",
+				"-H", "Content-Type: application/grpc-web+proto",
+				"-o", "/dev/null",
+				"-w", "%{http_code}\n%{content_type}",
+			).Output()
+			if err != nil {
+				return fmt.Errorf("output: %s, err: %v", output, err)
+			}
+			fmt.Printf("output: %v\n", string(output)) // DEBUG
+
+			s := strings.Split(string(output), "\n")
+			if !strings.Contains(s[0], strconv.Itoa(http.StatusOK)) {
+				return fmt.Errorf("http status is not 200: %s", s[0])
+			}
+			if !strings.Contains(s[1], "application/grpc-web+proto") {
+				return fmt.Errorf("content type is not application/grpc-web+proto: %s", s[1])
+			}
+			return nil
+		}).Should(Succeed())
 	})
 }
