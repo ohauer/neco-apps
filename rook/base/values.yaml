@@ -1,5 +1,4 @@
 currentNamespaceOnly: true
-enableDiscoveryDaemon: false
 pspEnable: false
 csi:
   enableCephfsDriver: false
@@ -9,10 +8,13 @@ csi:
   provisionerPriorityClassName: ""
 image:
   repository: quay.io/cybozu/rook
-  tag: 1.6.3.4
+  tag: 1.7.5.0
   pullPolicy: IfNotPresent
 resources:
-  limits:
+  limits:  # Delete limits to avoid aggressive throttling.
   requests:
     cpu: 100m
-    memory: 256Mi
+    memory: 128Mi
+
+# To pass the CI tests easily.
+cephCommandsTimeoutSeconds: "300"

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -34,6 +35,9 @@ var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONSc
 
 //go:embed testdata/setup-teleport.yaml
 var setupTeleportYAML string
+
+//go:embed testdata/setup-rook.yaml
+var setupRookYAML string
 
 func prepareNodes() {
 	It("should increase worker nodes", func() {
@@ -275,6 +279,10 @@ func testSetup() {
 			applyNetworkPolicy()
 			setupArgoCD()
 		}
+		if doUpgrade {
+			// TODO: remove this block after #1842 is released
+			enableHostNetworkForCephRbdplugin()
+		}
 		if meowsDisabled() {
 			ExecSafeAt(boot0, "sed", "-i", "/meows.yaml/d", "./neco-apps/argocd-config/overlays/gcp/kustomization.yaml")
 		}
@@ -358,6 +366,102 @@ func testSetup() {
 			return nil
 		}).Should(Succeed())
 	})
+}
+
+func enableHostNetworkForCephRbdplugin() {
+	var nodeList corev1.NodeList
+	data := ExecSafeAt(boot0, "kubectl", "get", "nodes", "-o", "json")
+	err := json.Unmarshal(data, &nodeList)
+	Expect(err).ShouldNot(HaveOccurred(), "data=%s", string(data))
+	Expect(nodeList.Items).ShouldNot(BeEmpty())
+	for _, node := range nodeList.Items {
+		ExecSafeAt(boot0, "kubectl", "taint", "nodes", node.Name, "csa=op97:NoSchedule")
+	}
+
+	var pvcList corev1.PersistentVolumeClaimList
+	data = ExecSafeAt(boot0, "kubectl", "get", "pvc", "-A", "-o", "json")
+	err = json.Unmarshal(data, &pvcList)
+	Expect(err).ShouldNot(HaveOccurred(), "data=%s", string(data))
+	r := regexp.MustCompile(`ceph-(ssd|hdd|poc)-block`)
+	for _, pvc := range pvcList.Items {
+		if !r.MatchString(*pvc.Spec.StorageClassName) {
+			continue
+		}
+		var podList corev1.PodList
+		data = ExecSafeAt(boot0, "kubectl", "get", "pod", "-n", pvc.Namespace, "-o", "json")
+		err = json.Unmarshal(data, &podList)
+		Expect(err).ShouldNot(HaveOccurred(), "data=%s", string(data))
+		for _, pod := range podList.Items {
+			for _, vol := range pod.Spec.Volumes {
+				if vol.PersistentVolumeClaim == nil {
+					continue
+				}
+				if vol.PersistentVolumeClaim.ClaimName == pvc.Name {
+					ExecSafeAt(boot0, "kubectl", "delete", "pod", "-n", pvc.Namespace, pod.Name, "--wait=false")
+				}
+			}
+		}
+	}
+
+	Eventually(func() error {
+		for _, node := range nodeList.Items {
+			out, _, err := ExecAt(boot0, "ckecli", "ssh", node.Name, "lsblk | grep ^rbd || true")
+			if err != nil {
+				return err
+			}
+			if len(out) > 0 {
+				return fmt.Errorf("rbd device still exist: %s", node.Name)
+			}
+		}
+		return nil
+	}, 10*time.Minute).Should(Succeed())
+
+	nsList := []string{"ceph-hdd", "ceph-ssd", "ceph-poc"}
+	for _, ns := range nsList {
+		ExecSafeAt(boot0, "kubectl", "scale", "-n", ns, "deployment", "rook-ceph-operator", "--replicas=0")
+		Eventually(func() error {
+			var deployment appsv1.Deployment
+			data = ExecSafeAt(boot0, "kubectl", "get", "deployment", "-n", ns, "rook-ceph-operator", "-o", "json")
+			err = json.Unmarshal(data, &deployment)
+			Expect(err).ShouldNot(HaveOccurred(), "data=%s", string(data))
+			if deployment.Status.AvailableReplicas > 0 {
+				return fmt.Errorf("rook is still running")
+			}
+			return nil
+		}, 10*time.Minute).Should(Succeed())
+	}
+
+	for _, ns := range nsList {
+		ExecSafeAt(boot0, "kubectl", "delete", "-n", ns, "daemonset", "csi-rbdplugin")
+		Eventually(func() error {
+			data = ExecSafeAt(boot0, "kubectl", "get", "pod", "-n", ns, "-l", "app=csi-rbdplugin", "--ignore-not-found")
+			if len(data) > 0 {
+				return fmt.Errorf("csi-rbdplugin is still running")
+			}
+			return nil
+		}, 10*time.Minute).Should(Succeed())
+	}
+
+	stdout, stderr, err := ExecAtWithInput(boot0, []byte(setupRookYAML), "kubectl", "apply", "-f", "-")
+	Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s", stdout, stderr)
+
+	for _, node := range nodeList.Items {
+		ExecSafeAt(boot0, "kubectl", "taint", "nodes", node.Name, "csa=op97:NoSchedule-")
+	}
+
+	for _, ns := range nsList {
+		ExecSafeAt(boot0, "kubectl", "scale", "-n", ns, "deployment", "rook-ceph-operator", "--replicas=1")
+		Eventually(func() error {
+			var deployment appsv1.Deployment
+			data = ExecSafeAt(boot0, "kubectl", "get", "deployment", "-n", ns, "rook-ceph-operator", "-o", "json")
+			err = json.Unmarshal(data, &deployment)
+			Expect(err).ShouldNot(HaveOccurred(), "data=%s", string(data))
+			if deployment.Status.AvailableReplicas == 0 {
+				return fmt.Errorf("rook is still stopping")
+			}
+			return nil
+		}, 10*time.Minute).Should(Succeed())
+	}
 }
 
 func applyAndWaitForApplications(commitID string) {
@@ -488,7 +592,7 @@ func applyAndWaitForApplications(commitID string) {
 			if app.Name == "rook" && app.Status.Sync.Status != SyncStatusCodeSynced && app.Operation == nil {
 				fmt.Printf("%s sync rook app manually: syncStatus=%s, healthStatus=%s\n",
 					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async")
+				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
 				// ignore error
 			}
 
