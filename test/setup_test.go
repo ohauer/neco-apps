@@ -462,6 +462,13 @@ func applyAndWaitForApplications(commitID string) {
 				continue
 			}
 
+			if app.Name == "rook" && app.Status.Sync.Status != SyncStatusCodeSynced && app.Operation == nil {
+				fmt.Printf("%s sync rook app manually: syncStatus=%s, healthStatus=%s\n",
+					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async")
+				// ignore error
+			}
+
 			// TODO: remove this block after release
 			if doUpgrade && app.Name == "pod-security-admission" {
 				ExecAt(boot0, "kubectl", "annotate", "namespace", "psa-system", "admission.cybozu.com/i-am-sure-to-delete=psa-system")
