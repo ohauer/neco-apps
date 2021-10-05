@@ -214,18 +214,10 @@ func testSetup() {
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
 
-			By("loading ghcr.io token")
-			data, err := os.ReadFile(ghcrTokenFile)
-			Expect(err).NotTo(HaveOccurred())
-			token := strings.TrimSpace(string(data))
-
 			By("creating a secret for ghcr.io")
 			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-ghcr",
 				"-n", "init-template",
-				"--docker-server=ghcr.io",
-				"--docker-username=cybozu-neco",
-				"--docker-password="+token,
-				"--docker-email=neco@cybozu.com",
+				"--from-file=.dockerconfigjson="+ghcrTokenFile,
 			)
 
 			By("annotate secret to propagate")
@@ -240,18 +232,10 @@ func testSetup() {
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
 
-			By("loading quay.io token")
-			data, err := os.ReadFile(quayTokenFile)
-			Expect(err).NotTo(HaveOccurred())
-			token := strings.TrimSpace(string(data))
-
 			By("creating a secret for quay.io")
 			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-quay",
 				"-n", "init-template",
-				"--docker-server=quay.io",
-				"--docker-username=cybozu-neco",
-				"--docker-password="+token,
-				"--docker-email=neco@cybozu.com",
+				"--from-file=.dockerconfigjson="+quayTokenFile,
 			)
 
 			By("annotate secret to propagate")
