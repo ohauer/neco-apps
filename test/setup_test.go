@@ -475,6 +475,16 @@ func applyAndWaitForApplications(commitID string) {
 				// ignore error
 			}
 
+			// TODO: remove this block after release the PR bellow
+			// https://github.com/cybozu-go/neco-apps/pull/1791
+			if doUpgrade && app.Name == "topolvm" {
+				_, _, err := ExecAt(boot0, "argocd", "app", "sync", "topolvm", "--force", "--timeout", "300")
+				if err != nil {
+					ExecAt(boot0, "argocd", "app", "terminate-op", "topolvm")
+					return err
+				}
+			}
+
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.
 			// It leads to ArgoCD's improper behavior. In spite of the network-policy app becomes Synced/Healthy, the operation does not end.
 			// So terminate the unexpected operation manually in upgrade test.
