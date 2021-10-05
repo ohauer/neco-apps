@@ -4,6 +4,10 @@
       "app-ept-monitoring",
       "app-ept-plantuml",
       "app-ept-wiki"
+    ],
+    "garoon": [
+      "app-garoon-monitoring",
+      "app-garoon-static"
     ]
   },
   "apps": {
@@ -121,8 +125,6 @@
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
-      "app-garoon-monitoring": {},
-      "app-garoon-static": {},
       "dev-garoon": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
