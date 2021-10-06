@@ -5,8 +5,8 @@ metadata:
   namespace: test-ingress
   annotations:
     kubernetes.io/tls-acme: "true"
-    kubernetes.io/ingress.class: global
 spec:
+  ingressClassName: global
   virtualhost:
     fqdn: "{{.}}-https.test-ingress.gcp0.dev-ne.co"
     tls:
@@ -29,9 +29,8 @@ kind: HTTPProxy
 metadata:
   name: root
   namespace: test-ingress
-  annotations:
-    kubernetes.io/ingress.class: global
 spec:
+  ingressClassName: global
   virtualhost:
     fqdn: "{{.}}-http.test-ingress.gcp0.dev-ne.co"
   routes:
@@ -46,11 +45,27 @@ kind: HTTPProxy
 metadata:
   name: bastion
   namespace: test-ingress
+spec:
+  ingressClassName: bastion
+  virtualhost:
+    fqdn: "{{.}}-bastion.test-ingress.gcp0.dev-ne.co"
+  routes:
+    - conditions:
+        - prefix: /testhttpd
+      services:
+        - name: testhttpd
+          port: 80
+---
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: bastion-annotated
+  namespace: test-ingress
   annotations:
     kubernetes.io/ingress.class: bastion
 spec:
   virtualhost:
-    fqdn: "{{.}}-bastion.test-ingress.gcp0.dev-ne.co"
+    fqdn: "{{.}}-bastion-annotated.test-ingress.gcp0.dev-ne.co"
   routes:
     - conditions:
         - prefix: /testhttpd

@@ -143,6 +143,7 @@ func testContour() {
 		fqdnHTTP := testID + "-http.test-ingress.gcp0.dev-ne.co"
 		fqdnHTTPS := testID + "-https.test-ingress.gcp0.dev-ne.co"
 		fqdnBastion := testID + "-bastion.test-ingress.gcp0.dev-ne.co"
+		fqdnBastionAnnotated := testID + "-bastion-annotated.test-ingress.gcp0.dev-ne.co"
 
 		By("getting contour service")
 		var targetIP string
@@ -339,6 +340,44 @@ func testContour() {
 			"curl",
 			"-I", "--resolve", fqdnBastion+":80:"+targetIP,
 			"http://"+fqdnBastion+"/testhttpd",
+			"-m", "5",
+			"--fail",
+			"-o", "/dev/null",
+			"-w", "%{http_code}",
+			"-s",
+		)
+		Expect(err).To(HaveOccurred())
+		Expect(string(stdout)).To(Equal("404"))
+
+		By("trying to access from the Internet with a bastion-annotated URL")
+		Eventually(func() error {
+			stdout, _, err := ExecInNetns(
+				"external",
+				"curl",
+				"-I",
+				"--resolve",
+				fqdnBastionAnnotated+":80:"+bastionIP,
+				"http://"+fqdnBastionAnnotated+"/testhttpd",
+				"-m", "5",
+				"--fail",
+				"-o", "/dev/null",
+				"-w", "%{http_code}",
+				"-s",
+			)
+			if err != nil {
+				return err
+			}
+			if string(stdout) != "200" {
+				return errors.New("unexpected status: " + string(stdout))
+			}
+			return nil
+		}).Should(Succeed())
+
+		stdout, _, err = ExecInNetns(
+			"external",
+			"curl",
+			"-I", "--resolve", fqdnBastionAnnotated+":80:"+targetIP,
+			"http://"+fqdnBastionAnnotated+"/testhttpd",
 			"-m", "5",
 			"--fail",
 			"-o", "/dev/null",

@@ -34,4 +34,3 @@ patchesStrategicMerge:
 - session-log.yaml
 - team-management.yaml
 - teleport.yaml
-- topolvm.yaml

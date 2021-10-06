@@ -8,7 +8,7 @@ spec:
     - name: argocd-config
       rules:
         - alert: AppOutOfSync
-          expr: argocd_app_info{sync_status!="Synced",project="default"} == 1
+          expr: max without(health_status,operation) (argocd_app_info{sync_status!="Synced",project="default"}) == 1
           for: 20m
           labels:
             severity: error
