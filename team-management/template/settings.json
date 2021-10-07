@@ -1,5 +1,8 @@
 {
   "allowed_namespaces": {
+    "cydec": [
+      "app-gorush"
+    ],
     "ept": [
       "app-ept-monitoring",
       "app-ept-plantuml",
@@ -8,6 +11,21 @@
     "garoon": [
       "app-garoon-monitoring",
       "app-garoon-static"
+    ],
+    "maneki": [
+      "app-comconv-earthlab",
+      "app-elasticsearch",
+      "app-endpoint-discovery",
+      "app-es-cluster-allocator",
+      "app-forest-archive",
+      "app-forest-certs",
+      "app-kodama",
+      "app-maneki-static-cybozu-com",
+      "app-misc",
+      "app-monitoring",
+      "app-monitoring-elasticstack",
+      "app-oauth-redirector",
+      "app-octodns"
     ]
   },
   "apps": {
@@ -93,7 +111,6 @@
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
-      "app-gorush": {},
       "dev-cydec": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
@@ -141,23 +158,10 @@
       }
     },
     "maneki": {
-      "app-comconv-earthlab": {},
-      "app-elasticsearch": {},
-      "app-endpoint-discovery": {},
-      "app-es-cluster-allocator": {},
-      "app-forest-archive": {},
-      "app-forest-certs": {},
-      "app-kodama": {},
       "app-maneki": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
-      "app-maneki-static-cybozu-com": {},
-      "app-misc": {},
-      "app-monitoring": {},
-      "app-monitoring-elasticstack": {},
-      "app-oauth-redirector": {},
-      "app-octodns": {},
       "dev-maneki": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
