@@ -68,6 +68,15 @@
       "repo": "https://github.com/cybozu-private/maneki-apps.git",
       "team": "maneki"
     },
+    "network-apps": {
+      "destinations": {
+        "osaka0": "release",
+        "stage0": "stage",
+        "tokyo0": "release"
+      },
+      "repo": "https://github.com/cybozu-private/network-apps.git",
+      "team": "network"
+    },
     "tenant-apps": {
       "destinations": {
         "osaka0": "release",
@@ -160,6 +169,10 @@
     },
     "neco-devusers": {},
     "network": {
+      "app-network": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "dev-network": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",

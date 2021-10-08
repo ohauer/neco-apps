@@ -37,6 +37,12 @@ function(settings) [{
             'default',
           ],
         },
+        {
+          repository: 'https://topolvm.github.io/topolvm',
+          projects: [
+            'default',
+          ],
+        },
       ],
       function(x) if std.objectHas(x, 'repositoryPrefix') then 'A' + x.repositoryPrefix else 'B' + x.repository
     ),
