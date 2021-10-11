@@ -121,12 +121,13 @@ func testMeows() {
 
 		By("checking that runner pods become online")
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "curl", "-s", "-X", "GET", `'http://vmselect-vmcluster-largeset.monitoring.svc:8481/select/0/prometheus/api/v1/query?query=count(meows_runner_online)'`, "|", "jq", "-r", ".data.result[0].value[1]")
+			stdout, stderr, err := ExecAt(boot0, "set", "-o", "pipefail", "&&", "curl", "-sSLf", "-X", "GET", `'http://vmselect-vmcluster-largeset.monitoring.svc:8481/select/0/prometheus/api/v1/query?query=count(meows_runner_online)'`, "|", "jq", "-r", ".data.result[0].value[1]")
 			if err != nil {
 				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 			}
-			if strings.TrimSpace(string(stdout)) != "1" {
-				return fmt.Errorf("there is not online runner pod")
+			onlineRunners := strings.TrimSpace(string(stdout))
+			if onlineRunners != "1" {
+				return fmt.Errorf("there is not an online runner pod, the metrics of count(meows_runner_online) is %s", onlineRunners)
 			}
 			return nil
 		}).Should(Succeed())
