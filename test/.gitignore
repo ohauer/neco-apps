@@ -9,8 +9,8 @@
 /vendor
 account.json
 meows-secret.json
-ghcr_token
-quay_token
+ghcr_dockerconfig.json
+quay_dockerconfig.json
 argocd-password.txt
 current-secret.yaml
 expected-secret-*.yaml
