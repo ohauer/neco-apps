@@ -171,7 +171,6 @@
         "app.kubernetes.io/name": "maneki"
       }
     },
-    "neco-devusers": {},
     "network": {
       "app-network": {
         "accurate.cybozu.com/template": "init-template",

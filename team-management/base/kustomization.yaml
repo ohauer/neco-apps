@@ -9,7 +9,6 @@ resources:
   - ./garoon
   - ./maneki
   - ./neco
-  - ./neco-devusers
   - ./neco-readonly
   - ./network
   - ./sandbox
