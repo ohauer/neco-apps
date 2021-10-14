@@ -58,6 +58,8 @@ spec:
       server: '*'
     - namespace: app-network
       server: '*'
+    - namespace: app-network-*
+      server: '*'
     - namespace: app-oauth-redirector
       server: '*'
     - namespace: app-octodns

@@ -8,6 +8,8 @@ spec:
   destinations:
     - namespace: app-network
       server: '*'
+    - namespace: app-network-*
+      server: '*'
     - namespace: dev-*
       server: '*'
     - namespace: sandbox
