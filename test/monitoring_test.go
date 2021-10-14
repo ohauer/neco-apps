@@ -639,6 +639,11 @@ func testVMCommonClusterComponents(setType vmSetType) {
 				const stoppedMachinesInDCTest = 1
 				downedMonitorHW := 0
 				for _, jobName := range jobNames {
+					// When meows is disabled, the target pod for these jobs does not exist.
+					if (jobName == "meows" || jobName == "meows-runner") && meowsDisabled() {
+						continue
+					}
+
 					targets := findTargets(string(jobName), response.TargetsResult.Active)
 					if len(targets) == 0 {
 						return fmt.Errorf("target is not found, job_name: %s", jobName)

@@ -12,8 +12,11 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-//go:embed testdata/admission-pod.yaml
-var admissionPodYAML []byte
+//go:embed testdata/admission-pod-bad-image.yaml
+var admissionPodBadImageYAML []byte
+
+//go:embed testdata/admission-pod-ephemeral-storage.yaml
+var admissionPodEphemeralStorageLimitYAML []byte
 
 //go:embed testdata/admission-networkpolicy.yaml
 var admissionNetworkPolicyYAML []byte
@@ -114,8 +117,14 @@ func testAdmission() {
 		Expect(err).Should(HaveOccurred())
 	})
 
+	It("should validate pod", func() {
+		_, stderr, err := ExecAtWithInput(boot0, admissionPodBadImageYAML, "kubectl", "apply", "-f", "-")
+		Expect(err).To(HaveOccurred())
+		Expect(string(stderr)).To(ContainSubstring(`admission webhook "vpod.kb.io" denied the request`))
+	})
+
 	It("should mutate pod to apply ephemeral storage limitation", func() {
-		stdout, stderr, err := ExecAtWithInput(boot0, admissionPodYAML, "kubectl", "apply", "-f", "-")
+		stdout, stderr, err := ExecAtWithInput(boot0, admissionPodEphemeralStorageLimitYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 
 		By("confirming that resource request/limit of ephemeral storage are added/overwritten")
