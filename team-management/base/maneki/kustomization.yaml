@@ -4,7 +4,20 @@ commonLabels:
   team: maneki
 kind: Kustomization
 resources:
+  - app-comconv-earthlab.yaml
+  - app-elasticsearch.yaml
+  - app-endpoint-discovery.yaml
+  - app-es-cluster-allocator.yaml
+  - app-forest-archive.yaml
+  - app-forest-certs.yaml
+  - app-kodama.yaml
+  - app-maneki-static-cybozu-com.yaml
   - app-maneki.yaml
+  - app-misc.yaml
+  - app-monitoring-elasticstack.yaml
+  - app-monitoring.yaml
+  - app-oauth-redirector.yaml
+  - app-octodns.yaml
   - dev-maneki.yaml
   - elastic-serviceaccount.yaml
   - maneki.yaml
