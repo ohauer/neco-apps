@@ -353,31 +353,16 @@ func testSetup() {
 }
 
 func applyAndWaitForApplications(commitID string) {
-	// TODO: remove this block after #1839 is released
-	By("grafting cydec namespaces")
+	// TODO: remove this block after #1798 is released
+	By("grafting garoon namespaces")
 	if doUpgrade {
 		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "none")
-		nss := []string{"app-gorush"}
+		nss := []string{"app-garoon-monitoring", "app-garoon-static"}
 		for _, ns := range nss {
 			_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
 			if err == nil {
 				ExecSafeAt(boot0, "kubectl", "label", "ns", ns, "app.kubernetes.io/instance-")
-				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "app-cydec")
-			}
-		}
-	}
-
-	By("grafting maneki namespaces")
-	if doUpgrade {
-		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "none")
-		nss := []string{"app-comconv-earthlab", "app-elasticsearch", "app-endpoint-discovery", "app-es-cluster-allocator", "app-forest-archive", "app-forest-certs",
-			"app-kodama", "app-maneki-static-cybozu-com", "app-misc", "app-monitoring", "app-monitoring-elasticstack", "app-oauth-redirector", "app-octodns",
-		}
-		for _, ns := range nss {
-			_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
-			if err == nil {
-				ExecSafeAt(boot0, "kubectl", "label", "ns", ns, "app.kubernetes.io/instance-")
-				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "app-maneki")
+				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "app-garoon")
 			}
 		}
 	}
@@ -540,7 +525,7 @@ func applyAndWaitForApplications(commitID string) {
 		}
 	}, 60*time.Minute).Should(Succeed())
 
-	// TODO: remove this block after #1839 is released
+	// TODO: remove this block after #1798 is released
 	if doUpgrade {
 		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "automated", "--auto-prune", "--self-heal")
 

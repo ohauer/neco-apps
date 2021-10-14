@@ -17,11 +17,11 @@ function(settings) [{
         },
         {
           repositoryPrefix: 'https://github.com/cybozu-private',
-          projects: std.setDiff(std.set(utility.get_teams(settings) + [
+          projects: std.set(utility.get_teams(settings) + [
             'default',
             'tenant-apps',
             'tenant-app-of-apps',
-          ]), ['neco-devusers']),
+          ]),
         },
         {
           repositoryPrefix: 'https://github.com/garoon-private',
