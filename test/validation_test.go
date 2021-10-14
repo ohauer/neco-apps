@@ -122,6 +122,7 @@ func testApplicationResources(t *testing.T) {
 		"team-management":        "7",
 		"network-policy":         "8",
 	}
+	tenantSyncWave := "9"
 
 	targetRevisions := map[string]string{
 		"gcp":      "release",
@@ -169,17 +170,22 @@ func testApplicationResources(t *testing.T) {
 					t.Error(err)
 				}
 
-				if app.Name == "argocd-config" || app.GetLabels()["is-tenant"] == "true" {
-					// Target revision for tenant apps is maintained in team-management/template/settings.json.
+				if app.Name == "argocd-config" {
 					continue
 				}
 
 				// Check the sync wave
-				if syncWaves[app.Name] == "" {
-					t.Errorf("expected sync-wave should be defined. application: %s", app.Name)
+				var expectedWave string
+				if app.GetLabels()["is-tenant"] == "true" {
+					expectedWave = tenantSyncWave
+				} else {
+					if syncWaves[app.Name] == "" {
+						t.Errorf("expected sync-wave should be defined. application: %s", app.Name)
+					}
+					expectedWave = syncWaves[app.Name]
 				}
-				if app.GetAnnotations()["argocd.argoproj.io/sync-wave"] != syncWaves[app.Name] {
-					t.Errorf("invalid sync-wave. application: %s, sync-wave: %s (should be %s)", app.Name, app.GetAnnotations()["argocd.argoproj.io/sync-wave"], syncWaves[app.Name])
+				if app.GetAnnotations()["argocd.argoproj.io/sync-wave"] != expectedWave {
+					t.Errorf("invalid sync-wave. application: %s, sync-wave: %s (should be %s)", app.Name, app.GetAnnotations()["argocd.argoproj.io/sync-wave"], expectedWave)
 				}
 
 				// Skip when the application provides from helm chart.

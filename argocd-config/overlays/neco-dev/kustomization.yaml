@@ -5,3 +5,4 @@ resources:
 patchesStrategicMerge:
 - cert-manager.yaml
 - external-dns.yaml
+- neco-admission.yaml

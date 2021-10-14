@@ -13,7 +13,8 @@ Environments
 
 Currently, the following environments are defined:
 
-- `gcp`: A fully virtualized data center built with [neco/dctest](https://github.com/cybozu-go/neco/tree/main/dctest).
+- `gcp`, `neco-dev`: A fully virtualized data center built with [neco/dctest](https://github.com/cybozu-go/neco/tree/main/dctest). 
+`neco-dev` is intended to be used in the [neco-gcp](https://github.com/cybozu-go/neco-gcp/) command.
 - `stage0`: A real data center of Neco project for staging usage.
 - `tokyo0`, `osaka0`: Real data centers of Neco project for production usage.
 

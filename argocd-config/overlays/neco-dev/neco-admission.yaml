@@ -5,4 +5,4 @@ metadata:
   namespace: argocd
 spec:
   source:
-    path: neco-admission/overlays/gcp
+    path: neco-admission/overlays/neco-dev

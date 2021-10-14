@@ -68,7 +68,6 @@ spec:
         - cybozu-private:ept
         - cybozu-private:garoon
         - cybozu-private:maneki
-        - cybozu-private:neco-devusers
         - cybozu-private:network
       name: tenant-apps
       policies:
@@ -113,7 +112,6 @@ spec:
         - cybozu-private:garoon
         - cybozu-private:maneki
         - cybozu-private:neco
-        - cybozu-private:neco-devusers
         - cybozu-private:network
       name: admin
       policies:

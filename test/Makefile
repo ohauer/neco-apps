@@ -80,8 +80,8 @@ dctest-upgrade: install.yaml
 		git worktree add /tmp/neco-apps $(BASE_BRANCH) && \
 		cp account.json /tmp/neco-apps/test && \
 		cp meows-secret.json /tmp/neco-apps/test || true && \
-		cp ghcr_token /tmp/neco-apps/test || true && \
-		cp quay_token /tmp/neco-apps/test || true && \
+		cp ghcr_dockerconfig.json /tmp/neco-apps/test || true && \
+		cp quay_dockerconfig.json /tmp/neco-apps/test || true && \
 		if grep -q BOOTSTRAP /tmp/neco-apps/test/env.go; then \
 			$(MAKE) -C /tmp/neco-apps/test setup dctest BOOTSTRAP=1 COMMIT_ID=$(BASE_BRANCH); \
 		else \

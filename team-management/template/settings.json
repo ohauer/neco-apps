@@ -8,6 +8,9 @@
     "garoon": [
       "app-garoon-monitoring",
       "app-garoon-static"
+    ],
+    "network": [
+      "app-network-*"
     ]
   },
   "apps": {
@@ -167,7 +170,6 @@
         "app.kubernetes.io/name": "maneki"
       }
     },
-    "neco-devusers": {},
     "network": {
       "app-network": {
         "accurate.cybozu.com/template": "init-template",
