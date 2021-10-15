@@ -211,14 +211,18 @@ func testSetup() {
 
 		_, err := os.Stat(ghcrDockerConfigJson)
 		if err == nil {
+			data, err := os.ReadFile(ghcrDockerConfigJson)
+			Expect(err).ShouldNot(HaveOccurred())
+
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
 
 			By("creating a secret for ghcr.io")
-			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-ghcr",
+			_, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-ghcr",
 				"-n", "init-template",
-				"--from-file=.dockerconfigjson="+ghcrDockerConfigJson,
+				"--from-file=.dockerconfigjson=/dev/stdin",
 			)
+			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
 
 			By("annotate secret to propagate")
 			_ = ExecSafeAt(boot0, "kubectl", "annotate", "secrets", "image-pull-secret-ghcr",
@@ -229,14 +233,18 @@ func testSetup() {
 
 		_, err = os.Stat(quayDockerConfigJson)
 		if err == nil {
+			data, err := os.ReadFile(quayDockerConfigJson)
+			Expect(err).ShouldNot(HaveOccurred())
+
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
 
 			By("creating a secret for quay.io")
-			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-quay",
+			_, stderr, err := ExecAtWithInput(boot0, data, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-quay",
 				"-n", "init-template",
-				"--from-file=.dockerconfigjson="+quayDockerConfigJson,
+				"--from-file=.dockerconfigjson=/dev/stdin",
 			)
+			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
 
 			By("annotate secret to propagate")
 			_ = ExecSafeAt(boot0, "kubectl", "annotate", "secrets", "image-pull-secret-quay",
