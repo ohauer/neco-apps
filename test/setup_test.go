@@ -25,9 +25,9 @@ import (
 )
 
 const (
-	argoCDPasswordFile = "./argocd-password.txt"
-	ghcrTokenFile      = "ghcr_token"
-	quayTokenFile      = "quay_token"
+	argoCDPasswordFile   = "./argocd-password.txt"
+	ghcrDockerConfigJson = "ghcr_dockerconfig.json"
+	quayDockerConfigJson = "quay_dockerconfig.json"
 )
 
 var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
@@ -209,7 +209,7 @@ func testSetup() {
 			Skip("No need to create it when upgrading")
 		}
 
-		_, err := os.Stat(ghcrTokenFile)
+		_, err := os.Stat(ghcrDockerConfigJson)
 		if err == nil {
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
@@ -217,7 +217,7 @@ func testSetup() {
 			By("creating a secret for ghcr.io")
 			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-ghcr",
 				"-n", "init-template",
-				"--from-file=.dockerconfigjson="+ghcrTokenFile,
+				"--from-file=.dockerconfigjson="+ghcrDockerConfigJson,
 			)
 
 			By("annotate secret to propagate")
@@ -227,7 +227,7 @@ func testSetup() {
 			)
 		}
 
-		_, err = os.Stat(quayTokenFile)
+		_, err = os.Stat(quayDockerConfigJson)
 		if err == nil {
 			By("creating init-template namespace")
 			createNamespaceIfNotExists("init-template", false)
@@ -235,7 +235,7 @@ func testSetup() {
 			By("creating a secret for quay.io")
 			_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "docker-registry", "image-pull-secret-quay",
 				"-n", "init-template",
-				"--from-file=.dockerconfigjson="+quayTokenFile,
+				"--from-file=.dockerconfigjson="+quayDockerConfigJson,
 			)
 
 			By("annotate secret to propagate")

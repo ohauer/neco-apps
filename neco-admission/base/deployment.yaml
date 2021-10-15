@@ -42,6 +42,9 @@ spec:
         - --valid-image-prefix=ghcr.io/cybozu-private/
         - --valid-image-prefix=docker.elastic.co/
         - --valid-image-prefix=quay.io/gravitational/teleport-ent
+        # quay.io/gravitational/teleport (not teleport-ent) is used in the dctest.
+        # I want to allow the image only in dctest, but it is difficult to change this array by kustomize. So add it here.
+        - --valid-image-prefix=quay.io/gravitational/teleport
         - --valid-image-prefix=gcr.io/datadoghq/agent
         # TODO: remove this after we build our own images for Rook
         - --valid-image-prefix=k8s.gcr.io/sig-storage/,quay.io/cephcsi/

@@ -7,6 +7,9 @@ function(name, repo, destination, revision) [{
     labels: {
       'is-tenant': 'true',
     },
+    annotations: {
+      'argocd.argoproj.io/sync-wave': '9',
+    },
   },
   spec: {
     project: 'tenant-app-of-apps',

@@ -176,6 +176,19 @@ var prohibitedClusterResources = []string{
 	"vmusers.operator.victoriametrics.com",
 }
 
+func init() {
+	if meowsDisabled() {
+		// When meows is disabled, the RunnerPool CRD will not be installed in the dctest environment.
+		var removed []string
+		for i, res := range requiredResources {
+			if res == "runnerpools.meows.cybozu.com" {
+				removed = append(requiredResources[:i], requiredResources[i+1:]...)
+			}
+		}
+		requiredResources = removed
+	}
+}
+
 var (
 	allVerbs        = []string{"get", "list", "watch", "create", "update", "patch", "delete"}
 	adminVerbs      = []string{"get", "list", "watch", "create", "update", "patch", "delete"}
