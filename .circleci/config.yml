@@ -201,7 +201,11 @@ jobs:
       - run:
           name: store bootstrap build num
           command: |
-            echo "export BOOTSTRAP_BUILD_NUM=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
+            echo "${CIRCLE_BUILD_NUM}" > /tmp/bootstrap_build_num.txt
+      - persist_to_workspace:
+          root: /tmp
+          paths:
+            - bootstrap_build_num.txt
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
@@ -280,6 +284,8 @@ jobs:
             diffs=$(git diff --name-only main origin/stage)
             if [ "$diffs" = "" ]; then touch .skip; exit 0; fi
             printf "%s\n" "$diffs"
+      - attach_workspace:
+          at: /tmp
       - run:
           name: Create a pull request
           command: |
@@ -288,7 +294,7 @@ jobs:
             git checkout -b op-${BRANCH_NAME} origin/stage
             git merge --no-edit main
             git push git@github.com:${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git op-${BRANCH_NAME}:op-${BRANCH_NAME}
-            hub pull-request --message="[CI] Stage ${BRANCH_NAME}" --message="[image_list.txt](https://${BOOTSTRAP_BUILD_NUM}-166922796-gh.circle-artifacts.com/0/~/test-results/image_list.txt)" --base=cybozu-go:stage --head=cybozu-go:op-${BRANCH_NAME}
+            hub pull-request --message="[CI] Stage ${BRANCH_NAME}" --message="[image_list.txt](https://$(cat /tmp/bootstrap_build_num.txt)-166922796-gh.circle-artifacts.com/0/~/test-results/image_list.txt)" --base=cybozu-go:stage --head=cybozu-go:op-${BRANCH_NAME}
       - run:
           name: Create a pull request for neco-apps-secret staging branch
           command: |
