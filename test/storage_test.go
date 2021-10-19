@@ -157,21 +157,21 @@ func testClusterStable() {
 			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns,
 				"get", "cephcluster", ns, "-o", "jsonpath='{.spec.mon.count}'")
 			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
-			num_mon_expected, err := strconv.Atoi(strings.TrimSpace(string(stdout)))
+			numMonExpected, err := strconv.Atoi(strings.TrimSpace(string(stdout)))
 			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
 
 			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns,
 				"get", "cephcluster", ns, "-o", "jsonpath='{.spec.storage.storageClassDeviceSets[*].count}'")
 			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
-			num_osd_list := strings.Fields(string(stdout))
-			num_osd_expected := 0
-			for _, num_osd := range num_osd_list {
-				num, err := strconv.Atoi(strings.TrimSpace(string(num_osd)))
+			numOsdList := strings.Fields(string(stdout))
+			numOsdExpected := 0
+			for _, numOsd := range numOsdList {
+				num, err := strconv.Atoi(strings.TrimSpace(string(numOsd)))
 				Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
-				num_osd_expected += num
+				numOsdExpected += num
 			}
 
-			num_rgw_expected := 0
+			numRgwExpected := 0
 			if ns == "ceph-hdd" || ns == "ceph-poc" {
 				stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
 					"get", "cephobjectstore", "-o", "jsonpath='{.items[*].spec.gateway.instances}'")
@@ -180,7 +180,7 @@ func testClusterStable() {
 				for _, num := range nums {
 					n, err := strconv.Atoi(num)
 					Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
-					num_rgw_expected += n
+					numRgwExpected += n
 				}
 			}
 
@@ -199,15 +199,32 @@ func testClusterStable() {
 					return err
 				}
 
-				var num_mon, num_osd, num_rgw int
+				err := confirmOsdPrepare(ns, numOsdExpected)
+				if err != nil {
+					return err
+				}
+
+				st := time.Now()
+				for {
+					if time.Since(st) > 30*time.Second {
+						break
+					}
+					err := confirmCephPod(ns)
+					if err != nil {
+						return err
+					}
+					time.Sleep(1 * time.Second)
+				}
+
+				var numMon, numOsd, numRgw int
 				for _, deployment := range deployments.Items {
 					switch deployment.Labels["app"] {
 					case "rook-ceph-mon":
-						num_mon++
+						numMon++
 					case "rook-ceph-osd":
-						num_osd++
+						numOsd++
 					case "rook-ceph-rgw":
-						num_rgw += int(*deployment.Spec.Replicas)
+						numRgw += int(*deployment.Spec.Replicas)
 					}
 
 					rookVersion, ok := deployment.Labels["rook-version"]
@@ -229,44 +246,145 @@ func testClusterStable() {
 					}
 				}
 
-				if num_mon != num_mon_expected {
-					return fmt.Errorf("number of monitors is %d, expected is %d", num_mon, num_mon_expected)
+				if numMon != numMonExpected {
+					return fmt.Errorf("number of monitors is %d, expected is %d", numMon, numMonExpected)
 				}
-				if num_osd != num_osd_expected {
-					return fmt.Errorf("number of OSDs is %d, expected is %d", num_osd, num_osd_expected)
+				if numOsd != numOsdExpected {
+					return fmt.Errorf("number of OSDs is %d, expected is %d", numOsd, numOsdExpected)
 				}
-				if num_rgw != num_rgw_expected {
-					return fmt.Errorf("number of RGWs is %d, expected is %d", num_rgw, num_rgw_expected)
-				}
-
-				return nil
-			}).Should(Succeed())
-
-			By("checking pods statuses are equal to running or job statuses are equal to succeeded")
-			Eventually(func() error {
-				// Show pod status.
-				stdout, _, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
-					"get", "pod", "-o=json")
-				if err != nil {
-					return err
-				}
-
-				pods := new(corev1.PodList)
-				err = json.Unmarshal(stdout, pods)
-				if err != nil {
-					return err
-				}
-
-				for _, pod := range pods.Items {
-					if pod.Status.Phase != corev1.PodRunning && pod.Status.Phase != corev1.PodSucceeded {
-						return fmt.Errorf("pod status is not running: ns=%s name=%s time=%s", pod.Namespace, pod.Name, time.Now())
-					}
+				if numRgw != numRgwExpected {
+					return fmt.Errorf("number of RGWs is %d, expected is %d", numRgw, numRgwExpected)
 				}
 
 				return nil
 			}).Should(Succeed())
 		})
 	}
+}
+
+func confirmOsdPrepare(ns string, numOsdExpected int) error {
+	stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
+		"get", "pod", "-l", "app=rook-ceph-osd-prepare", "-o=json")
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+	pods := new(corev1.PodList)
+	err = json.Unmarshal(stdout, pods)
+	Expect(err).ShouldNot(HaveOccurred(), "json=%s", stdout)
+
+	if len(pods.Items) != numOsdExpected {
+		return fmt.Errorf("number of OSD prepare pods is %d, expected is %d", len(pods.Items), numOsdExpected)
+	}
+
+	for _, pod := range pods.Items {
+		if pod.Status.Phase != corev1.PodSucceeded {
+			return fmt.Errorf("OSD prepare pod has not finished yet.")
+		}
+
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns, "logs", pod.Name, "--tail=1")
+		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+		if !strings.Contains(string(stdout), "skipping OSD configuration as no devices matched") {
+			continue
+		}
+		// log for checking
+		fmt.Println("delete PVC and Job to re-create prepare Job")
+		stdout, _, _ = ExecAt(boot0, "kubectl", "--namespace="+ns, "get", "pod")
+		fmt.Println(string(stdout))
+
+		pvcName := ""
+		for _, volume := range pod.Spec.Volumes {
+			if volume.PersistentVolumeClaim != nil && len(volume.PersistentVolumeClaim.ClaimName) != 0 {
+				pvcName = volume.PersistentVolumeClaim.ClaimName
+			}
+		}
+		Expect(pvcName).ShouldNot(Equal(""))
+
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pvc", pvcName, "--wait=false")
+		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "job", "-l", "ceph.rook.io/pvc="+pvcName)
+		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pod", "-l", "app=rook-ceph-operator")
+		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+		return fmt.Errorf("the osd prepare job gets failed and restarted")
+	}
+
+	return nil
+}
+
+func confirmCephPod(ns string) error {
+	stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
+		"get", "pod", "-o=json")
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+	pods := new(corev1.PodList)
+	err = json.Unmarshal(stdout, pods)
+	Expect(err).ShouldNot(HaveOccurred(), "json=%s", stdout)
+
+	for _, pod := range pods.Items {
+		// skip prepare job pods
+		if pod.Status.Phase == corev1.PodSucceeded {
+			continue
+		}
+
+		// checking initContainer status of osd pod and restart if needed
+		for _, containerStatus := range pod.Status.InitContainerStatuses {
+			if containerStatus.State.Terminated == nil {
+				return fmt.Errorf("a init container of pod has not finished")
+			}
+
+			// init container finished normally
+			if containerStatus.State.Terminated.ExitCode == 0 {
+				continue
+			}
+
+			// return error immediately if pod is not osd
+			if pod.Labels["app"] != "rook-ceph-osd" {
+				return fmt.Errorf("pod status is not running: ns=%s name=%s time=%s", pod.Namespace, pod.Name, time.Now())
+			}
+
+			// log for checking
+			fmt.Println("delete osd pod and re-create it")
+			stdout, _, _ = ExecAt(boot0, "kubectl", "--namespace="+ns, "get", "pod")
+			fmt.Println(string(stdout))
+
+			// re-create osd pod
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pod", pod.Name)
+			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+			return fmt.Errorf("a init container of osd pod gets failed and restarted")
+		}
+
+		// checking container status of osd pod and restart if needed
+		for _, containerStatus := range pod.Status.ContainerStatuses {
+			// container running or finished normally
+			if containerStatus.Ready == true ||
+				containerStatus.LastTerminationState.Terminated == nil ||
+				containerStatus.LastTerminationState.Terminated.ExitCode == 0 {
+				continue
+			}
+
+			// return error immediately if pod is not osd
+			if pod.Labels["app"] != "rook-ceph-osd" {
+				return fmt.Errorf("pod status is not running: ns=%s name=%s time=%s", pod.Namespace, pod.Name, time.Now())
+			}
+
+			// log for checking
+			fmt.Println("delete osd pod and re-create it")
+			stdout, _, _ = ExecAt(boot0, "kubectl", "--namespace="+ns, "get", "pod")
+			fmt.Println(string(stdout))
+
+			// re-create osd pod
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pod", pod.Name)
+			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+			return fmt.Errorf("an osd pod gets failed and restarted")
+		}
+	}
+
+	return nil
 }
 
 func testDaemonPodsSpread(daemonName, appLabel, cephClusterNamespace string, expectDaemonCount, expectDaemonCountOnNode, expectDaemonCountInRack int) {
