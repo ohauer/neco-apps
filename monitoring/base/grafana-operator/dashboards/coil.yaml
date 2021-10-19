@@ -204,7 +204,7 @@ spec:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "histogram_quantile(0.95, sum(rate(controller_runtime_reconcile_time_seconds_bucket{job=\"coil\", component=\"coil-controller\"}[5m])) by (le, controller))",
+              "expr": "histogram_quantile(0.95, sum(rate(controller_runtime_reconcile_time_seconds_bucket{job=\"coil-controller\"}[5m])) by (le, controller))",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -313,7 +313,7 @@ spec:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(grpc_server_handled_total{job=\"coil\", component=\"coild\", grpc_code=\"OK\"}[5m])) by (instance) * 300",
+              "expr": "sum(rate(grpc_server_handled_total{job=\"coild\", grpc_code=\"OK\"}[5m])) by (instance) * 300",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -408,7 +408,7 @@ spec:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "sum(rate(grpc_server_handled_total{job=\"coil\", component=\"coild\", grpc_code!=\"OK\"}[5m])) by (instance) * 300",
+              "expr": "sum(rate(grpc_server_handled_total{job=\"coild\", grpc_code!=\"OK\"}[5m])) by (instance) * 300",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -521,7 +521,7 @@ spec:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_memstats_heap_alloc_bytes{job=\"coil\", component=\"${component}\"}",
+                  "expr": "go_memstats_heap_alloc_bytes{job=\"${component}\"}",
                   "hide": false,
                   "interval": "",
                   "legendFormat": "",
@@ -624,7 +624,7 @@ spec:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "irate(process_cpu_seconds_total{job=\"coil\", component=\"${component}\"}[1m])",
+                  "expr": "irate(process_cpu_seconds_total{job=\"${component}\"}[1m])",
                   "interval": "",
                   "legendFormat": "",
                   "refId": "A"
@@ -726,7 +726,7 @@ spec:
               "steppedLine": false,
               "targets": [
                 {
-                  "expr": "go_goroutines{job=\"coil\", component=\"${component}\"}",
+                  "expr": "go_goroutines{job=\"${component}\"}",
                   "interval": "",
                   "legendFormat": "",
                   "refId": "A"
