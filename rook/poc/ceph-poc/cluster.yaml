@@ -155,6 +155,11 @@ spec:
               accessModes:
                 - ReadWriteOnce
         placement:
+          tolerations:
+            # Temporary configuration for storage performance measurement
+            - key: csa/exclude_noisy_neighbor
+              operator: Exists
+              effect: NoExecute
           topologySpreadConstraints:
             - maxSkew: 1
               topologyKey: topology.kubernetes.io/zone

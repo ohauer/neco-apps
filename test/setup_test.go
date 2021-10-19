@@ -543,6 +543,27 @@ func applyAndWaitForApplications(commitID string) {
 			}
 		}, 60*time.Minute).Should(Succeed())
 	}
+
+	// TODO: remove this block after #1811 is released
+	if doUpgrade {
+		nss := []string{"ceph-hdd", "ceph-ssd", "ceph-poc"}
+		for _, ns := range nss {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
+				"get", "deployment", "-o=json")
+			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+			deployments := new(appsv1.DeploymentList)
+			err = json.Unmarshal(stdout, deployments)
+			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
+
+			for _, deployment := range deployments.Items {
+				if deployment.Labels["app"] != "rook-ceph-mon" && deployment.Labels["app"] != "rook-ceph-osd" {
+					continue
+				}
+				ExecSafeAt(boot0, "kubectl", "rollout", "restart", "-n", ns, "deployment", deployment.Name)
+			}
+		}
+	}
 }
 
 // Sometimes synchronization fails when argocd applies network policies.
