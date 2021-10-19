@@ -9,6 +9,8 @@ tests:
         values: '1+0x15'
       - series: 'up{job="rook",namespace="ceph-ssd"}'
         values: '1+0x15'
+      - series: 'up{job="rook",namespace="ceph-object-store"}'
+        values: '1+0x15'
     alert_rule_test:
       - eval_time: 15m
         alertname: RookMetricsMissing
@@ -19,38 +21,8 @@ tests:
       - series: 'up{job="rook",namespace="ceph-hdd"}'
         values: '0+0x15'
       - series: 'up{job="rook",namespace="ceph-ssd"}'
-        values: '1+0x15'
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: RookMetricsMissing
-        exp_alerts:
-          - exp_labels:
-              severity: critical
-              category: storage
-            exp_annotations:
-              runbook: Please consider to find root causes, and solve the problems
-              summary: Rook/Ceph ceph-hdd's metrics can not be got.
-  - interval: 1m
-    input_series:
-      - series: 'up{job="rook",namespace="ceph-hdd"}'
-        values: '1+0x15'
-      - series: 'up{job="rook",namespace="ceph-ssd"}'
         values: '0+0x15'
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: RookMetricsMissing
-        exp_alerts:
-          - exp_labels:
-              severity: critical
-              category: storage
-            exp_annotations:
-              runbook: Please consider to find root causes, and solve the problems
-              summary: Rook/Ceph ceph-ssd's metrics can not be got.
-  - interval: 1m
-    input_series:
-      - series: 'up{job="rook",namespace="ceph-hdd"}'
-        values: '0+0x15'
-      - series: 'up{job="rook",namespace="ceph-ssd"}'
+      - series: 'up{job="rook",namespace="ceph-object-store"}'
         values: '0+0x15'
     alert_rule_test:
       - eval_time: 15m
@@ -68,6 +40,12 @@ tests:
             exp_annotations:
               runbook: Please consider to find root causes, and solve the problems
               summary: Rook/Ceph ceph-ssd's metrics can not be got.
+          - exp_labels:
+              severity: critical
+              category: storage
+            exp_annotations:
+              runbook: Please consider to find root causes, and solve the problems
+              summary: Rook/Ceph ceph-object-store's metrics can not be got.
   # when no metrics found, an alert is fired.
   - interval: 1m
     input_series:
@@ -87,19 +65,21 @@ tests:
             exp_annotations:
               runbook: Please consider to find root causes, and solve the problems
               summary: Rook/Ceph ceph-ssd's metrics can not be got.
+          - exp_labels:
+              severity: critical
+              category: storage
+            exp_annotations:
+              runbook: Please consider to find root causes, and solve the problems
+              summary: Rook/Ceph ceph-object-store's metrics can not be got.
 
   # when health status is 0, which means healthy, no alerts are fired.
   - interval: 1m
     input_series:
       - series: 'ceph_health_status{job="rook",namespace="ceph-hdd"}'
         values: '0+0x15'
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: RookCephStatusIsError
-        exp_alerts: []
-  - interval: 1m
-    input_series:
       - series: 'ceph_health_status{job="rook",namespace="ceph-ssd"}'
+        values: '0+0x15'
+      - series: 'ceph_health_status{job="rook",namespace="ceph-object-store"}'
         values: '0+0x15'
     alert_rule_test:
       - eval_time: 15m
@@ -110,13 +90,9 @@ tests:
     input_series:
       - series: 'ceph_health_status{job="rook",namespace="ceph-hdd"}'
         values: '1+0x15'
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: RookCephStatusIsError
-        exp_alerts: []
-  - interval: 1m
-    input_series:
       - series: 'ceph_health_status{job="rook",namespace="ceph-ssd"}'
+        values: '1+0x15'
+      - series: 'ceph_health_status{job="rook",namespace="ceph-object-store"}'
         values: '1+0x15'
     alert_rule_test:
       - eval_time: 15m
@@ -126,6 +102,10 @@ tests:
   - interval: 1m
     input_series:
       - series: 'ceph_health_status{job="rook",namespace="ceph-hdd"}'
+        values: '2+0x15'
+      - series: 'ceph_health_status{job="rook",namespace="ceph-ssd"}'
+        values: '2+0x15'
+      - series: 'ceph_health_status{job="rook",namespace="ceph-object-store"}'
         values: '2+0x15'
     alert_rule_test:
       - eval_time: 15m
@@ -139,14 +119,6 @@ tests:
             exp_annotations:
               runbook: Please consider to find root causes, and solve the problems
               summary: Rook/Ceph ceph-hdd's status is HEALTH_ERR.
-  - interval: 1m
-    input_series:
-      - series: 'ceph_health_status{job="rook",namespace="ceph-ssd"}'
-        values: '2+0x15'
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: RookCephStatusIsError
-        exp_alerts:
           - exp_labels:
               severity: critical
               category: storage
@@ -155,6 +127,14 @@ tests:
             exp_annotations:
               runbook: Please consider to find root causes, and solve the problems
               summary: Rook/Ceph ceph-ssd's status is HEALTH_ERR.
+          - exp_labels:
+              severity: critical
+              category: storage
+              job: rook
+              namespace: ceph-object-store
+            exp_annotations:
+              runbook: Please consider to find root causes, and solve the problems
+              summary: Rook/Ceph ceph-object-store's status is HEALTH_ERR.
 
   # This test confirms that CephOSDIsNearLyNearFul is out because the metrics is above threshold.
   - interval: 1m
@@ -162,6 +142,14 @@ tests:
       - series: 'ceph_osd_stat_bytes{job="rook",namespace="ceph-hdd",ceph_daemon="osd.1"}'
         values: '100+0x15'
       - series: 'ceph_osd_stat_bytes_used{job="rook",namespace="ceph-hdd",ceph_daemon="osd.1"}'
+        values: '81+0x15'
+      - series: 'ceph_osd_stat_bytes{job="rook",namespace="ceph-ssd",ceph_daemon="osd.1"}'
+        values: '100+0x15'
+      - series: 'ceph_osd_stat_bytes_used{job="rook",namespace="ceph-ssd",ceph_daemon="osd.1"}'
+        values: '81+0x15'
+      - series: 'ceph_osd_stat_bytes{job="rook",namespace="ceph-object-store",ceph_daemon="osd.1"}'
+        values: '100+0x15'
+      - series: 'ceph_osd_stat_bytes_used{job="rook",namespace="ceph-object-store",ceph_daemon="osd.1"}'
         values: '81+0x15'
     alert_rule_test:
       - eval_time: 15m
@@ -175,16 +163,6 @@ tests:
             exp_annotations:
               summary: "Rook/Ceph osd.1 in ceph-hdd is used more than 80%."
               runbook: Please consider to find root causes, and solve the problems
-  - interval: 1m
-    input_series:
-      - series: 'ceph_osd_stat_bytes{job="rook",namespace="ceph-ssd",ceph_daemon="osd.1"}'
-        values: '100+0x15'
-      - series: 'ceph_osd_stat_bytes_used{job="rook",namespace="ceph-ssd",ceph_daemon="osd.1"}'
-        values: '81+0x15'
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: CephOSDIsNearlyNearFull
-        exp_alerts:
           - exp_labels:
               severity: warning
               job: rook
@@ -193,6 +171,14 @@ tests:
             exp_annotations:
               summary: "Rook/Ceph osd.1 in ceph-ssd is used more than 80%."
               runbook: Please consider to find root causes, and solve the problems
+          - exp_labels:
+              severity: warning
+              job: rook
+              namespace: ceph-object-store
+              ceph_daemon: osd.1
+            exp_annotations:
+              summary: "Rook/Ceph osd.1 in ceph-object-store is used more than 80%."
+              runbook: Please consider to find root causes, and solve the problems
   # This test confirms that CephOSDIsNearLyNearFul is not out because the metrics is below threshold.
   - interval: 1m
     input_series:
@@ -200,15 +186,13 @@ tests:
         values: '100+0x15'
       - series: 'ceph_osd_stat_bytes_used{job="rook",namespace="ceph-hdd",ceph_daemon="osd.1"}'
         values: '80+0x15'
-    alert_rule_test:
-      - eval_time: 15m
-        alertname: CephOSDIsNearlyNearFull
-        exp_alerts: []
-  - interval: 1m
-    input_series:
       - series: 'ceph_osd_stat_bytes{job="rook",namespace="ceph-ssd",ceph_daemon="osd.1"}'
         values: '100+0x15'
       - series: 'ceph_osd_stat_bytes_used{job="rook",namespace="ceph-ssd",ceph_daemon="osd.1"}'
+        values: '80+0x15'
+      - series: 'ceph_osd_stat_bytes{job="rook",namespace="ceph-object-store",ceph_daemon="osd.1"}'
+        values: '100+0x15'
+      - series: 'ceph_osd_stat_bytes_used{job="rook",namespace="ceph-object-store",ceph_daemon="osd.1"}'
         values: '80+0x15'
     alert_rule_test:
       - eval_time: 15m
