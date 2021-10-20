@@ -62,7 +62,7 @@ func prepareRookCeph() {
 
 	It("should create a POD for testRookRBD", func() {
 		tmpl := template.Must(template.New("").Parse(storageRBDYAML))
-		for _, storageClassName := range []string{"ceph-hdd-block", "ceph-ssd-block", "ceph-poc-block"} {
+		for _, storageClassName := range []string{"ceph-hdd-block", "ceph-ssd-block"} {
 			buf := new(bytes.Buffer)
 			err := tmpl.Execute(buf, storageClassName)
 			Expect(err).NotTo(HaveOccurred())
@@ -74,7 +74,7 @@ func prepareRookCeph() {
 }
 
 func testRookOperator() {
-	nss := []string{"ceph-hdd", "ceph-ssd", "ceph-poc"}
+	nss := []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"}
 	for _, ns := range nss {
 		By("checking rook-ceph-operator Deployment for "+ns, func() {
 			Eventually(func() error {
@@ -138,7 +138,7 @@ func testRookOperator() {
 }
 
 func testClusterStable() {
-	nss := []string{"ceph-hdd", "ceph-ssd", "ceph-poc"}
+	nss := []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"}
 	for _, ns := range nss {
 		By("checking stability of rook/ceph cluster "+ns, func() {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
@@ -172,7 +172,7 @@ func testClusterStable() {
 			}
 
 			numRgwExpected := 0
-			if ns == "ceph-hdd" || ns == "ceph-poc" {
+			if ns == "ceph-hdd" || ns == "ceph-object-store" {
 				stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
 					"get", "cephobjectstore", "-o", "jsonpath='{.items[*].spec.gateway.instances}'")
 				Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
@@ -426,21 +426,20 @@ func testDaemonPodsSpread(daemonName, appLabel, cephClusterNamespace string, exp
 }
 
 func testMONPodsSpreadAll() {
-	for _, namespace := range []string{"ceph-hdd", "ceph-ssd", "ceph-poc"} {
+	for _, namespace := range []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"} {
 		testDaemonPodsSpread("MON", "app=rook-ceph-mon", namespace, 3, 1, 1)
 	}
 }
 
 func testMGRPodsSpreadAll() {
-	for _, namespace := range []string{"ceph-hdd", "ceph-ssd", "ceph-poc"} {
+	for _, namespace := range []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"} {
 		testDaemonPodsSpread("MGR", "app=rook-ceph-mgr", namespace, 2, 1, 1)
 	}
 }
 
 func testRGWPodsSpreadAll() {
 	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw", "ceph-hdd", 3, 1, 1)
-	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-hdd-index", "ceph-poc", 3, 1, 1)
-	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw,rook_object_store=ceph-poc-object-store-ssd-index", "ceph-poc", 3, 1, 1)
+	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw", "ceph-object-store", 3, 1, 1)
 }
 
 func testOSDPodsSpread() {
@@ -531,7 +530,6 @@ func testRookRGW() {
 func testRookRBDAll() {
 	testRookRBD("ceph-hdd-block")
 	testRookRBD("ceph-ssd-block")
-	testRookRBD("ceph-poc-block")
 }
 
 func testRookRBD(storageClassName string) {

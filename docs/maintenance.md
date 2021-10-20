@@ -487,7 +487,7 @@ $ cd $GOPATH/src/github.com/cybozu-go/neco-apps/rook/base
 $ for i in clusterrole resources; do
     ../bin/helm template upstream/chart -f values.yaml -s templates/${i}.yaml > common/${i}.yaml
   done
-$ for t in hdd ssd; do
+$ for t in hdd ssd object-store; do
     for i in deployment role rolebinding serviceaccount; do
       ../bin/helm template upstream/chart -f values.yaml -f values-${t}.yaml -s templates/${i}.yaml --namespace ceph-${t} > ceph-${t}/${i}.yaml
     done
@@ -517,6 +517,7 @@ Update `spec.cephVersion.image` field in CephCluster CR.
 
 - rook/base/ceph-hdd/cluster.yaml
 - rook/base/ceph-ssd/cluster.yaml
+- rook/base/ceph-object-store/cluster.yaml
 
 ## s3gw
 

@@ -64,7 +64,7 @@ spec:
               app: rook-ceph-mgr
           topologyKey: topology.kubernetes.io/zone
   cephVersion:
-    image: quay.io/cybozu/ceph:16.2.4.1
+    image: quay.io/cybozu/ceph:16.2.6.0
   dashboard:
     ssl: true
   priorityClassNames:
@@ -147,7 +147,7 @@ spec:
             spec:
               resources:
                 requests:
-                  storage: 1Ti
+                  storage: 256Gi
               # IMPORTANT: Change the storage class depending on your environment (e.g. local-storage, gp2)
               storageClassName: topolvm-provisioner
               volumeMode: Block
