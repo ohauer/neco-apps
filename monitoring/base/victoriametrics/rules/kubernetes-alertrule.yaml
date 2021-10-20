@@ -266,9 +266,10 @@ spec:
               }}) is restarting {{ printf "%.2f" $value }} times / 5 minutes.
             runbook: TBD
           expr: |
-            rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[5m])
-            * on(namespace) group_left kube_namespace_labels{label_team="neco"}
-            * 60 * 5  > 0
+            max by (namespace, pod, container) (
+              rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[5m])
+              * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            ) * 60 * 5  > 0
           for: 15m
           labels:
             severity: error
@@ -281,7 +282,7 @@ spec:
             sum by (namespace, pod) (
               kube_pod_status_phase{job="kube-state-metrics", phase=~"Failed|Pending|Unknown"}
               * on(namespace) group_left kube_namespace_labels{label_team="neco"}
-              * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}
+              * on(namespace, pod, uid) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}
             ) > 0
           for: 30m
           labels:
@@ -295,8 +296,8 @@ spec:
             sum by (namespace, pod) (
               kube_pod_status_phase{job="kube-state-metrics", phase=~"Failed|Pending|Unknown"}
               * on(namespace) group_left kube_namespace_labels{label_team="neco"}
-              * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}
-              and on(namespace, pod) kube_pod_info{job="kube-state-metrics",node!=""}
+              * on(namespace, pod, uid) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}
+              and on(namespace, pod, uid) kube_pod_info{job="kube-state-metrics",node!=""}
             ) > 0
           for: 15m
           labels:
@@ -307,12 +308,14 @@ spec:
               state though containers are in a ready state for longer than 30 minutes.
             runbook: TBD
           expr: |
-            min by(namespace, pod) (
-              kube_pod_container_status_ready
-              * on(namespace) group_left kube_namespace_labels{label_team="neco"}
-            )
-            * on(namespace, pod) kube_pod_status_ready{condition="false"}
-            * on(namespace, pod) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"} > 0
+            sum by (namespace, pod) (
+              min by(namespace, pod, uid) (
+                kube_pod_container_status_ready
+                * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+              )
+              * on(namespace, pod, uid) kube_pod_status_ready{condition="false"}
+              * on(namespace, pod, uid) group_left(owner_kind) kube_pod_owner{owner_kind!="Job"}
+            ) > 0
           for: 30m
           labels:
             severity: error

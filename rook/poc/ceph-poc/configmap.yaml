@@ -7,11 +7,5 @@ metadata:
     argocd.argoproj.io/sync-wave: "-1"
 data:
   config: |
-    [mon]
-    bluefs_buffered_io = false
-    
-    [osd]
-    bluefs_buffered_io = false
-
     [rgw]
     rgw_dynamic_resharding = false
