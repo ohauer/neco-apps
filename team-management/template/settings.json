@@ -1,5 +1,8 @@
 {
   "allowed_namespaces": {
+    "cydec": [
+      "app-gorush"
+    ],
     "ept": [
       "app-ept-monitoring",
       "app-ept-plantuml",
@@ -8,6 +11,21 @@
     "garoon": [
       "app-garoon-monitoring",
       "app-garoon-static"
+    ],
+    "maneki": [
+      "app-comconv-earthlab",
+      "app-elasticsearch",
+      "app-endpoint-discovery",
+      "app-es-cluster-allocator",
+      "app-forest-archive",
+      "app-forest-certs",
+      "app-kodama",
+      "app-maneki-static-cybozu-com",
+      "app-misc",
+      "app-monitoring",
+      "app-monitoring-elasticstack",
+      "app-oauth-redirector",
+      "app-octodns"
     ],
     "network": [
       "app-network-*"
@@ -96,7 +114,6 @@
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
-      "app-gorush": {},
       "dev-cydec": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
@@ -114,6 +131,9 @@
       "app-dbre": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
+      },
+      "app-mysql-tenant-service": {
+        "cybozu.com/alert-group": "dbre"
       },
       "dev-dbre": {
         "accurate.cybozu.com/template": "init-template",
@@ -144,23 +164,10 @@
       }
     },
     "maneki": {
-      "app-comconv-earthlab": {},
-      "app-elasticsearch": {},
-      "app-endpoint-discovery": {},
-      "app-es-cluster-allocator": {},
-      "app-forest-archive": {},
-      "app-forest-certs": {},
-      "app-kodama": {},
       "app-maneki": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
-      "app-maneki-static-cybozu-com": {},
-      "app-misc": {},
-      "app-monitoring": {},
-      "app-monitoring-elasticstack": {},
-      "app-oauth-redirector": {},
-      "app-octodns": {},
       "dev-maneki": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
