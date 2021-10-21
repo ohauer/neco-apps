@@ -46,7 +46,7 @@ func kustomizeBuild(dir string) ([]byte, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	cmd := exec.Command(filepath.Join(workdir, "bin", "kustomize"), "build", dir)
+	cmd := exec.Command(filepath.Join(workdir, "bin", "kustomize"), "build", "--enable-helm", dir)
 	cmd.Stdout = outBuf
 	cmd.Stderr = errBuf
 	err = cmd.Run()

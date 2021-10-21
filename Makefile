@@ -237,8 +237,8 @@ update-sealed-secrets:
 .PHONY: update-topolvm
 update-topolvm:
 	sed -i -E \
-		-e 's/^(    targetRevision:).*$$/\1 $(CHART_VERSION)/' \
-		argocd-config/base/topolvm.yaml
+		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
+		topolvm/base/kustomization.yaml
 
 .PHONY: update-victoriametrics-operator
 update-victoriametrics-operator:

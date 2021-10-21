@@ -4,6 +4,7 @@ metadata:
   name: argocd-cm
 data:
   url: https://argocd.gcp0.dev-ne.co
+  kustomize.buildOptions: --enable-helm
   dex.config: |
     connectors:
       - type: github
