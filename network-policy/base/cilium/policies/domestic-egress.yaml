@@ -1,0 +1,26 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: network-nat
+  namespace: domestic-egress
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/component: egress
+      app.kubernetes.io/instance: network-nat
+      app.kubernetes.io/name: coil
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            io.kubernetes.pod.namespace.labels.team: network
+      toPorts:
+        - ports:
+            - port: "5555"
+              protocol: UDP
+  egress:
+    - toCIDRSet:
+        - cidr: 10.72.0.0/20
+        - cidr: 10.76.0.0/20
+        - cidr: 10.78.0.0/20

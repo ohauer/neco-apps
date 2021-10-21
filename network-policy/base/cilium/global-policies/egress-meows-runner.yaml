@@ -1,0 +1,44 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: egress-meows-runner
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: meows
+      app.kubernetes.io/component: runner
+  egress:
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: coil
+            app.kubernetes.io/component: egress
+            app.kubernetes.io/instance: nat
+            k8s:io.kubernetes.pod.namespace: internet-egress
+      toPorts:
+        - ports:
+            - port: "5555"
+              protocol: UDP
+    - toEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: meows
+            app.kubernetes.io/component: slack-agent
+      toPorts:
+        - ports:
+            - port: "8080"
+              protocol: TCP
+    - toCIDR:
+        - 10.69.0.0/16
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+        - ports:
+            - port: "53"
+              protocol: UDP
+  egressDeny:
+    - toCIDRSet:
+        - cidr: 10.0.0.0/8
+        - cidr: 172.16.0.0/12
+        - cidr: 192.168.0.0/16

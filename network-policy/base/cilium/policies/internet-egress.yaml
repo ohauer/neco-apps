@@ -1,0 +1,33 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-squid
+  namespace: internet-egress
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: squid
+  egressDeny:
+    - toCIDRSet:
+        - cidr: 10.0.0.0/8
+        - cidr: 172.16.0.0/12
+        - cidr: 192.168.0.0/16
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-unbound
+  namespace: internet-egress
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: unbound
+  egressDeny:
+    - toCIDRSet:
+        - cidr: 10.0.0.0/8
+        - cidr: 172.16.0.0/12
+        - cidr: 192.168.0.0/16

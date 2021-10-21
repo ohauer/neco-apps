@@ -1,0 +1,23 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: egress-bmc-allow
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: bmc-reverse-proxy
+      k8s:io.kubernetes.pod.namespace.labels.team: neco
+  egress:
+    - toCIDRSet:
+        - cidr: 10.72.16.0/20
+        - cidr: 10.76.16.0/20
+        - cidr: 10.78.16.0/20
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
+        - ports:
+            - port: "5900"
+              protocol: TCP

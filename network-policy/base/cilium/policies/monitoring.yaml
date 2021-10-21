@@ -1,0 +1,51 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-prometheus
+  namespace: monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: vmagent
+  egress:
+    - toCIDR:
+        - 10.69.0.0/16
+      toPorts:
+        # etcd metrics
+        - ports:
+            - port: "2381"
+              protocol: TCP
+        # metallb speaker
+        - ports:
+            - port: "7472"
+              protocol: TCP
+        # vault
+        - ports:
+            - port: "8200"
+              protocol: TCP
+        # node_exporter
+        - ports:
+            - port: "9100"
+              protocol: TCP
+        # setup-hw
+        - ports:
+            - port: "9105" 
+              protocol: TCP
+        # coild
+        - ports:
+            - port: "9384"
+              protocol: TCP
+        # coil-controller
+        - ports:
+            - port: "9386"
+              protocol: TCP
+        # sabakan
+        - ports:
+            - port: "10081"
+              protocol: TCP
+        # cke
+        - ports:
+            - port: "10180"
+              protocol: TCP

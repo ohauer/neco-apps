@@ -1,0 +1,39 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-teleport-proxy-node-allow
+  namespace: teleport
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: teleport
+      app.kubernetes.io/component: proxy
+  egress:
+    - toCIDR:
+        - 10.69.0.0/16
+      toPorts:
+        - ports:
+            - port: "3022"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-teleport-auth-etcd-allow
+  namespace: teleport
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: teleport
+      app.kubernetes.io/component: auth
+  egress:
+    - toCIDR:
+        - 10.69.0.0/16
+      toPorts:
+        - ports:
+            - port: "2379"
+              protocol: TCP
