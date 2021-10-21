@@ -2,13 +2,15 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: app-maneki-static-cybozu-com
+  labels:
+    cybozu.com/alert-group: dbre
+  name: app-mysql-tenant-service
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: maneki-role-binding
-  namespace: app-maneki-static-cybozu-com
+  name: dbre-role-binding
+  namespace: app-mysql-tenant-service
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -16,7 +18,13 @@ roleRef:
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
+    name: dbre
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
     name: maneki
+  - kind: ServiceAccount
+    name: node-dbre
+    namespace: teleport
   - kind: ServiceAccount
     name: node-maneki
     namespace: teleport
