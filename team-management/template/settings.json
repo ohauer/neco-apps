@@ -132,6 +132,9 @@
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
+      "app-mysql-tenant-service": {
+        "cybozu.com/alert-group": "dbre"
+      },
       "dev-dbre": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
