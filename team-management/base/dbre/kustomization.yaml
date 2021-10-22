@@ -8,6 +8,7 @@ resources:
   - app-cybozu-com-mysql-restore.yaml
   - app-cybozu-com-mysql.yaml
   - app-dbre.yaml
+  - app-mysql-tenant-service.yaml
   - dev-dbre.yaml
   - elastic-serviceaccount.yaml
   - project.yaml
