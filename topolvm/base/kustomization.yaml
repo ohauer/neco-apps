@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 helmCharts:
-- name: topolvm
-  includeCRDs: true
-  valuesFile: values.yaml
+- includeCRDs: true
+  name: topolvm
+  namespace: topolvm-system
   releaseName: topolvm
-  version: 3.1.1
   repo: https://topolvm.github.io/topolvm
-namespace: topolvm-system
+  valuesFile: values.yaml
+  version: 3.1.1
