@@ -3,7 +3,9 @@ package test
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
+	"golang.org/x/sync/semaphore"
 	"io"
 	"os"
 	"os/exec"
@@ -46,6 +48,7 @@ func kustomizeBuild(dir string) ([]byte, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+
 	cmd := exec.Command(filepath.Join(workdir, "bin", "kustomize"), "build", "--enable-helm", dir)
 	cmd.Stdout = outBuf
 	cmd.Stderr = errBuf
@@ -54,11 +57,9 @@ func kustomizeBuild(dir string) ([]byte, []byte, error) {
 }
 
 func testNamespaceResources(t *testing.T) {
-	t.Parallel()
-
 	// All namespaces defined in neco-apps should have the `team` label.
 	// Exceptionally, `sandbox` ns should not have the `team` label.
-	doCheckKustomizedYaml(t, func(t *testing.T, data []byte) {
+	doCheckKustomizedYaml(t, func(t *testing.T, path string, data []byte) {
 		var meta struct {
 			metav1.TypeMeta   `json:",inline"`
 			metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -74,14 +75,14 @@ func testNamespaceResources(t *testing.T) {
 		// `sandbox` and `init-template` namespaces should not have a team label.
 		if meta.Name == "sandbox" || meta.Name == "init-template" {
 			if _, ok := meta.Labels["team"]; ok {
-				t.Errorf("%s ns has team label: value=%s", meta.Name, meta.Labels["team"])
+				t.Errorf("[%s] %s ns has team label: value=%s", path, meta.Name, meta.Labels["team"])
 			}
 			return
 		}
 
 		// other namespace should have a team label.
 		if meta.Labels["team"] == "" {
-			t.Errorf("%s ns doesn't have team label", meta.Name)
+			t.Errorf("[%s] %s ns doesn't have team label", path, meta.Name)
 		}
 	})
 }
@@ -233,26 +234,34 @@ func doCheckKustomizedYaml(t *testing.T, checkFunc func(*testing.T, []byte)) {
 		t.Error(err)
 	}
 
+	maxParallels := int64(10)
+	sem := semaphore.NewWeighted(maxParallels)
 	for _, path := range targets {
-		t.Run(path, func(t *testing.T) {
-			stdout, stderr, err := kustomizeBuild(path)
-			if err != nil {
-				t.Errorf("kustomize build failed. path: %s, stderr: %s, err: %v", path, stderr, err)
-			}
+		sem.Acquire(context.Background(), 1)
 
-			y := k8sYaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(stdout)))
-			for {
-				data, err := y.Read()
-				if err == io.EOF {
-					break
-				} else if err != nil {
-					t.Error(err)
+		go func(path string) {
+			defer sem.Release(1)
+			t.Run(path, func(t *testing.T) {
+				stdout, stderr, err := kustomizeBuild(path)
+				if err != nil {
+					t.Errorf("kustomize build failed. path: %s, stderr: %s, err: %v", path, stderr, err)
 				}
 
-				checkFunc(t, data)
-			}
-		})
+				y := k8sYaml.NewYAMLReader(bufio.NewReader(bytes.NewReader(stdout)))
+				for {
+					data, err := y.Read()
+					if err == io.EOF {
+						break
+					} else if err != nil {
+						t.Errorf("yaml read failed. path: %s, err: %v", path, err)
+					}
+
+					checkFunc(t, path, data)
+				}
+			})
+		}(path)
 	}
+	sem.Acquire(context.Background(), maxParallels)
 }
 
 type RelabelConfig struct {
