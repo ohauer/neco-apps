@@ -650,37 +650,37 @@ func applyNetworkPolicy() {
 		Expect(err).ShouldNot(HaveOccurred(), "failed to apply non-crd resource: stdout=%s, stderr=%s", stdout, stderr)
 	}
 
-	Eventually(func() error {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=kube-system", "get", "deployment/calico-typha", "-o=json")
-		if err != nil {
-			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-		}
-		deployment := new(appsv1.Deployment)
-		err = json.Unmarshal(stdout, deployment)
-		if err != nil {
-			return err
-		}
-		if deployment.Status.Replicas != deployment.Status.ReadyReplicas {
-			return fmt.Errorf("calico-typha deployment's ReadyReplicas is not %d: %d", int(deployment.Status.Replicas), int(deployment.Status.ReadyReplicas))
-		}
-		return nil
-	}, 3*time.Minute).Should(Succeed())
+	// Eventually(func() error {
+	// 	stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=kube-system", "get", "deployment/calico-typha", "-o=json")
+	// 	if err != nil {
+	// 		return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+	// 	}
+	// 	deployment := new(appsv1.Deployment)
+	// 	err = json.Unmarshal(stdout, deployment)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	if deployment.Status.Replicas != deployment.Status.ReadyReplicas {
+	// 		return fmt.Errorf("calico-typha deployment's ReadyReplicas is not %d: %d", int(deployment.Status.Replicas), int(deployment.Status.ReadyReplicas))
+	// 	}
+	// 	return nil
+	// }, 3*time.Minute).Should(Succeed())
 
-	Eventually(func() error {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=kube-system", "get", "daemonset/calico-node", "-o=json")
-		if err != nil {
-			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-		}
-		daemonset := new(appsv1.DaemonSet)
-		err = json.Unmarshal(stdout, daemonset)
-		if err != nil {
-			return err
-		}
-		if daemonset.Status.DesiredNumberScheduled != daemonset.Status.NumberReady {
-			return fmt.Errorf("calico-node daemonset's NumberReady is not %d: %d", int(daemonset.Status.DesiredNumberScheduled), int(daemonset.Status.NumberReady))
-		}
-		return nil
-	}, 3*time.Minute).Should(Succeed())
+	// Eventually(func() error {
+	// 	stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=kube-system", "get", "daemonset/calico-node", "-o=json")
+	// 	if err != nil {
+	// 		return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+	// 	}
+	// 	daemonset := new(appsv1.DaemonSet)
+	// 	err = json.Unmarshal(stdout, daemonset)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	if daemonset.Status.DesiredNumberScheduled != daemonset.Status.NumberReady {
+	// 		return fmt.Errorf("calico-node daemonset's NumberReady is not %d: %d", int(daemonset.Status.DesiredNumberScheduled), int(daemonset.Status.NumberReady))
+	// 	}
+	// 	return nil
+	// }, 3*time.Minute).Should(Succeed())
 }
 
 func setupArgoCD() {
