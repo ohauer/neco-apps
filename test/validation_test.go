@@ -234,6 +234,7 @@ func doCheckKustomizedYaml(t *testing.T, checkFunc func(*testing.T, []byte)) {
 		t.Error(err)
 	}
 
+	// Limit the number of parallel executions to avoid kustomize prosesses are killed with kill signal when running them without limit.
 	maxParallels := int64(10)
 	sem := semaphore.NewWeighted(maxParallels)
 	for _, path := range targets {
