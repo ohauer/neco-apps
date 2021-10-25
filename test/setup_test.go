@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"sort"
@@ -365,6 +366,12 @@ func testSetup() {
 			}
 			return nil
 		}).Should(Succeed())
+	})
+
+	It("exports a list of images used", func() {
+		stdout := ExecSafeAt(boot0, "kubectl", "get", "pods", "-A", "-o", "jsonpath=\"{.items[*].spec.containers[*].image}\"", "|", "tr", "-s", "'[[:space:]]' ", "'\n'", "|", "sort", "-u")
+		err := ioutil.WriteFile("/tmp/image_list.txt", stdout, 0644)
+		Expect(err).NotTo(HaveOccurred())
 	})
 }
 
