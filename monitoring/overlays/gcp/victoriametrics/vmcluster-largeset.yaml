@@ -1,0 +1,12 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMCluster
+metadata:
+  name: vmcluster-largeset
+  namespace: monitoring
+spec:
+  vmstorage:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          # using ceph-ssd makes CI *VERY* unstable.
+          storageClassName: ceph-hdd-block
