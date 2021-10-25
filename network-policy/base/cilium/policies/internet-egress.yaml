@@ -31,3 +31,52 @@ spec:
         - cidr: 10.0.0.0/8
         - cidr: 172.16.0.0/12
         - cidr: 192.168.0.0/16
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-squid
+  namespace: internet-egress
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: squid
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: squid
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+        - ports:
+            - port: "53"
+              protocol: UDP
+        - ports:
+            - port: "3128"
+              protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-unbound
+  namespace: internet-egress
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: unbound
+  ingress:
+    - fromEndpoints:
+        - matchLabels:
+            app.kubernetes.io/name: unbound
+      toPorts:
+        - ports:
+            - port: "1053"
+              protocol: TCP
+        - ports:
+            - port: "1053"
+              protocol: UDP
