@@ -11,6 +11,7 @@ spec:
       app.kubernetes.io/component: moco-controller
   podMetricsEndpoints:
   - port: metrics
+    honorLabels: true
     relabelConfigs:
     - replacement: moco-controller
       targetLabel: job
