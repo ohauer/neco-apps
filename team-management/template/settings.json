@@ -122,12 +122,16 @@
     },
     "dbre": {
       "app-cybozu-com-mysql": {
-        "cybozu.com/alert-group": "dbre"
+        "cybozu.com/alert-group": "dbre",
+        "pod-security.cybozu.com/policy": "traceable"
       },
       "app-cybozu-com-mysql-replica": {
-        "cybozu.com/alert-group": "dbre"
+        "cybozu.com/alert-group": "dbre",
+        "pod-security.cybozu.com/policy": "traceable"
       },
-      "app-cybozu-com-mysql-restore": {},
+      "app-cybozu-com-mysql-restore": {
+        "pod-security.cybozu.com/policy": "traceable"
+      },
       "app-dbre": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
@@ -138,7 +142,8 @@
       "dev-dbre": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
-        "development": "true"
+        "development": "true",
+        "pod-security.cybozu.com/policy": "traceable"
       }
     },
     "ept": {
