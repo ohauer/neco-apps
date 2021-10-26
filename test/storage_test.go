@@ -377,7 +377,7 @@ func confirmCephPod(ns string) error {
 			fmt.Println(string(stdout))
 
 			// re-create osd pod
-			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pod", pod.Name)
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pod", pod.Name, "--ignore-not-found=true")
 			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 
 			return fmt.Errorf("an osd pod gets failed and restarted")
