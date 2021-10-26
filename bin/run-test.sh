@@ -41,5 +41,6 @@ $GCLOUD compute ssh --zone=${ZONE} cybozu@${INSTANCE_NAME} --command="sudo -H /h
 STATUSCODE=$?
 mkdir -p ~/test-results/junit/
 $GCLOUD compute scp --zone=${ZONE} cybozu@${INSTANCE_NAME}:/tmp/junit.xml ~/test-results/junit/
+$GCLOUD compute scp --zone=${ZONE} cybozu@${INSTANCE_NAME}:/tmp/image_list.txt ~/test-results/
 
 exit ${STATUSCODE}

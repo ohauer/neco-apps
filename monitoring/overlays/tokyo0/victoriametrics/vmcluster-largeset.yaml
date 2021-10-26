@@ -7,9 +7,7 @@ spec:
   vmstorage:
     storage:
       volumeClaimTemplate:
-        metadata: null
         spec:
-          storageClassName: ceph-hdd-block
           resources:
             requests:
               storage: 2Ti

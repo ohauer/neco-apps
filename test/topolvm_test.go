@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -17,8 +18,13 @@ var topolvmYAML []byte
 
 func prepareTopoLVM() {
 	It("should prepare a Pod and a PVC", func() {
-		stdout, stderr, err := ExecAtWithInput(boot0, topolvmYAML, "kubectl", "apply", "-f", "-")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+		Eventually(func() error {
+			stdout, stderr, err := ExecAtWithInput(boot0, topolvmYAML, "kubectl", "apply", "-f", "-")
+			if err != nil {
+				return fmt.Errorf("failed to apply topolvm yaml: stdout=%s, stderr=%s", stdout, stderr)
+			}
+			return nil
+		}).Should(Succeed())
 	})
 }
 
@@ -85,6 +91,6 @@ func testTopoLVM() {
 			}
 
 			return fmt.Errorf("no metric for PVC")
-		}).Should(Succeed())
+		}, 10*time.Minute).Should(Succeed())
 	})
 }
