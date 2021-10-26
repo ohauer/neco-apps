@@ -75,5 +75,13 @@ spec:
               # to satisfy rule1 and 2: vmsingle-smallset and vmalertmanager-largest are place in the different node.
               app.kubernetes.io/instance: vmsingle-smallset
               managed-by: vm-operator
+  topologySpreadConstraints:
+    # TODO: When we have more than 3 racks, we can use strict rack spreading.
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+    - maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: ScheduleAnyway
   podDisruptionBudget:
     minAvailable: 2
