@@ -167,3 +167,12 @@ spec:
           annotations:
             summary: pushgateway is down.
             runbook: TBD
+        - alert: GrafanaDown
+          expr: |
+            absent(up{job="grafana"} == 1)
+          labels:
+            severity: error
+          for: 15m
+          annotations:
+            summary: grafana is down.
+            runbook: TBD
