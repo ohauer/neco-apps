@@ -44,10 +44,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: squid
   ingress:
-    - fromEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: squid
-      toPorts:
+    - toPorts:
         - ports:
             - port: "53"
               protocol: TCP
@@ -56,6 +53,17 @@ spec:
               protocol: UDP
         - ports:
             - port: "3128"
+              protocol: TCP
+  egress:
+    - toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+        - ports:
+            - port: "53"
+              protocol: UDP
+        - ports:
+            - port: "443"
               protocol: TCP
 ---
 apiVersion: cilium.io/v2

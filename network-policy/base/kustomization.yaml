@@ -12,6 +12,7 @@ resources:
   # - calico/rbac.yaml
   - cilium/global-policies/bmc-reverse-proxy.yaml
   - cilium/policies/ingress.yaml
+  - cilium/policies/argocd-egress.yaml
   - cilium/policies/internet-egress.yaml
   - cilium/policies/customer-egress.yaml
   - cilium/policies/domestic-egress.yaml
