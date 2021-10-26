@@ -109,6 +109,20 @@ rules:
   - "*"
   verbs:
   - "*"
+- apiGroups:
+    - apps
+  resources:
+    - deployments/scale
+    - deployments
+  verbs:
+    - patch
+    - delete
+- apiGroups:
+    - ""
+  resources:
+    - persistentvolumeclaims
+  verbs:
+    - delete
 ---
 # Source: rook-ceph/templates/role.yaml
 kind: Role
@@ -163,3 +177,22 @@ rules:
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
     verbs: ["get", "watch", "list", "delete", "update", "create"]
+---
+# Source: rook-ceph/templates/role.yaml
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: rook-ceph-purge-osd
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "delete" ]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "delete" ]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["delete"]

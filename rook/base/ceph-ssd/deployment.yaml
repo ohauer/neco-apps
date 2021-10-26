@@ -21,9 +21,14 @@ spec:
     spec:
       containers:
       - name: rook-ceph-operator
-        image: "quay.io/cybozu/rook:1.6.3.4"
+        image: "quay.io/cybozu/rook:1.7.5.0"
         imagePullPolicy: IfNotPresent
         args: ["ceph", "operator"]
+        volumeMounts:
+        - mountPath: /var/lib/rook
+          name: rook-config
+        - mountPath: /etc/ceph
+          name: default-config-dir
         env:
         - name: ROOK_CURRENT_NAMESPACE_ONLY
           value: "true"
@@ -54,7 +59,7 @@ spec:
         - name: CSI_RBD_FSGROUPPOLICY
           value: "ReadWriteOnceWithFSType"
         - name: CSI_CEPHFS_FSGROUPPOLICY
-          value: "ReadWriteOnceWithFSType"
+          value: "None"
         - name: ROOK_CSI_ENABLE_GRPC_METRICS
           value: "false"
         - name: CSI_RBD_GRPC_METRICS_PORT
@@ -63,10 +68,14 @@ spec:
           value: "29080"
         - name: CSI_FORCE_CEPHFS_KERNEL_CLIENT
           value: "true"
+        - name: CSI_PROVISIONER_REPLICAS
+          value: "2"
         - name: ROOK_ENABLE_FLEX_DRIVER
           value: "false"
         - name: ROOK_ENABLE_DISCOVERY_DAEMON
           value: "false"
+        - name: ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS
+          value: "300"
         - name: ROOK_OBC_WATCH_OPERATOR_NAMESPACE
           value: "true"
 
@@ -87,5 +96,10 @@ spec:
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 128Mi
       serviceAccountName: rook-ceph-system
+      volumes:
+      - name: rook-config
+        emptyDir: {}
+      - name: default-config-dir
+        emptyDir: {}

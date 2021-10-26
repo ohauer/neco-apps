@@ -12,5 +12,3 @@ resources:
   - rolebinding.yaml
   - serviceaccount.yaml
 namespace: ceph-poc-2
-patchesStrategicMerge:
-  - operator.yaml
