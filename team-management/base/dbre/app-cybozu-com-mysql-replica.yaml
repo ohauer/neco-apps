@@ -4,6 +4,7 @@ kind: Namespace
 metadata:
   labels:
     cybozu.com/alert-group: dbre
+    pod-security.cybozu.com/policy: traceable
   name: app-cybozu-com-mysql-replica
 ---
 apiVersion: rbac.authorization.k8s.io/v1
