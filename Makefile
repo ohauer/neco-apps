@@ -11,13 +11,8 @@ all:
 
 .PHONY: update-accurate
 update-accurate:
-	$(call get-latest-gh,cybozu-go/accurate)
-	rm -rf /tmp/accurate
-	cd /tmp; git clone --depth 1 -b $(latest_gh) https://github.com/cybozu-go/accurate
-	rm -rf accurate/base/upstream/*
-	cp -a /tmp/accurate/config/* accurate/base/upstream
-	rm -rf /tmp/accurate
-	sed -i -E 's/newTag:.*$$/newTag: $(subst v,,$(latest_gh))/' accurate/base/kustomization.yaml
+	$(call get-latest-helm,accurate,https://cybozu-go.github.io/accurate)
+	yq eval -i '.spec.source.targetRevision = "$(latest_helm)"' argocd-config/base/accurate.yaml
 
 .PHONY: update-argocd
 update-argocd:
