@@ -83,7 +83,6 @@ resources:
   - rules/vault-alertrule.yaml
   - rules/vault-scrape.yaml
 patchesStrategicMerge:
-  - remove_crd_status.yaml
   - rbac/viewer_aggregation.yaml
   - rbac/editor_aggregation.yaml
 configMapGenerator:

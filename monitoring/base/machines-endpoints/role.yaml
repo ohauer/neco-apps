@@ -8,3 +8,7 @@ rules:
       - services
       - endpoints
     verbs: ["get", "update", "create"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources:
+      - endpointslices
+    verbs: ["get", "update", "create"]

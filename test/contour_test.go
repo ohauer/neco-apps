@@ -13,7 +13,7 @@ import (
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	policyv1beta1 "k8s.io/api/policy/v1beta1"
+	policyv1 "k8s.io/api/policy/v1"
 )
 
 //go:embed testdata/contour-deploy.yaml
@@ -113,7 +113,7 @@ func testContour() {
 		By("checking PodDisruptionBudget for contour Deployment")
 		Eventually(func() error {
 			for _, ns := range ingressNamespaces {
-				pdb := policyv1beta1.PodDisruptionBudget{}
+				pdb := policyv1.PodDisruptionBudget{}
 				stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "poddisruptionbudgets", "contour-pdb", "-n", ns, "-o", "json")
 				if err != nil {
 					return fmt.Errorf("failed to get %s/contour-pdb: %s: %w", ns, stderr, err)
@@ -130,7 +130,7 @@ func testContour() {
 
 		By("checking PodDisruptionBudget for envoy Deployment")
 		for _, ns := range ingressNamespaces {
-			pdb := policyv1beta1.PodDisruptionBudget{}
+			pdb := policyv1.PodDisruptionBudget{}
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "poddisruptionbudgets", "envoy-pdb", "-n", ns, "-o", "json")
 			if err != nil {
 				Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)

@@ -207,37 +207,6 @@ func testApplicationResources(t *testing.T) {
 	}
 }
 
-// Use to check the existence of the status field in manifest files for CRDs.
-// `apiextensionsv1beta1.CustomResourceDefinition` cannot be used because the status field always exists in the struct.
-type crdValidation struct {
-	Kind     string `json:"kind"`
-	Metadata struct {
-		Name string `json:"name"`
-	} `json:"metadata"`
-	Status *struct{} `json:"status"`
-}
-
-func testCRDStatus(t *testing.T) {
-	t.Parallel()
-
-	doCheckKustomizedYaml(t, func(t *testing.T, data []byte) {
-		var crd crdValidation
-		err := yaml.Unmarshal(data, &crd)
-		if err != nil {
-			// Skip because this YAML might not be custom resource definition
-			return
-		}
-
-		if crd.Kind != "CustomResourceDefinition" {
-			// Skip because this YAML is not custom resource definition
-			return
-		}
-		if crd.Status != nil {
-			t.Errorf(".status(Status) exists in %s, remove it to prevent occurring OutOfSync by Argo CD", crd.Metadata.Name)
-		}
-	})
-}
-
 func doCheckKustomizedYaml(t *testing.T, checkFunc func(*testing.T, []byte)) {
 	targets := []string{}
 	err := filepath.Walk(manifestDir, func(path string, info os.FileInfo, err error) error {
@@ -638,7 +607,6 @@ func TestValidation(t *testing.T) {
 	}
 
 	t.Run("ApplicationTargetRevision", testApplicationResources)
-	t.Run("CRDStatus", testCRDStatus)
 	t.Run("NamespaceLabels", testNamespaceResources)
 	t.Run("VictoriaMetricsCustomResources", testVMCustomResources)
 }

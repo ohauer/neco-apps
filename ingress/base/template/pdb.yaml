@@ -1,4 +1,4 @@
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: contour-pdb
@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: contour
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: envoy-pdb
