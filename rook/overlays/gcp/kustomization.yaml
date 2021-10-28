@@ -2,7 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
-  - ../../poc/ceph-poc
 patchesJson6902:
 - target:
     group: ceph.rook.io
@@ -49,8 +48,8 @@ patchesJson6902:
     group: ceph.rook.io
     version: v1
     kind: CephCluster
-    name: ceph-poc
-    namespace: ceph-poc
+    name: ceph-object-store
+    namespace: ceph-object-store
   patch: |-
     - op: replace
       path: /spec/resources/osd/requests/cpu
@@ -64,9 +63,6 @@ patchesJson6902:
     - op: replace
       path: /spec/storage/storageClassDeviceSets/0/count
       value: 3
-    - op: replace
-      path: /spec/storage/storageClassDeviceSets/0/volumeClaimTemplates/0/spec/resources/requests/storage
-      value: 5Gi
     - op: replace
       path: /spec/storage/storageClassDeviceSets/1/count
       value: 3
@@ -89,6 +85,16 @@ patchesJson6902:
     kind: Deployment
     name: rook-ceph-operator
     namespace: ceph-ssd
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/2/value
+      value: DEBUG
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: rook-ceph-operator
+    namespace: ceph-object-store
   patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/env/2/value

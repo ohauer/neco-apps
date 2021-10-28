@@ -4,3 +4,4 @@ resources:
   - common
   - ceph-hdd
   - ceph-ssd
+  - ceph-object-store
