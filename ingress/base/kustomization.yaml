@@ -7,8 +7,6 @@ resources:
   - global
   - forest
   - bastion
-patchesStrategicMerge:
-  - patch/crd.yaml
 images:
   - name: quay.io/cybozu/contour
     newTag: 1.18.1.1

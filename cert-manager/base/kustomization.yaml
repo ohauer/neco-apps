@@ -4,7 +4,6 @@ resources:
   - upstream/cert-manager.yaml
 patchesStrategicMerge:
   - namespace.yaml
-  - crd.yaml
   - deployment.yaml
   - mutatingwebhookconfiguration.yaml
   - validatingwebhookconfiguration.yaml
