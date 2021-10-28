@@ -39,23 +39,30 @@ loki {
       ingester+: {
         lifecycler+: {
           ring+: {
-            kvstore+: {
-              consul+: {
-                host: 'logging-consul-server.logging.svc:8500'
-              },
-            },
+            kvstore: std.mergePatch(super.kvstore, {
+              store: 'memberlist',
+              consul: null
+            }),
           },
         },
       },
 
       distributor+: {
         ring+: {
-          kvstore+: {
-            consul+: {
-              host: 'logging-consul-server.logging.svc:8500'
-            },
-          },
+          kvstore: std.mergePatch(super.kvstore, {
+            store: 'memberlist',
+            consul: null
+          }),
         },
+      },
+
+      memberlist+: {
+        abort_if_cluster_join_fails: false,
+        bind_port: 7946,
+        join_members: ['loki-gossip-ring.logging.svc:7946'],
+        retransmit_factor: 2,
+        gossip_interval: '5s',
+        stream_timeout: '5s'
       },
 
       schema_config+: {
