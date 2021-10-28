@@ -1651,7 +1651,7 @@ spec:
                 "pluginVersion": "7.5.6",
                 "targets": [
                     {
-                        "expr": "avg (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+                        "expr": "avg (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / (rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) != 0) >= 0)",
                         "format": "time_series",
                         "instant": false,
                         "interval": "",
@@ -1726,7 +1726,7 @@ spec:
                 "pluginVersion": "7.5.6",
                 "targets": [
                     {
-                        "expr": "avg (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m])/rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+                        "expr": "avg (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m]) / (rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) != 0) >= 0)",
                         "format": "time_series",
                         "instant": true,
                         "interval": "",
@@ -4178,7 +4178,7 @@ spec:
                 "reverseYBuckets": false,
                 "targets": [
                     {
-                        "expr": "rate(sum without (instance, pod) (ceph_osd_op_r_latency_sum{namespace=\"$namespace\"})[5m]) / rate(sum without (instance, pod) (ceph_osd_op_r_latency_count{namespace=\"$namespace\"})[5m]) >= 0",
+                        "expr": "rate(sum without (instance, pod) (ceph_osd_op_r_latency_sum{namespace=\"$namespace\"})[5m]) / (rate(sum without (instance, pod) (ceph_osd_op_r_latency_count{namespace=\"$namespace\"})[5m]) != 0) >= 0",
                         "format": "time_series",
                         "instant": false,
                         "interval": "$interval",
@@ -4245,7 +4245,7 @@ spec:
                 "reverseYBuckets": false,
                 "targets": [
                     {
-                        "expr": "rate(sum without (instance, pod) (ceph_osd_op_w_latency_sum{namespace=\"$namespace\"})[5m]) / rate(sum without (instance, pod) (ceph_osd_op_w_latency_count{namespace=\"$namespace\"})[5m]) >= 0",
+                        "expr": "rate(sum without (instance, pod) (ceph_osd_op_w_latency_sum{namespace=\"$namespace\"})[5m]) / (rate(sum without (instance, pod) (ceph_osd_op_w_latency_count{namespace=\"$namespace\"})[5m]) != 0) >= 0",
                         "format": "time_series",
                         "hide": false,
                         "instant": false,
@@ -4330,7 +4330,7 @@ spec:
                 "steppedLine": false,
                 "targets": [
                     {
-                        "expr": "avg (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+                        "expr": "avg (rate(ceph_osd_op_r_latency_sum{namespace=\"$namespace\"}[5m]) / (rate(ceph_osd_op_r_latency_count{namespace=\"$namespace\"}[5m]) != 0) >= 0)",
                         "format": "time_series",
                         "interval": "",
                         "intervalFactor": 1,
@@ -4338,7 +4338,7 @@ spec:
                         "refId": "A"
                     },
                     {
-                        "expr": "avg (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) >= 0)",
+                        "expr": "avg (rate(ceph_osd_op_w_latency_sum{namespace=\"$namespace\"}[5m]) / (rate(ceph_osd_op_w_latency_count{namespace=\"$namespace\"}[5m]) != 0) >= 0)",
                         "format": "time_series",
                         "interval": "",
                         "intervalFactor": 1,

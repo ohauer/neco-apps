@@ -23,6 +23,7 @@ resources:
   - upstream/v1.Service-query-frontend.yaml
   - upstream/v1.Service-table-manager.yaml
   - obc.yaml
+  - service.yaml
 patchesStrategicMerge:
   - patch.yaml
 images:

@@ -14,11 +14,3 @@ metadata:
   namespace: ceph-ssd
 data:
   CSI_ENABLE_HOST_NETWORK: "true"
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: rook-ceph-operator-config
-  namespace: ceph-poc
-data:
-  CSI_ENABLE_HOST_NETWORK: "true"

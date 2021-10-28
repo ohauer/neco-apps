@@ -5,7 +5,6 @@ resources:
 - argocd-config.yaml
 - tenants
 patchesStrategicMerge:
-- accurate.yaml
 - argocd-ingress.yaml
 - argocd.yaml
 - bmc-reverse-proxy.yaml

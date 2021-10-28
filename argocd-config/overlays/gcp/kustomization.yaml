@@ -12,7 +12,6 @@ patchesStrategicMerge:
 - meows.yaml
 - metallb.yaml
 - monitoring.yaml
-- namespaces.yaml
 - rook.yaml
 - sandbox.yaml
 - secrets.yaml

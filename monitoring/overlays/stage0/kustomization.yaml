@@ -9,7 +9,6 @@ patchesStrategicMerge:
   - heartbeat.yaml
   - ingress-health/httpproxy.yaml
   - victoriametrics/vmcluster-largeset.yaml
-  - victoriametrics/rules/rook-scrape.yaml
 configMapGenerator:
   - name: vmalertmanager
     behavior: merge

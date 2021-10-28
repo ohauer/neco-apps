@@ -233,3 +233,16 @@ tests:
             exp_annotations:
               runbook: TBD
               summary: pushgateway is down.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="grafana"}'
+        values: '0+0x15'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: GrafanaDown
+        exp_alerts:
+          - exp_labels:
+              severity: error
+            exp_annotations:
+              runbook: TBD
+              summary: grafana is down.

@@ -5,11 +5,17 @@ metadata:
   namespace: logging
 spec:
   template:
+    metadata:
+      labels:
+        gossip_ring_member: "true"
     spec:
       containers:
         - name: distributor
           resources:
             limits: null
+          ports:
+            - containerPort: 7946
+              name: gossip-ring
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -98,6 +104,9 @@ metadata:
   namespace: logging
 spec:
   template:
+    metadata:
+      labels:
+        gossip_ring_member: "true"
     spec:
       containers:
         - name: ingester
@@ -124,6 +133,9 @@ spec:
                   key: AWS_SECRET_ACCESS_KEY
           resources:
             limits: null
+          ports:
+            - containerPort: 7946
+              name: gossip-ring
       terminationGracePeriodSeconds: 30
 ---
 apiVersion: apps/v1
@@ -133,6 +145,9 @@ metadata:
   namespace: logging
 spec:
   template:
+    metadata:
+      labels:
+        gossip_ring_member: "true"
     spec:
       containers:
         - name: querier
@@ -157,4 +172,7 @@ spec:
                 secretKeyRef:
                   name: loki-bucket
                   key: AWS_SECRET_ACCESS_KEY
+          ports:
+            - containerPort: 7946
+              name: gossip-ring
       terminationGracePeriodSeconds: 30
