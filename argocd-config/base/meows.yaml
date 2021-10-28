@@ -17,4 +17,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: meows
-  syncPolicy: {}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
