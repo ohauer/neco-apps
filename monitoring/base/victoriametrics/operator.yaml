@@ -97,7 +97,7 @@ spec:
             matchLabels:
               control-plane: victoriametrics-operator
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: victoriametrics-operator

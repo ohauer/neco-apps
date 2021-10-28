@@ -6,6 +6,7 @@ metadata:
     accurate.cybozu.com/template: init-template
     accurate.cybozu.com/type: root
     development: "true"
+    pod-security.cybozu.com/policy: traceable
   name: dev-dbre
 ---
 apiVersion: rbac.authorization.k8s.io/v1

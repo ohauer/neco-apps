@@ -42,6 +42,12 @@ spec:
           readOnly: false
         - name: home
           mountPath: /home/actions
+        - name: worker
+          mountPath: /runner/_worker
+        - name: tools
+          mountPath: /opt/hostedtoolcache
+        - name: tmp
+          mountPath: /tmp
         - name: secrets
           mountPath: /secrets
           readOnly: true
@@ -64,6 +70,33 @@ spec:
                   requests:
                     storage: 400Gi
         - name: home
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                storageClassName: topolvm-flash1-xfs
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: 15Gi
+        - name: worker
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                storageClassName: topolvm-flash1-xfs
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: 15Gi
+        - name: tools
+          ephemeral:
+            volumeClaimTemplate:
+              spec:
+                storageClassName: topolvm-flash1-xfs
+                accessModes: [ "ReadWriteOnce" ]
+                resources:
+                  requests:
+                    storage: 15Gi
+        - name: tmp
           ephemeral:
             volumeClaimTemplate:
               spec:

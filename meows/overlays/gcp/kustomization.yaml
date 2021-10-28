@@ -12,6 +12,5 @@ resources:
   - ./clusterrole.yaml
   - ./namespace.yaml
 patchesStrategicMerge:
-  - ./crd.yaml
   - ./deployment.yaml
   - ./webhook.yaml
