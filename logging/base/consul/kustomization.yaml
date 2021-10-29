@@ -6,15 +6,3 @@ resources:
 images:
   - name: quay.io/cybozu/consul
     newTag: 1.10.2.3
-patchesJson6902:
-- target:
-    group: policy
-    version: v1
-    kind: PodDisruptionBudget
-    name: logging-consul-server
-    namespace: logging
-  # This patch should be deleted after upgrading to k8s 1.21, when "policy" is promoted from v1beta1 to v1.
-  patch: |-
-    - op: replace
-      path: /apiVersion
-      value: policy/v1beta1

@@ -4,5 +4,3 @@ resources:
 - ./upstream/crd.yaml
 - deployment.yaml
 - rbac.yaml
-patchesStrategicMerge:
-- crd.yaml

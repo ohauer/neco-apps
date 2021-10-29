@@ -31,7 +31,7 @@ metadata:
     metallb.universe.tf/address-pool: bastion
 spec:
   type: LoadBalancer
-  externalTrafficPolicy: Cluster
+  externalTrafficPolicy: Local
   ports:
     - name: proxyssh
       port: 3023
