@@ -6,6 +6,8 @@ metadata:
   labels:
     smallset: "true"
 spec:
+  namespaceSelector:
+    any: true
   selector:
     matchLabels:
       app: rook-ceph-mgr
