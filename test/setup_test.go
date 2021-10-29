@@ -389,7 +389,7 @@ func enableHostNetworkForCephRbdplugin() {
 	data = ExecSafeAt(boot0, "kubectl", "get", "pvc", "-A", "-o", "json")
 	err = json.Unmarshal(data, &pvcList)
 	Expect(err).ShouldNot(HaveOccurred(), "data=%s", string(data))
-	r := regexp.MustCompile(`ceph-(ssd|hdd|poc)-block`)
+	r := regexp.MustCompile(`ceph-(ssd|hdd)-block`)
 	for _, pvc := range pvcList.Items {
 		if !r.MatchString(*pvc.Spec.StorageClassName) {
 			continue
@@ -423,7 +423,7 @@ func enableHostNetworkForCephRbdplugin() {
 		return nil
 	}, 10*time.Minute).Should(Succeed())
 
-	nsList := []string{"ceph-hdd", "ceph-ssd", "ceph-poc"}
+	nsList := []string{"ceph-hdd", "ceph-ssd"}
 	for _, ns := range nsList {
 		ExecSafeAt(boot0, "kubectl", "scale", "-n", ns, "deployment", "rook-ceph-operator", "--replicas=0")
 		Eventually(func() error {
@@ -500,6 +500,10 @@ func applyAndWaitForApplications(commitID string) {
 			}
 		}
 	}
+
+	// TODO: remove this block after #1890 is released
+	By("remove ceph-poc")
+	removeCephPoc()
 
 	By("creating Argo CD app")
 	Eventually(func() error {
@@ -686,7 +690,7 @@ func applyAndWaitForApplications(commitID string) {
 
 	// TODO: remove this block after #1811 is released
 	if doUpgrade {
-		nss := []string{"ceph-hdd", "ceph-ssd", "ceph-poc"}
+		nss := []string{"ceph-hdd", "ceph-ssd"}
 		for _, ns := range nss {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
 				"get", "deployment", "-o=json")
@@ -704,6 +708,70 @@ func applyAndWaitForApplications(commitID string) {
 			}
 		}
 	}
+}
+
+func removeCephPoc() {
+	if !doUpgrade {
+		return
+	}
+	stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "namespace", "ceph-poc", "--no-headers", "--ignore-not-found")
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+	if len(stdout) == 0 {
+		return
+	}
+
+	ExecSafeAt(boot0, "argocd", "app", "set", "namespaces", "--sync-policy=none")
+	ExecSafeAt(boot0, "argocd", "app", "set", "neco-admission", "--sync-policy=none")
+	ExecSafeAt(boot0, "kubectl", "delete", "validatingwebhookconfigurations.admissionregistration.k8s.io", "neco-admission")
+
+	ExecSafeAt(boot0, "kubectl", "delete", "deployments.apps", "addload-for-ss", "--wait=false")
+
+	ExecSafeAt(boot0, "argocd", "app", "set", "rook", "--sync-policy=none")
+
+	ExecSafeAt(boot0, "kubectl", "delete", "-n", "ceph-poc", "cephblockpools.ceph.rook.io", "ceph-poc-block-pool")
+	ExecSafeAt(boot0, "kubectl", "delete", "-n", "ceph-poc", "cephobjectstores.ceph.rook.io", "ceph-poc-object-store-ssd-index")
+	ExecSafeAt(boot0, "kubectl", "delete", "-n", "ceph-poc", "cephobjectstores.ceph.rook.io", "ceph-poc-object-store-hdd-index")
+
+	Eventually(func() error {
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "pod", "-n", "ceph-poc", "-l", "app=rook-ceph-rgw", "--no-headers", "--ignore-not-found")
+		if err != nil {
+			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
+
+		if len(stdout) > 0 {
+			return fmt.Errorf("rgw is still alive.")
+		}
+
+		return nil
+	}, 10*time.Minute).Should(Succeed())
+	ExecSafeAt(boot0, "kubectl", "delete", "-n", "ceph-poc", "cephclusters.ceph.rook.io", "ceph-poc")
+	for _, t := range []string{"mon", "mgr", "osd"} {
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "pod", "-n", "ceph-poc", "-l", "app=rook-ceph-"+t, "--no-headers", "--ignore-not-found")
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+
+			if len(stdout) > 0 {
+				return fmt.Errorf(t + " is still alive.")
+			}
+
+			return nil
+		}, 10*time.Minute).Should(Succeed())
+	}
+	ExecSafeAt(boot0, "kubectl", "delete", "ns", "ceph-poc", "--wait=false")
+	Eventually(func() error {
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "ns", "ceph-poc", "--ignore-not-found=true")
+		if err != nil {
+			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
+
+		if len(stdout) > 0 {
+			return fmt.Errorf("ceph-poc namespace is still alive.")
+		}
+
+		return nil
+	}, 10*time.Minute).Should(Succeed())
 }
 
 // Sometimes synchronization fails when argocd applies network policies.

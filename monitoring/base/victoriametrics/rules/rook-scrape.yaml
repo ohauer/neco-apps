@@ -6,8 +6,6 @@ metadata:
   labels:
     smallset: "true"
 spec:
-  namespaceSelector:
-    matchNames: [ceph-hdd, ceph-ssd]
   selector:
     matchLabels:
       app: rook-ceph-mgr
