@@ -69,10 +69,10 @@ spec:
     ssl: true
   priorityClassNames:
     osd: node-bound
-  disruptionManagement:
-    managePodBudgets: false
-    osdMaintenanceTimeout: 60 # rebooting worker nodes takes about 60 minutes.
-    pgHealthCheckTimeout: 0
+  # disruptionManagement:
+  #   managePodBudgets: false
+  #   osdMaintenanceTimeout: 60 # rebooting worker nodes takes about 60 minutes.
+  #   pgHealthCheckTimeout: 0
   healthCheck:
     daemonHealth:
       # Ensure that mon waits for failover for up to one hour when restarting a node.

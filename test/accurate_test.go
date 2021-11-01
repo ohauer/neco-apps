@@ -109,6 +109,7 @@ func testAccurate() {
 		}).Should(Succeed())
 
 		By("deleting child namespace by deleting SubNamespace")
+		ExecSafeAt(boot0, "kubectl", "annotate", "SubNamespace", "-n", accurateParentNamespaceName, accurateChildNamespaceName, "admission.cybozu.com/i-am-sure-to-delete="+accurateChildNamespaceName)
 		ExecSafeAt(boot0, "kubectl", "delete", "SubNamespace", "-n", accurateParentNamespaceName, accurateChildNamespaceName)
 
 		Eventually(func() error {
