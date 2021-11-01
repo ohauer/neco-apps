@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki-gossip-ring
+  namespace: logging
+spec:
+  clusterIP: None
+  ports:
+    - name: gossip-ring
+      port: 7946
+      protocol: TCP
+      targetPort: 7946
+  publishNotReadyAddresses: true
+  selector:
+    gossip_ring_member: "true"

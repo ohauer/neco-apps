@@ -94,6 +94,7 @@ webhooks:
     - DELETE
     resources:
     - namespaces
+    - resourcequotas
   sideEffects: None
 - admissionReviewVersions:
   - v1
@@ -197,25 +198,4 @@ webhooks:
     - DELETE
     resources:
     - persistentvolumeclaims
-  sideEffects: None
-- admissionReviewVersions:
-  - v1
-  - v1beta1
-  clientConfig:
-    service:
-      name: webhook-service
-      namespace: system
-      path: /validate-service
-  failurePolicy: Fail
-  name: vservice.kb.io
-  rules:
-  - apiGroups:
-    - ""
-    apiVersions:
-    - v1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - services
   sideEffects: None

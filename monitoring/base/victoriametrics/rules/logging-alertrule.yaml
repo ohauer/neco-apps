@@ -62,16 +62,6 @@ spec:
             summary: Loki table-manager has disappeared from Prometheus target discovery.
             runbook: Please consider to find root causes, and solve the problems
 
-        - alert: LokiConsulServerDown
-          expr: |
-            absent(kube_pod_status_ready{namespace="logging",pod=~"logging-consul-server-.*",condition="true"} == 1)
-          labels:
-            severity: error
-          for: 10m
-          annotations:
-            summary: Loki consul-server has disappeared from Prometheus target discovery.
-            runbook: Please consider to find root causes, and solve the problems
-
         - alert: LoggingMemcachedDown
           expr: |
             absent(up{job="logging-memcached"} == 1)
