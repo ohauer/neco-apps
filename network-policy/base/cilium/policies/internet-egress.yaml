@@ -88,3 +88,11 @@ spec:
         - ports:
             - port: "1053"
               protocol: UDP
+  egress:
+    - toPorts:
+        - ports:
+            - port: "53"
+              protocol: TCP
+        - ports:
+            - port: "53"
+              protocol: UDP
