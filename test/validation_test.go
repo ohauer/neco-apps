@@ -208,7 +208,7 @@ func testApplicationResources(t *testing.T) {
 	}
 }
 
-func doCheckKustomizedYaml(t *testing.T, checkFunc func(*testing.T, []byte)) {
+func doCheckKustomizedYaml(t *testing.T, checkFunc func(*testing.T, string, []byte)) {
 	targets := []string{}
 	err := filepath.Walk(manifestDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
