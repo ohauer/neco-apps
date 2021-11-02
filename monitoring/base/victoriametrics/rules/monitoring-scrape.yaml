@@ -256,3 +256,20 @@ spec:
     relabelConfigs:
       - replacement: pushgateway
         targetLabel: job
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [monitoring]
+  selector:
+    matchLabels:
+      app: grafana
+  podMetricsEndpoints:
+  - port: grafana-http
+    relabelConfigs:
+      - replacement: grafana
+        targetLabel: job

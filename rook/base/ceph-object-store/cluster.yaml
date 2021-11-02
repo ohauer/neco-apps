@@ -1,8 +1,8 @@
 apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
-  name: ceph-ssd
-  namespace: ceph-ssd
+  name: ceph-object-store
+  namespace: ceph-object-store
 spec:
   dataDirHostPath: /var/lib/rook
   resources:
@@ -39,7 +39,7 @@ spec:
     count: 3
     volumeClaimTemplate:
       spec:
-        storageClassName: topolvm-provisioner
+        storageClassName: topolvm-flash1-ext4
         resources:
           requests:
             storage: 10Gi
@@ -82,17 +82,72 @@ spec:
       # However, this is not a problem since most node reboots are completed within 30 minutes.
       mon:
         timeout: "1800s"
+    livenessProbe:
+      # extend livenessProve.initialDelaySeconds for osds since an osd's initialize process is so slow.
+      osd:
+        probe:
+          initialDelaySeconds: 600
   storage:
     storageClassDeviceSets:
-      - name: set1
-        count: 20
+      - name: hdd
+        count: 18
+        tuneDeviceClass: true
         volumeClaimTemplates:
           - metadata:
               name: data
+              annotations:
+                crushDeviceClass: hdd
             spec:
               resources:
                 requests:
-                  storage: 1Ti
+                  # Local-storage provisioner allocates whole disk capacity, in spite of the storage request specified.
+                  storage: 5Gi
+              # IMPORTANT: Change the storage class depending on your environment (e.g. local-storage, gp2)
+              storageClassName: local-storage
+              volumeMode: Block
+              accessModes:
+                - ReadWriteOnce
+        placement:
+          tolerations:
+            - key: cke.cybozu.com/role
+              operator: Equal
+              value: storage
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: topology.kubernetes.io/zone
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - rook-ceph-osd
+                      - rook-ceph-osd-prepare
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - rook-ceph-osd
+                      - rook-ceph-osd-prepare
+      - name: ssd
+        count: 6
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+              annotations:
+                crushDeviceClass: ssd
+            spec:
+              resources:
+                requests:
+                  storage: 256Gi
               # IMPORTANT: Change the storage class depending on your environment (e.g. local-storage, gp2)
               storageClassName: topolvm-provisioner
               volumeMode: Block

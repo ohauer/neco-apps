@@ -1,8 +1,0 @@
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMServiceScrape
-metadata:
-  name: rook
-  namespace: monitoring
-spec:
-  namespaceSelector:
-    matchNames: [ceph-hdd, ceph-ssd, ceph-poc]

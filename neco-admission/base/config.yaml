@@ -19,6 +19,9 @@ ArgoCDApplicationValidator:
       repositoryPrefix: https://github.com/garoon-private
     - projects:
         - default
+      repository: https://cybozu-go.github.io/accurate
+    - projects:
+        - default
       repository: https://github.com/cybozu-go/neco-apps.git
     - projects:
         - default

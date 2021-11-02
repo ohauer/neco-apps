@@ -7,7 +7,7 @@ metadata:
     smallset: "true"
 spec:
   namespaceSelector:
-    matchNames: [ceph-hdd, ceph-ssd]
+    any: true
   selector:
     matchLabels:
       app: rook-ceph-mgr
