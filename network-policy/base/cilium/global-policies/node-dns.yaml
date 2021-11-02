@@ -7,12 +7,12 @@ metadata:
 spec:
   endpointSelector: {}
   egress:
-    - toCIDR:
-      - 10.69.0.0/16
-      toPorts:
+    - toPorts:
         - ports:
             - port: "53"
               protocol: TCP
         - ports:
             - port: "53"
               protocol: UDP
+      # toCIDR:
+      # - 10.69.0.0/16
