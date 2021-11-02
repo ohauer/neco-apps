@@ -11,4 +11,6 @@ spec:
       - name: kube-state-metrics
         args:
         - --metric-labels-allowlist
-        - namespaces=[team],nodes=[cke.cybozu.com/rack,cke.cybozu.com/role,cke.cybozu.com/master]
+        - namespaces=[team,development],nodes=[cke.cybozu.com/rack,cke.cybozu.com/role,cke.cybozu.com/master]
+        - --metric-annotations-allowlist
+        - persistentvolumeclaims=[volume.kubernetes.io/selected-node]

@@ -8,18 +8,22 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/cybozu-go/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	promv1 "github.com/prometheus/client_golang/api/prometheus/v1"
+	"github.com/prometheus/common/model"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -97,6 +101,90 @@ func testKubeStateMetrics() {
 			}
 			return nil
 		}).Should(Succeed())
+	})
+
+	It("should export specified labels and annotations", func() {
+		expectedMetricsLabels := map[string]map[string]map[string]bool{
+			// kind -> label/annotation -> its name -> true
+			"namespace": {
+				"label": {
+					"team":        true,
+					"development": true,
+				},
+			},
+			"node": {
+				"label": {
+					"cke.cybozu.com/rack":   true,
+					"cke.cybozu.com/role":   true,
+					"cke.cybozu.com/master": true,
+				},
+			},
+			"persistentvolumeclaim": {
+				"annotation": {
+					"volume.kubernetes.io/selected-node": true,
+				},
+			},
+		}
+
+		Eventually(func() error {
+			promql := `{__name__=~"kube_.*_(labels|annotations)"}`
+			querystr := url.QueryEscape(promql)
+			stdout, stderr, err := ExecAt(boot0, "curl", "-sf", "http://vmselect-vmcluster-largeset.monitoring.svc:8481/select/0/prometheus/api/v1/query?query="+querystr)
+			if err != nil {
+				return fmt.Errorf("stderr=%s: %w", string(stderr), err)
+			}
+
+			result := struct {
+				Data struct {
+					Result model.Vector `json:"result"`
+				} `json:"data"`
+			}{}
+			err = json.Unmarshal(stdout, &result)
+			if err != nil {
+				return err
+			}
+
+			metricsLabels := map[string]map[string]bool{}
+			for _, sample := range result.Data.Result {
+				if sample.Metric == nil {
+					continue
+				}
+
+				name := string(sample.Metric["__name__"])
+				var la string
+				if strings.HasSuffix(name, "_labels") {
+					name = name[5 : len(name)-len("_labels")]
+					la = "label"
+				} else {
+					name = name[5 : len(name)-len("_annotations")]
+					la = "annotation"
+				}
+				if _, ok := metricsLabels[name]; !ok {
+					metricsLabels[name] = map[string]bool{}
+				}
+
+				for labelName := range sample.Metric {
+					label := string(labelName)
+					if strings.HasPrefix(label, la+"_") {
+						metricsLabels[name][label] = true
+					}
+				}
+			}
+
+			r := regexp.MustCompile("[^a-zA-Z]")
+			for kind, x := range expectedMetricsLabels {
+				for la, y := range x {
+					for name := range y {
+						name = r.ReplaceAllString(name, "_")
+						if _, ok := metricsLabels[kind][la+"_"+name]; !ok {
+							return fmt.Errorf("kube_%s_%ss metrics does not have %s_%s label", kind, la, la, name)
+						}
+					}
+				}
+			}
+
+			return nil
+		}, 10*time.Minute).Should(Succeed())
 	})
 }
 
