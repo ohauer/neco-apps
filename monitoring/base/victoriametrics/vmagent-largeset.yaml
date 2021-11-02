@@ -6,25 +6,46 @@ metadata:
 spec:
   extraArgs:
     promscrape.maxScrapeSize: "33554432"
+  serviceScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
   serviceScrapeSelector:
     matchExpressions:
       - key: managed-by
         operator: NotIn
         values:
           - vm-operator
+  podScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
   podScrapeSelector:
     matchExpressions:
       - key: managed-by
         operator: NotIn
         values:
           - vm-operator
+  nodeScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
   nodeScrapeSelector:
     matchExpressions:
       - key: managed-by
         operator: NotIn
         values:
           - vm-operator
+  probeNamespaceSelector:
+    matchLabels:
+      team: neco
   probeSelector:
+    matchExpressions:
+      - key: managed-by
+        operator: NotIn
+        values:
+          - vm-operator
+  staticScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
+  staticScrapeSelector:
     matchExpressions:
       - key: managed-by
         operator: NotIn

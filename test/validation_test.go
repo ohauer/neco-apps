@@ -298,6 +298,8 @@ type VMAgent struct {
 		NodeScrapeNamespaceSelector    *metav1.LabelSelector `json:"nodeScrapeNamespaceSelector,omitempty"`
 		ProbeSelector                  *metav1.LabelSelector `json:"probeSelector,omitempty"`
 		ProbeNamespaceSelector         *metav1.LabelSelector `json:"probeNamespaceSelector,omitempty"`
+		StaticScrapeSelector           *metav1.LabelSelector `json:"staticScrapeSelector,omitempty"`
+		StaticScrapeNamespaceSelector  *metav1.LabelSelector `json:"staticScrapeNamespaceSelector,omitempty"`
 	} `json:"spec"`
 }
 
@@ -532,12 +534,18 @@ func testVMCustomResources(t *testing.T) {
 		t.Fatalf("failed to get vmalert-smallset")
 	}
 
+	necoNamespaceLabelSelector := metav1.LabelSelector{
+		MatchLabels: map[string]string{
+			"team": "neco",
+		},
+	}
 	// check namespace label selectors
-	if smallsetVMAgent.Spec.ServiceScrapeNamespaceSelector != nil ||
-		smallsetVMAgent.Spec.PodScrapeNamespaceSelector != nil ||
-		smallsetVMAgent.Spec.NodeScrapeNamespaceSelector != nil ||
-		smallsetVMAgent.Spec.ProbeNamespaceSelector != nil ||
-		smallsetVMAlert.Spec.RuleNamespaceSelector != nil {
+	if !reflect.DeepEqual(smallsetVMAgent.Spec.ServiceScrapeNamespaceSelector, &necoNamespaceLabelSelector) ||
+		!reflect.DeepEqual(smallsetVMAgent.Spec.PodScrapeNamespaceSelector, &necoNamespaceLabelSelector) ||
+		!reflect.DeepEqual(smallsetVMAgent.Spec.NodeScrapeNamespaceSelector, &necoNamespaceLabelSelector) ||
+		!reflect.DeepEqual(smallsetVMAgent.Spec.ProbeNamespaceSelector, &necoNamespaceLabelSelector) ||
+		!reflect.DeepEqual(smallsetVMAgent.Spec.StaticScrapeNamespaceSelector, &necoNamespaceLabelSelector) ||
+		!reflect.DeepEqual(smallsetVMAlert.Spec.RuleNamespaceSelector, &necoNamespaceLabelSelector) {
 		t.Errorf("bad namespace selector")
 	}
 

@@ -5,6 +5,9 @@ metadata:
   namespace: monitoring
 spec:
   replicaCount: 3
+  configNamespaceSelector:
+    matchLabels:
+      team: neco
   # VMAlertmanager is able to detect configSecret content change and to reload alertmanager.
   # We don't need to use secretGenerator for alertmanager.yaml unlike monitoring/base/alertmanager/deployment.yaml
   configSecret: vmalertmanager-config
