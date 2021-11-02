@@ -40,9 +40,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
-  endpointSelector:
-    matchLabels:
-      app.kubernetes.io/name: squid
+  endpointSelector: {}
   ingress:
     - toPorts:
         - ports:
@@ -74,14 +72,9 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
 spec:
-  endpointSelector:
-    matchLabels:
-      app.kubernetes.io/name: unbound
+  endpointSelector: {}
   ingress:
-    - fromEndpoints:
-        - matchLabels:
-            app.kubernetes.io/name: unbound
-      toPorts:
+    - toPorts:
         - ports:
             - port: "1053"
               protocol: TCP
