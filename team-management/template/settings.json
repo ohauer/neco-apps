@@ -34,7 +34,7 @@
   "apps": {
     "cydec-apps": {
       "destinations": {},
-      "repo": "https://github.com/cybozu-private/cydec-apps.git",
+      "repo": "https://github.com/cybozu-private/cydec-apps",
       "team": "cydec"
     },
     "dbre-apps": {
