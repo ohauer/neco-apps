@@ -42,11 +42,15 @@ var setupRookYAML string
 
 func prepareNodes() {
 	It("should increase worker nodes", func() {
+		const numControlPlanes = 3
+		const numWorkers = 6
+		const numNodes = numControlPlanes + numWorkers
+
 		Eventually(func() error {
 			_, _, err := ExecAt(boot0, "ckecli", "cluster", "get")
 			return err
 		}).Should(Succeed())
-		ExecSafeAt(boot0, "ckecli", "constraints", "set", "minimum-workers", "4")
+		ExecSafeAt(boot0, "ckecli", "constraints", "set", "minimum-workers", strconv.Itoa(numWorkers))
 		Eventually(func() error {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "nodes", "-o", "json")
 			if err != nil {
@@ -59,8 +63,7 @@ func prepareNodes() {
 				return err
 			}
 
-			// control-plane: 3, minimum-workers: 4
-			if len(nl.Items) != 7 {
+			if len(nl.Items) != numNodes {
 				return fmt.Errorf("too few nodes: %d", len(nl.Items))
 			}
 
@@ -72,7 +75,7 @@ func prepareNodes() {
 					}
 				}
 			}
-			if len(readyNodeSet) != 7 {
+			if len(readyNodeSet) != numNodes {
 				return fmt.Errorf("some nodes are not ready")
 			}
 
