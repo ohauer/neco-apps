@@ -443,6 +443,10 @@ func testRGWPodsSpreadAll() {
 }
 
 func testOSDPodsSpread() {
+	if doUpgrade {
+		return
+	}
+
 	cephClusterName := "ceph-hdd"
 	cephClusterNamespace := "ceph-hdd"
 	nodeRole := "ss"

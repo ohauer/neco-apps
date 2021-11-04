@@ -33,8 +33,12 @@
   },
   "apps": {
     "cydec-apps": {
-      "destinations": {},
-      "repo": "https://github.com/cybozu-private/cydec-apps.git",
+      "destinations": {
+        "osaka0": "release",
+        "stage0": "stage",
+        "tokyo0": "release"
+      },
+      "repo": "https://github.com/cybozu-private/cydec-apps",
       "team": "cydec"
     },
     "dbre-apps": {
