@@ -27,9 +27,10 @@ import (
 )
 
 const (
-	argoCDPasswordFile   = "./argocd-password.txt"
-	ghcrDockerConfigJson = "ghcr_dockerconfig.json"
-	quayDockerConfigJson = "quay_dockerconfig.json"
+	argoCDPasswordFile       = "./argocd-password.txt"
+	ghcrDockerConfigJson     = "ghcr_dockerconfig.json"
+	quayDockerConfigJson     = "quay_dockerconfig.json"
+	cybozuPrivateRepoReadPAT = "cybozu_private_repo_read_pat"
 )
 
 var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
@@ -293,6 +294,22 @@ func testSetup() {
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/overlays/"+overlayName+"/*.yaml")
 		applyAndWaitForApplications(commitID)
+	})
+
+	It("should add a credential to access to cybozu-private repositories", func() {
+		if doUpgrade {
+			Skip("No need to create it when upgrading")
+		}
+
+		_, err := os.Stat(cybozuPrivateRepoReadPAT)
+		if err == nil {
+			data, err := os.ReadFile(cybozuPrivateRepoReadPAT)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			By("add a credential for cybozu-private")
+			_, stderr, err := ExecAtWithInput(boot0, data, "bash", "-c", "'read -sr PASSWORD; argocd repocreds add https://github.com/cybozu-private/ --username cybozu-neco --password=${PASSWORD}'")
+			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+		}
 	})
 
 	It("should set HTTP proxy", func() {
@@ -657,19 +674,16 @@ func applyAndWaitForApplications(commitID string) {
 		return nil
 	}
 
-	// want to do "Eventually( Consistently(checkAllAppsSynced, 15sec, 1sec) )"
+	// want to do like "Eventually( Consistently(checkAllAppsSynced, 10sec, 1sec) )"
 	Eventually(func() error {
-		st := time.Now()
-		for {
-			if time.Since(st) > 15*time.Second {
-				return nil
-			}
+		for i := 0; i < 10; i++ {
 			err := checkAllAppsSynced()
 			if err != nil {
 				return err
 			}
 			time.Sleep(1 * time.Second)
 		}
+		return nil
 	}, 60*time.Minute).Should(Succeed())
 
 	// TODO: remove this block after #1874 is released
@@ -689,27 +703,6 @@ func applyAndWaitForApplications(commitID string) {
 				time.Sleep(1 * time.Second)
 			}
 		}, 60*time.Minute).Should(Succeed())
-	}
-
-	// TODO: remove this block after #1811 is released
-	if doUpgrade {
-		nss := []string{"ceph-hdd", "ceph-ssd"}
-		for _, ns := range nss {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
-				"get", "deployment", "-o=json")
-			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-
-			deployments := new(appsv1.DeploymentList)
-			err = json.Unmarshal(stdout, deployments)
-			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
-
-			for _, deployment := range deployments.Items {
-				if deployment.Labels["app"] != "rook-ceph-mon" && deployment.Labels["app"] != "rook-ceph-osd" {
-					continue
-				}
-				ExecSafeAt(boot0, "kubectl", "rollout", "restart", "-n", ns, "deployment", deployment.Name)
-			}
-		}
 	}
 }
 

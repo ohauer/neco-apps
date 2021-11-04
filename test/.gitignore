@@ -11,6 +11,7 @@ account.json
 meows-secret.json
 ghcr_dockerconfig.json
 quay_dockerconfig.json
+cybozu_private_repo_read_pat
 argocd-password.txt
 current-secret.yaml
 expected-secret-*.yaml

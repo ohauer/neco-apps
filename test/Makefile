@@ -44,7 +44,7 @@ install.yaml: $(shell find ../argocd/base)
 	$(KUSTOMIZE) build ../argocd/base/ > install.yaml
 
 validation:
-	env SSH_PRIVKEY= go test -v -count 1 -run 'TestValidation' .
+	env SSH_PRIVKEY= PATH=$$PATH:$$(go env GOPATH)/bin go test -v -count 1 -run 'TestValidation' .
 
 .PHONY: test-alert-rules
 test-alert-rules: test-vmalert-rules
@@ -82,6 +82,7 @@ dctest-upgrade: install.yaml
 		cp meows-secret.json /tmp/neco-apps/test || true && \
 		cp ghcr_dockerconfig.json /tmp/neco-apps/test || true && \
 		cp quay_dockerconfig.json /tmp/neco-apps/test || true && \
+		cp cybozu_private_repo_read_pat /tmp/neco-apps/test || true && \
 		if grep -q BOOTSTRAP /tmp/neco-apps/test/env.go; then \
 			$(MAKE) -C /tmp/neco-apps/test setup dctest BOOTSTRAP=1 COMMIT_ID=$(BASE_BRANCH); \
 		else \
@@ -126,6 +127,7 @@ $(ARGOCD):
 
 .PHONY: setup
 setup: $(KUBECTL) $(KUSTOMIZE) $(PROMTOOL) $(TSH) $(ARGOCD)
+	$(MAKE) -C .. setup
 	go install github.com/onsi/ginkgo/ginkgo@latest
 
 .PHONY: test-tools
