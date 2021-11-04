@@ -27,9 +27,10 @@ import (
 )
 
 const (
-	argoCDPasswordFile   = "./argocd-password.txt"
-	ghcrDockerConfigJson = "ghcr_dockerconfig.json"
-	quayDockerConfigJson = "quay_dockerconfig.json"
+	argoCDPasswordFile       = "./argocd-password.txt"
+	ghcrDockerConfigJson     = "ghcr_dockerconfig.json"
+	quayDockerConfigJson     = "quay_dockerconfig.json"
+	cybozuPrivateRepoReadPAT = "cybozu_private_repo_read_pat"
 )
 
 var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
@@ -293,6 +294,22 @@ func testSetup() {
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/base/*.yaml")
 		ExecSafeAt(boot0, "sed", "-i", "s/release/"+commitID+"/", "./neco-apps/argocd-config/overlays/"+overlayName+"/*.yaml")
 		applyAndWaitForApplications(commitID)
+	})
+
+	It("should add a credential to access to cybozu-private repositories", func() {
+		if doUpgrade {
+			Skip("No need to create it when upgrading")
+		}
+
+		_, err := os.Stat(cybozuPrivateRepoReadPAT)
+		if err == nil {
+			data, err := os.ReadFile(cybozuPrivateRepoReadPAT)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			By("add a credential for cybozu-private")
+			_, stderr, err := ExecAtWithInput(boot0, data, "bash", "-c", "'read -sr PASSWORD; argocd repocreds add https://github.com/cybozu-private/ --username cybozu-neco --password=${PASSWORD}'")
+			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+		}
 	})
 
 	It("should set HTTP proxy", func() {
