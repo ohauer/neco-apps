@@ -44,7 +44,7 @@ install.yaml: $(shell find ../argocd/base)
 	$(KUSTOMIZE) build ../argocd/base/ > install.yaml
 
 validation:
-	env SSH_PRIVKEY= go test -v -count 1 -run 'TestValidation' .
+	env SSH_PRIVKEY= PATH=$$PATH:$$(go env GOPATH)/bin go test -v -count 1 -run 'TestValidation' .
 
 .PHONY: test-alert-rules
 test-alert-rules: test-vmalert-rules
@@ -126,6 +126,7 @@ $(ARGOCD):
 
 .PHONY: setup
 setup: $(KUBECTL) $(KUSTOMIZE) $(PROMTOOL) $(TSH) $(ARGOCD)
+	$(MAKE) -C .. setup
 	go install github.com/onsi/ginkgo/ginkgo@latest
 
 .PHONY: test-tools

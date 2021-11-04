@@ -20,6 +20,9 @@
 /rook/bin
 /team-management/template/bin
 
+# Ignore template file to use helm charts
+/topolvm/base/charts
+
 # Editors
 *~
 .*.swp
