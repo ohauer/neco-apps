@@ -10,6 +10,7 @@ resources:
   - dbre.yaml
   - ept.yaml
   - garoon.yaml
+  - kintone-neco.yaml
   - maneki.yaml
   - neco.yaml
   - network.yaml
