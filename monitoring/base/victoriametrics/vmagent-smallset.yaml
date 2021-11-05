@@ -6,16 +6,34 @@ metadata:
 spec:
   extraArgs:
     promscrape.maxScrapeSize: "33554432"
+  serviceScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
   serviceScrapeSelector:
     matchLabels:
       smallset: "true"
+  podScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
   podScrapeSelector:
     matchLabels:
       smallset: "true"
+  nodeScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
   nodeScrapeSelector:
     matchLabels:
       smallset: "true"
+  probeNamespaceSelector:
+    matchLabels:
+      team: neco
   probeSelector:
+    matchLabels:
+      smallset: "true"
+  staticScrapeNamespaceSelector:
+    matchLabels:
+      team: neco
+  staticScrapeSelector:
     matchLabels:
       smallset: "true"
   replicaCount: 1
