@@ -20,6 +20,7 @@ const accurateChildNamespaceName = "accurate-child"
 // `team` is not included because it requires special handling.
 var accuratePropagatedNamespaceLabels = []string{
 	"development",
+	"pod-security.cybozu.com/policy",
 }
 var accuratePropagatedNamespaceAnnotations = []string{
 	"metallb.universe.tf/address-pool",
@@ -35,7 +36,7 @@ var accuratePropagatedResourceKinds = []string{
 }
 
 func prepareAccurate() {
-	It("should create namepaces for accurate", func() {
+	It("should create namespaces for accurate", func() {
 		createNamespaceIfNotExists(accurateParentNamespaceName, false)
 		ExecSafeAt(boot0, "kubectl", "label", "namespace", accurateParentNamespaceName, "accurate.cybozu.com/type=root")
 		// `team` should have actual team name.
