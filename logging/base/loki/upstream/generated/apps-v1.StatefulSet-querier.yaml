@@ -1,38 +1,48 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: compactor
+  name: querier
   namespace: logging
 spec:
-  replicas: 1
+  podManagementPolicy: Parallel
+  replicas: 3
   selector:
     matchLabels:
-      name: compactor
-  serviceName: compactor
+      name: querier
+  serviceName: querier
   template:
     metadata:
       annotations:
-        config_hash: 801a773e6c6afb059d6b0662a94cee8c
+        config_hash: 9979aff380ca3ecdb768703174f63193
       labels:
-        name: compactor
+        name: querier
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                name: querier
+            topologyKey: kubernetes.io/hostname
       containers:
       - args:
-        - -boltdb.shipper.compactor.shared-store=s3
-        - -boltdb.shipper.compactor.working-directory=/data/compactor
         - -config.expand-env=true
         - -config.file=/etc/loki/config/config.yaml
-        - -target=compactor
+        - -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
+        - -target=querier
         image: quay.io/cybozu/loki
         imagePullPolicy: IfNotPresent
-        name: compactor
+        name: querier
         ports:
         - containerPort: 3100
           name: http-metrics
+        - containerPort: 9095
+          name: grpc
         readinessProbe:
           httpGet:
             path: /ready
             port: 3100
+          initialDelaySeconds: 15
           timeoutSeconds: 1
         resources:
           requests:
@@ -40,26 +50,31 @@ spec:
             memory: 2Gi
         volumeMounts:
         - mountPath: /data
-          name: compactor-data
+          name: querier-data
         - mountPath: /etc/loki/config
           name: loki
+        - mountPath: /etc/loki/overrides
+          name: overrides
       securityContext:
         fsGroup: 10001
       volumes:
       - configMap:
           name: loki
         name: loki
+      - configMap:
+          name: overrides
+        name: overrides
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
-      name: compactor-data
+      name: querier-data
     spec:
       accessModes:
       - ReadWriteOnce
       resources:
         requests:
-          storage: 10Gi
+          storage: 100Gi
       storageClassName: ceph-ssd-block

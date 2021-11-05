@@ -2,9 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: logging
 resources:
-  - ./upstream
-  - ./obc.yaml
-  - ./service.yaml
+  - upstream
+  - obc.yaml
+  - service.yaml
 images:
   - name: quay.io/cybozu/memcached
     newTag: 1.6.10.1

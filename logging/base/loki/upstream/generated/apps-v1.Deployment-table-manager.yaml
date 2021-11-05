@@ -1,38 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: distributor
+  name: table-manager
   namespace: logging
 spec:
   minReadySeconds: 10
-  replicas: 3
+  replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      name: distributor
+      name: table-manager
   template:
     metadata:
       annotations:
-        config_hash: 801a773e6c6afb059d6b0662a94cee8c
+        config_hash: 9979aff380ca3ecdb768703174f63193
       labels:
-        name: distributor
+        name: table-manager
     spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchLabels:
-                name: distributor
-            topologyKey: kubernetes.io/hostname
       containers:
       - args:
+        - -bigtable.backoff-on-ratelimits=true
+        - -bigtable.grpc-client-rate-limit=5
+        - -bigtable.grpc-client-rate-limit-burst=5
+        - -bigtable.table-cache.enabled=true
         - -config.expand-env=true
         - -config.file=/etc/loki/config/config.yaml
         - -limits.per-user-override-config=/etc/loki/overrides/overrides.yaml
-        - -target=distributor
+        - -target=table-manager
         image: quay.io/cybozu/loki
         imagePullPolicy: IfNotPresent
-        name: distributor
+        name: table-manager
         ports:
         - containerPort: 3100
           name: http-metrics
@@ -46,20 +43,15 @@ spec:
           timeoutSeconds: 1
         resources:
           limits:
-            cpu: "1"
-            memory: 1Gi
+            cpu: 200m
+            memory: 200Mi
           requests:
-            cpu: 500m
-            memory: 500Mi
+            cpu: 100m
+            memory: 100Mi
         volumeMounts:
         - mountPath: /etc/loki/config
           name: loki
-        - mountPath: /etc/loki/overrides
-          name: overrides
       volumes:
       - configMap:
           name: loki
         name: loki
-      - configMap:
-          name: overrides
-        name: overrides
