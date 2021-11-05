@@ -5,6 +5,9 @@ metadata:
   namespace: monitoring
 spec:
   replicaCount: 1
+  configNamespaceSelector:
+    matchLabels:
+      team: neco
   configSecret: vmalertmanager-config
   volumeMounts:
     - name: alertmanager-config-volume
