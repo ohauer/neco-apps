@@ -6,5 +6,5 @@ resources:
 patchesStrategicMerge:
   - namespace.yaml
   - statefulset.yaml
-  - crd.yaml
+  - crds.yaml
   - validatingwebhookconfiguration.yaml
