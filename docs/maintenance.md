@@ -542,9 +542,13 @@ $ make teleport
 
 Check [releases](https://github.com/topolvm/topolvm/releases) for changes.
 
-Update the manifest as follows:
+Check the latest Helm chart for topolvm on https://github.com/topolvm/topolvm/releases .
+
+Update the Helm chart as follows:
 
 ```console
-$ make update-topolvm
+$ make update-topolvm CHART_VERSION=3.1.1
 $ git diff
 ```
+
+Please modify values in chart if needed.
