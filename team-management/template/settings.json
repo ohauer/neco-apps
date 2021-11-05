@@ -175,7 +175,8 @@
     "kintone-neco": {
       "dev-kintone": {
         "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
       }
     },
     "maneki": {
