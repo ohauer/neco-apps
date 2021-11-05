@@ -172,6 +172,7 @@
         "development": "true"
       }
     },
+    "kintone-neco": {},
     "maneki": {
       "app-maneki": {
         "accurate.cybozu.com/template": "init-template",
