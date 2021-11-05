@@ -4,5 +4,6 @@ commonLabels:
   team: kintone-neco
 kind: Kustomization
 resources:
+  - dev-kintone.yaml
   - elastic-serviceaccount.yaml
   - project.yaml
