@@ -626,12 +626,6 @@ func applyAndWaitForApplications(commitID string) {
 				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
 				// ignore error
 			}
-			if app.Name == "meows" && app.Status.Sync.Status != SyncStatusCodeSynced && app.Operation == nil {
-				fmt.Printf("%s sync meows app manually: syncStatus=%s, healthStatus=%s\n",
-					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-				ExecAt(boot0, "argocd", "app", "sync", "meows", "--async")
-				// ignore error
-			}
 
 			// TODO: remove this block after release
 			if doUpgrade && app.Name == "pod-security-admission" {
