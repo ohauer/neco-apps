@@ -19,7 +19,6 @@ resources:
   # - policies/kube-system.yaml
   - cilium/policies/logging.yaml
   - cilium/policies/monitoring.yaml
-  - cilium/policies/session-log.yaml
   - cilium/policies/teleport.yaml
   - cilium/global-policies/apiserver.yaml
   - cilium/global-policies/coil-nat.yaml
