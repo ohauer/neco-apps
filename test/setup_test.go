@@ -296,6 +296,10 @@ func testSetup() {
 		applyAndWaitForApplications(commitID)
 	})
 
+	It("should wait for rook stable", func() {
+		confirmOsdPrepare()
+	})
+
 	It("should add a credential to access to cybozu-private repositories", func() {
 		if doUpgrade {
 			Skip("No need to create it when upgrading")
