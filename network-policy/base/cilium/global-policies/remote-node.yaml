@@ -1,0 +1,26 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: remote-node-allow
+spec:
+  endpointSelector: {}
+  ingress:
+  - toPorts:
+    - ports:
+      - port: "1053"
+        protocol: TCP
+    - ports:
+      - port: "6443"
+        protocol: TCP
+    - ports:
+      - port: "9443"
+        protocol: TCP
+    fromEntities:
+      - remote-node
+  egress:
+  - toPorts:
+    - ports:
+      - port: "9105"
+        protocol: TCP
+    toEntities:
+      - remote-node

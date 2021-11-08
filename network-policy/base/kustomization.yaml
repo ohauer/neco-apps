@@ -27,8 +27,10 @@ resources:
   - cilium/global-policies/egress-meows-runner.yaml
   # - global-policies/ingress-all-deny.yaml
   - cilium/global-policies/ingress-cluster-allow.yaml
+  - cilium/global-policies/egress-cluster-allow.yaml
   # - global-policies/network-set.yaml
   - cilium/global-policies/node-dns.yaml
+  - cilium/global-policies/remote-node.yaml
   - cilium/global-policies/scheduler.yaml
 # patchesStrategicMerge:
 #   - calico/deployment.yaml

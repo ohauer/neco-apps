@@ -3,7 +3,7 @@ kind: CiliumNetworkPolicy
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
-  name: egress-argocd
+  name: argocd-allow
   namespace: argocd
 spec:
   endpointSelector: {}
