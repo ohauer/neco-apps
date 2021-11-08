@@ -12,6 +12,9 @@ spec:
   - url: "http://vmalertmanager-vmalertmanager-largeset-1.vmalertmanager-vmalertmanager-largeset.monitoring.svc:9093"
   - url: "http://vmalertmanager-vmalertmanager-largeset-2.vmalertmanager-vmalertmanager-largeset.monitoring.svc:9093"
   evaluationInterval: "30s"
+  ruleNamespaceSelector:
+    matchLabels:
+      team: neco
   ruleSelector:
     matchExpressions:
       - key: managed-by
