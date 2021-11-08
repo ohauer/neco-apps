@@ -16,4 +16,5 @@ patchesStrategicMerge:
 - rook.yaml
 - secrets.yaml
 - session-log.yaml
+- team-management.yaml
 - teleport.yaml
