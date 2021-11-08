@@ -236,13 +236,9 @@ update-sealed-secrets:
 
 .PHONY: update-topolvm
 update-topolvm:
-	$(call get-latest-gh,topolvm/topolvm)
-	rm -rf /tmp/topolvm
-	cd /tmp; git clone --depth 1 -b $(latest_gh) https://github.com/topolvm/topolvm
-	rm -rf topolvm/base/upstream/*
-	cp -r /tmp/topolvm/deploy/manifests/* topolvm/base/upstream/
-	rm -rf /tmp/topolvm
-	sed -i -E 's/newTag:.*$$/newTag: $(patsubst v%,%,$(latest_gh))/' topolvm/base/kustomization.yaml
+	sed -i -E \
+		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
+		topolvm/base/kustomization.yaml
 
 .PHONY: update-victoriametrics-operator
 update-victoriametrics-operator:
