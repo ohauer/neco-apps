@@ -1,0 +1,19 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: session-log-ingress-allow
+  namespace: session-log
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromCIDRSet:
+      - cidr: 10.72.48.0/24
+      - cidr: 10.72.80.0/24
+      - cidr: 10.76.48.0/24
+      - cidr: 10.76.80.0/24
+      - cidr: 10.78.48.0/24
+      - cidr: 10.78.80.0/24
+      toPorts:
+        - ports:
+          - port: "20080"
+            protocol: TCP

@@ -17,6 +17,11 @@ spec:
         - ports:
             - port: "8443"
               protocol: TCP
+  egress:
+    - toPorts:
+        - ports:
+            - port: "8001"
+              protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -37,6 +42,11 @@ spec:
         - ports:
             - port: "8443"
               protocol: TCP
+  egress:
+    - toPorts:
+        - ports:
+            - port: "8001"
+              protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumNetworkPolicy
@@ -56,4 +66,9 @@ spec:
               protocol: TCP
         - ports:
             - port: "8443"
+              protocol: TCP
+  egress:
+    - toPorts:
+        - ports:
+            - port: "8001"
               protocol: TCP

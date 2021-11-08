@@ -1,0 +1,18 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: ingress-node-dns-allow
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector: {}
+  ingress:
+    - fromCIDR:
+      - 10.0.0.0/8
+      toPorts:
+        - ports:
+            - port: "1053"
+              protocol: TCP
+        - ports:
+            - port: "1053"
+              protocol: UDP

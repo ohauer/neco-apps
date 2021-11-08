@@ -17,7 +17,9 @@ resources:
   - cilium/policies/customer-egress.yaml
   - cilium/policies/domestic-egress.yaml
   # - policies/kube-system.yaml
+  - cilium/policies/logging.yaml
   - cilium/policies/monitoring.yaml
+  - cilium/policies/session-log.yaml
   - cilium/policies/teleport.yaml
   - cilium/global-policies/apiserver.yaml
   - cilium/global-policies/coil-nat.yaml
@@ -29,6 +31,7 @@ resources:
   - cilium/global-policies/ingress-cluster-allow.yaml
   - cilium/global-policies/egress-cluster-allow.yaml
   # - global-policies/network-set.yaml
+  - cilium/global-policies/ingress-node-dns-allow.yaml
   - cilium/global-policies/node-dns.yaml
   - cilium/global-policies/remote-node.yaml
   - cilium/global-policies/scheduler.yaml
