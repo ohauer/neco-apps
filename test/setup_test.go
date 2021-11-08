@@ -41,12 +41,12 @@ var setupTeleportYAML string
 //go:embed testdata/setup-rook.yaml
 var setupRookYAML string
 
+const numControlPlanes = 3
+const numWorkers = 6
+const numNodes = numControlPlanes + numWorkers
+
 func prepareNodes() {
 	It("should increase worker nodes", func() {
-		const numControlPlanes = 3
-		const numWorkers = 6
-		const numNodes = numControlPlanes + numWorkers
-
 		Eventually(func() error {
 			_, _, err := ExecAt(boot0, "ckecli", "cluster", "get")
 			return err
