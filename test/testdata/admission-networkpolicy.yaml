@@ -1,16 +1,14 @@
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: admission-test
   namespace: default
 spec:
-  order: 100.0
-  selector: app.kubernetes.io/name == 'hoge'
-  types:
-  - Ingress
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: hoge
   ingress:
-  - action: Allow
-    protocol: TCP
-    destination:
-      ports:
-      - 8000
+    - toPorts:
+      - ports:
+        - port: "8000"
+          protocol: TCP
