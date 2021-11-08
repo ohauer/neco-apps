@@ -12,4 +12,3 @@ resources:
   - ./namespace.yaml
 patchesStrategicMerge:
   - ./deployment.yaml
-  - ./webhook.yaml
