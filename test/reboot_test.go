@@ -83,9 +83,6 @@ var rebootPodYAML []byte
 // testRebootAllNodes tests all nodes stop scenario
 func testRebootAllNodes() {
 	var beforeNodes map[string]bool
-	// control-plane-count + minimum-workers = 7
-	// https://github.com/cybozu-go/cke/blob/main/docs/sabakan-integration.md#initialization
-	expectedNodeNum := 7
 
 	It("fetch cluster nodes", func() {
 		var err error
@@ -266,7 +263,7 @@ func testRebootAllNodes() {
 				return err
 			}
 
-			if len(nl.Items) != expectedNodeNum {
+			if len(nl.Items) != numNodes {
 				return fmt.Errorf("too few nodes: %d", len(nl.Items))
 			}
 		OUTER:
