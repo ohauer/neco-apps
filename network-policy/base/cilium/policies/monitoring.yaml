@@ -56,3 +56,21 @@ spec:
         # cert-manager prometheus
         - port: "9402"
           protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-grafana-operator
+  namespace: monitoring
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:name: grafana-operator
+    - toCIDR:
+      - 10.68.0.0/16
+      toPorts:
+      - ports:
+        # grafana-operator
+        - port: "3000"
