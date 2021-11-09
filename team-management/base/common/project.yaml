@@ -67,6 +67,7 @@ spec:
         - cybozu-private:dbre
         - cybozu-private:ept
         - cybozu-private:garoon
+        - cybozu-private:kintone-neco
         - cybozu-private:maneki
         - cybozu-private:network
       name: tenant-apps
@@ -110,6 +111,7 @@ spec:
         - cybozu-private:dbre
         - cybozu-private:ept
         - cybozu-private:garoon
+        - cybozu-private:kintone-neco
         - cybozu-private:maneki
         - cybozu-private:neco
         - cybozu-private:network

@@ -49,7 +49,7 @@ neco-admission: write-neco-admission
 .PHONY: team-management
 team-management:
 	# Cleanup existing files
-	set -e; for i in $$(ls -d ../base/*/); do \
+	set -e; for i in $$(ls -d ../base/*/ ../overlays/*/); do \
 		if ! echo $$i | grep -E '/(common|neco|neco-readonly|sandbox)/' > /dev/null; then \
 			rm -rf $$i; \
 		fi; \
