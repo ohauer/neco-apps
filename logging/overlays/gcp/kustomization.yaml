@@ -2,8 +2,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../base
-patchesStrategicMerge:
-  - patch.yaml
+patches:
+  # Strategic merge patch is currently failed.
+  # Now, we use inline patch.
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/cpu
+        value: 250m
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: 256Mi
+    target:
+      kind: Deployment|StatefulSet
+      name: distributor|query-frontend|compactor|ingester|memcached|memcached-frontend|memcached-index-queries|querier|table-manager
 patchesJSON6902:
   # Temporary configuration for storage performance measurement
   - target:
