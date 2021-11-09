@@ -1,8 +1,8 @@
 apiVersion: objectbucket.io/v1alpha1
 kind: ObjectBucketClaim
 metadata:
-  name: loki-bucket
+  name: loki-data-bucket
   namespace: logging
 spec:
-  generateBucketName: loki-bucket
-  storageClassName: ceph-hdd-bucket
+  generateBucketName: loki-data-bucket
+  storageClassName: ceph-object-store-bucket
