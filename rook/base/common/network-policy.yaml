@@ -11,3 +11,5 @@ spec:
       - ports:
         - port: "3300"
           protocol: TCP
+      toCIDR:
+        - 10.68.0.0/16

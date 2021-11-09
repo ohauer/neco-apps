@@ -49,7 +49,9 @@ spec:
         - ports:
             - port: "10180"
               protocol: TCP
-    - toPorts:
+    - toCIDR:
+      - 10.64.0.0/14
+      toPorts:
       - ports:
         # cert-manager prometheus
         - port: "9402"
