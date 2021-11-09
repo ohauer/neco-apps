@@ -14,8 +14,8 @@ spec:
     repoURL: https://cybozu-go.github.io/moco
     chart: moco
     targetRevision: 0.1.0
-  helm:
-    version: v3
+    helm:
+      version: v3
   destination:
     server: https://kubernetes.default.svc
     namespace: moco-system
