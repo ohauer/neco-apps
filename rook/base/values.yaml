@@ -8,7 +8,7 @@ csi:
   provisionerPriorityClassName: ""
 image:
   repository: quay.io/cybozu/rook
-  tag: 1.7.5.1
+  tag: 1.7.7.1
   pullPolicy: IfNotPresent
 resources:
   limits:  # Delete limits to avoid aggressive throttling.
