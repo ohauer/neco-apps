@@ -1,0 +1,13 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: rook-ceph-egress-allow
+spec:
+  endpointSelector:
+    matchLabels:
+      app: rook-ceph-operator
+  egress:
+    - toPorts:
+      - ports:
+        - port: "3300"
+          protocol: TCP

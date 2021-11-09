@@ -49,3 +49,8 @@ spec:
         - ports:
             - port: "10180"
               protocol: TCP
+    - toPorts:
+      - ports:
+        # cert-manager prometheus
+        - port: "9402"
+          protocol: TCP
