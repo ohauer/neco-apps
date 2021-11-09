@@ -5,6 +5,7 @@ resources:
   - ../../poc/ceph-poc
   - ../../poc/ceph-poc-2
   - ./ceph-hdd/httpproxy.yaml
+  - ./ceph-object-store/httpproxy.yaml
 patchesJson6902:
   - target:
       group: ceph.rook.io
