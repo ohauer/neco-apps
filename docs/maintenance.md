@@ -418,10 +418,12 @@ $ git diff
 
 Check [the CHANGELOG](https://github.com/topolvm/pvc-autoresizer/blob/main/CHANGELOG.md).
 
+Check the latest Helm chart for pvc-autoresizer on https://github.com/topolvm/pvc-autoresizer/releases .
+
 Update the manifest as follows:
 
 ```console
-$ make update-pvc-autoresizer
+$ make update-pvc-autoresizer CHART_VERSION=0.3.2
 $ git diff
 ```
 

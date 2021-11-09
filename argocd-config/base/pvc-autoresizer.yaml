@@ -11,15 +11,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://topolvm.github.io/pvc-autoresizer
-    chart: pvc-autoresizer
-    targetRevision: 0.3.0
-    helm:
-      version: v3
-      values: |
-        controller:
-          args:
-            prometheusURL: http://vmselect-vmcluster-largeset.monitoring.svc:8481/select/0/prometheus
+    repoURL: https://github.com/cybozu-go/neco-apps.git
+    targetRevision: release
+    path: pvc-autoresizer/base
   destination:
     server: https://kubernetes.default.svc
     namespace: pvc-autoresizer

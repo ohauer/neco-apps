@@ -219,8 +219,9 @@ update-pushgateway:
 
 .PHONY: update-pvc-autoresizer
 update-pvc-autoresizer:
-	$(call get-latest-helm,pvc-autoresizer,https://topolvm.github.io/pvc-autoresizer)
-	yq eval -i '.spec.source.targetRevision = "$(latest_helm)"' argocd-config/base/pvc-autoresizer.yaml
+	sed -i -E \
+		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
+		pvc-autoresizer/base/kustomization.yaml
 
 .PHONY: update-s3gw
 update-s3gw:

@@ -21,6 +21,7 @@
 /team-management/template/bin
 
 # Ignore template file to use helm charts
+/pvc-autoresizer/base/charts
 /topolvm/base/charts
 
 # Editors
