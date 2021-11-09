@@ -41,12 +41,12 @@ var setupTeleportYAML string
 //go:embed testdata/setup-rook.yaml
 var setupRookYAML string
 
+const numControlPlanes = 3
+const numWorkers = 6
+const numNodes = numControlPlanes + numWorkers
+
 func prepareNodes() {
 	It("should increase worker nodes", func() {
-		const numControlPlanes = 3
-		const numWorkers = 6
-		const numNodes = numControlPlanes + numWorkers
-
 		Eventually(func() error {
 			_, _, err := ExecAt(boot0, "ckecli", "cluster", "get")
 			return err
@@ -624,12 +624,6 @@ func applyAndWaitForApplications(commitID string) {
 				fmt.Printf("%s sync rook app manually: syncStatus=%s, healthStatus=%s\n",
 					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
 				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
-				// ignore error
-			}
-			if app.Name == "meows" && app.Status.Sync.Status != SyncStatusCodeSynced && app.Operation == nil {
-				fmt.Printf("%s sync meows app manually: syncStatus=%s, healthStatus=%s\n",
-					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-				ExecAt(boot0, "argocd", "app", "sync", "meows", "--async")
 				// ignore error
 			}
 
