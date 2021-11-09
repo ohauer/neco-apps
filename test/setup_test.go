@@ -529,6 +529,16 @@ func applyAndWaitForApplications(commitID string) {
 	By("remove ceph-poc")
 	removeCephPoc()
 
+	// TODO: remove this block after release
+	if doUpgrade {
+		By("replacing ECK CRDs")
+		ExecSafeAt(boot0, "argocd", "app", "set", "elastic", "--sync-policy", "none")
+		crds, stderr, err := kustomizeBuild("elastic_crds", "--load-restrictor", "LoadRestrictionsNone")
+		Expect(err).ShouldNot(HaveOccurred(), "failed to build ECK CRDs: stdout=%s, stderr=%s", crds, stderr)
+		stdout, stderr, err := ExecAtWithInput(boot0, crds, "kubectl", "replace", "-f", "-")
+		Expect(err).ShouldNot(HaveOccurred(), "failed to replace ECK CRDs: stdout=%s, stderr=%s", stdout, stderr)
+	}
+
 	By("creating Argo CD app")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "argocd", "app", "create", "argocd-config",

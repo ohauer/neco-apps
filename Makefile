@@ -61,7 +61,8 @@ update-customer-egress:
 .PHONY: update-eck
 update-eck:
 	$(call get-latest-gh,elastic/cloud-on-k8s)
-	curl -sLf -o elastic/base/upstream/all-in-one.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/all-in-one.yaml
+	curl -sLf -o elastic/base/upstream/crds.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/crds.yaml
+	curl -sLf -o elastic/base/upstream/operator.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/operator.yaml
 
 .PHONY: update-external-dns
 update-external-dns:
