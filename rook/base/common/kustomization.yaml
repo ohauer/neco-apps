@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
 - clusterrole.yaml
 - resources.yaml
-- network-policy.yaml
+# - network-policy.yaml
 patchesStrategicMerge:
 - patch.yaml

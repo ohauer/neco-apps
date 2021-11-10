@@ -7,5 +7,6 @@ metadata:
 spec:
   endpointSelector: {}
   egress:
-    - toEntities:
-      - cluster
+    - toCIDRSet:
+      - cidr: 10.64.0.0/14
+      - cidr: 10.68.0.0/16
