@@ -8,7 +8,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -68,21 +67,7 @@ func testLocalPVProvisioner() {
 
 		By("checking the number of available Pods by the state of DaemonSet")
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "ds", "local-pv-provisioner", "-n", "kube-system", "-o", "json")
-			if err != nil {
-				return fmt.Errorf("failed to get a DaemonSet. stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			var ds appsv1.DaemonSet
-			err = json.Unmarshal(stdout, &ds)
-			if err != nil {
-				return fmt.Errorf("failed to unmarshal JSON. err: %v", err)
-			}
-
-			if ds.Status.NumberAvailable != int32(ssNumber) {
-				return fmt.Errorf("available pods is not %d: %d", int32(ssNumber), ds.Status.NumberAvailable)
-			}
-			return nil
+			return checkDaemonSetNumber("local-pv-provisioner", "kube-system", ssNumber)
 		}).Should(Succeed())
 
 		By("checking the Pods were assigned for Nodes")

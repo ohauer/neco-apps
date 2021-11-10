@@ -29,23 +29,7 @@ func prepareLoadPods() {
 		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl",
-				"get", "deployment", "addload-for-ss", "-o=json")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return fmt.Errorf("stdout: %s, err: %v", stdout, err)
-			}
-
-			if deployment.Status.AvailableReplicas != 2 {
-				return fmt.Errorf("addload-for-ss deployment's AvailableReplicas is not 2: %d", int(deployment.Status.AvailableReplicas))
-			}
-
-			return nil
+			return checkDeploymentReplicas("addload-for-ss", "default", 2)
 		}).Should(Succeed())
 	})
 }
@@ -79,44 +63,18 @@ func testRookOperator() {
 	for _, ns := range nss {
 		By("checking rook-ceph-operator Deployment for "+ns, func() {
 			Eventually(func() error {
-				stdout, _, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
-					"get", "deployment/rook-ceph-operator", "-o=json")
-				if err != nil {
-					return err
-				}
-
-				deploy := new(appsv1.Deployment)
-				err = json.Unmarshal(stdout, deploy)
-				if err != nil {
-					return err
-				}
-
-				if deploy.Status.AvailableReplicas != 1 {
-					return fmt.Errorf("rook operator deployment's AvailableReplicas is not 1: %d", int(deploy.Status.AvailableReplicas))
-				}
-				return nil
+				return checkDeploymentReplicas("rook-ceph-operator", ns, 1)
 			}).Should(Succeed())
 		})
 
 		By("checking ceph-tools Deployment for "+ns, func() {
 			Eventually(func() error {
-				stdout, _, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
-					"get", "deployment/rook-ceph-tools", "-o=json")
+				err := checkDeploymentReplicas("rook-ceph-tools", ns, 1)
 				if err != nil {
 					return err
 				}
 
-				deploy := new(appsv1.Deployment)
-				err = json.Unmarshal(stdout, deploy)
-				if err != nil {
-					return err
-				}
-
-				if deploy.Status.AvailableReplicas != 1 {
-					return fmt.Errorf("rook ceph tools deployment's AvailableReplicas is not 1: %d", int(deploy.Status.AvailableReplicas))
-				}
-
-				stdout, _, err = ExecAt(boot0, "kubectl", "get", "pod", "--namespace="+ns, "-l", "app=rook-ceph-tools", "-o=json")
+				stdout, _, err := ExecAt(boot0, "kubectl", "get", "pod", "--namespace="+ns, "-l", "app=rook-ceph-tools", "-o=json")
 				if err != nil {
 					return err
 				}

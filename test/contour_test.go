@@ -11,7 +11,6 @@ import (
 	"github.com/cybozu-go/log"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	policyv1 "k8s.io/api/policy/v1"
 )
@@ -47,20 +46,9 @@ func testContour() {
 	It("should deploy contour successfully", func() {
 		Eventually(func() error {
 			for _, ns := range ingressNamespaces {
-				stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
-					"get", "deployment/contour", "-o=json")
-				if err != nil {
-					return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-				}
-
-				deployment := new(appsv1.Deployment)
-				err = json.Unmarshal(stdout, deployment)
+				err := checkDeploymentReplicas("contour", ns, 2)
 				if err != nil {
 					return err
-				}
-
-				if deployment.Status.AvailableReplicas != 2 {
-					return fmt.Errorf("contour deployment's AvailableReplica is not 2 in %s: %d", ns, int(deployment.Status.AvailableReplicas))
 				}
 			}
 			return nil
@@ -70,20 +58,9 @@ func testContour() {
 	It("should deploy envoy successfully", func() {
 		Eventually(func() error {
 			for _, ns := range ingressNamespaces {
-				stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
-					"get", "deployment/envoy", "-o=json")
-				if err != nil {
-					return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-				}
-
-				deployment := new(appsv1.Deployment)
-				err = json.Unmarshal(stdout, deployment)
+				err := checkDeploymentReplicas("envoy", ns, 3)
 				if err != nil {
 					return err
-				}
-
-				if deployment.Status.AvailableReplicas != 3 {
-					return fmt.Errorf("envoy deployment's AvailableReplica is not 3 in %s: %d", ns, int(deployment.Status.AvailableReplicas))
 				}
 			}
 			return nil
@@ -93,21 +70,7 @@ func testContour() {
 	It("should deploy HTTPProxy", func() {
 		By("waiting pods are ready")
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "-n", "test-ingress", "get", "deployments/testhttpd", "-o", "json")
-			if err != nil {
-				return err
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.ReadyReplicas != 2 {
-				return errors.New("ReadyReplicas is not 2")
-			}
-			return nil
+			return checkDeploymentReplicas("testhttpd", "test-ingress", 2)
 		}).Should(Succeed())
 
 		By("checking PodDisruptionBudget for contour Deployment")

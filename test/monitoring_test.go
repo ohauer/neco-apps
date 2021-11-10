@@ -24,7 +24,6 @@ import (
 	. "github.com/onsi/gomega"
 	promv1 "github.com/prometheus/client_golang/api/prometheus/v1"
 	"github.com/prometheus/common/model"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
@@ -85,21 +84,7 @@ func testMachinesEndpoints() {
 func testKubeStateMetrics() {
 	It("should be deployed successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=kube-system",
-				"get", "deployment/kube-state-metrics", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != 2 {
-				return fmt.Errorf("AvailableReplicas is not 2: %d", int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("kube-state-metrics", "kube-system", 2)
 		}).Should(Succeed())
 	})
 
@@ -205,21 +190,7 @@ func preparePushgateway() {
 func testPushgateway() {
 	It("should be deployed successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/pushgateway", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != 1 {
-				return fmt.Errorf("AvailableReplicas is not 1: %d", int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("pushgateway", "monitoring", 1)
 		}).Should(Succeed())
 	})
 
@@ -290,21 +261,7 @@ func prepareGrafanaOperator() {
 func testGrafanaOperator() {
 	It("should be deployed successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/grafana-deployment", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.ReadyReplicas) != 1 {
-				return fmt.Errorf("ReadyReplicas is not 1: %d", int(deployment.Status.ReadyReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("grafana-deployment", "monitoring", 1)
 		}).Should(Succeed())
 
 		By("confirming created Certificate")
@@ -371,21 +328,7 @@ func testGrafanaOperator() {
 func testVictoriaMetricsOperator() {
 	It("should be deployed successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/victoriametrics-operator", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != 2 {
-				return fmt.Errorf("AvailableReplicas is not 2: %d", int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("victoriametrics-operator", "monitoring", 2)
 		}).Should(Succeed())
 	})
 }
@@ -427,27 +370,7 @@ type VMAlertAPIV1GroupsResult struct {
 func testVMCommonClusterComponents(setType vmSetType) {
 	It("should be deployed successfully (vmalertmanager)", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "statefulset/vmalertmanager-vmalertmanager-"+setType.name, "-o=json")
-			if err != nil {
-				return err
-			}
-			sts := new(appsv1.StatefulSet)
-			err = json.Unmarshal(stdout, sts)
-			if err != nil {
-				return err
-			}
-
-			if doUpgrade {
-				if err := deleteOldStatefulSet(sts); err != nil {
-					return err
-				}
-			}
-
-			if int(sts.Status.ReadyReplicas) != setType.vmamCount {
-				return fmt.Errorf("ReadyReplicas is not %d: %d", setType.vmamCount, int(sts.Status.ReadyReplicas))
-			}
-			return nil
+			return checkStatefulSetReplicas("vmalertmanager-vmalertmanager-"+setType.name, "monitoring", setType.vmamCount)
 		}).Should(Succeed())
 	})
 
@@ -481,41 +404,13 @@ func testVMCommonClusterComponents(setType vmSetType) {
 
 	It("should be deployed successfully (vmalert)", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/vmalert-vmalert-"+setType.name, "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != setType.vmalertCount {
-				return fmt.Errorf("AvailableReplicas is not %d: %d", setType.vmalertCount, int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("vmalert-vmalert-"+setType.name, "monitoring", setType.vmalertCount)
 		}).Should(Succeed())
 	})
 
 	It("should be deployed successfully (vmagent)", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/vmagent-vmagent-"+setType.name, "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != setType.vmagentCount {
-				return fmt.Errorf("AvailableReplicas is not %d: %d", setType.vmagentCount, int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("vmagent-vmagent-"+setType.name, "monitoring", setType.vmagentCount)
 		}).Should(Succeed())
 	})
 
@@ -766,21 +661,7 @@ func testVMSmallsetClusterComponents() {
 
 	It("should be deployed successfully (vmsingle)", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/vmsingle-vmsingle-smallset", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != 1 {
-				return fmt.Errorf("AvailableReplicas is not 1: %d", int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("vmsingle-vmsingle-smallset", "monitoring", 1)
 		}).Should(Succeed())
 	})
 
@@ -826,61 +707,19 @@ func testVMLargesetClusterComponents() {
 
 	It("should be deployed successfully (vmstorage)", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "statefulset/vmstorage-vmcluster-largeset", "-o=json")
-			if err != nil {
-				return err
-			}
-			statefulSet := new(appsv1.StatefulSet)
-			err = json.Unmarshal(stdout, statefulSet)
-			if err != nil {
-				return err
-			}
-
-			if int(statefulSet.Status.ReadyReplicas) != vmstorageCount {
-				return fmt.Errorf("AvailableReplicas is not %d: %d", vmstorageCount, int(statefulSet.Status.ReadyReplicas))
-			}
-			return nil
+			return checkStatefulSetReplicas("vmstorage-vmcluster-largeset", "monitoring", vmstorageCount)
 		}).Should(Succeed())
 	})
 
 	It("should be deployed successfully (vmselect)", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "statefulset/vmselect-vmcluster-largeset", "-o=json")
-			if err != nil {
-				return err
-			}
-			statefulSet := new(appsv1.StatefulSet)
-			err = json.Unmarshal(stdout, statefulSet)
-			if err != nil {
-				return err
-			}
-
-			if int(statefulSet.Status.ReadyReplicas) != vmselectCount {
-				return fmt.Errorf("AvailableReplicas is not %d: %d", vmselectCount, int(statefulSet.Status.ReadyReplicas))
-			}
-			return nil
+			return checkStatefulSetReplicas("vmselect-vmcluster-largeset", "monitoring", vmselectCount)
 		}).Should(Succeed())
 	})
 
 	It("should be deployed successfully (vminsert)", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring",
-				"get", "deployment/vminsert-vmcluster-largeset", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != vminsertCount {
-				return fmt.Errorf("AvailableReplicas is not %d: %d", vminsertCount, int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("vminsert-vmcluster-largeset", "monitoring", vminsertCount)
 		}).Should(Succeed())
 	})
 
@@ -921,39 +760,4 @@ func findTargets(job string, targets []promv1.ActiveTarget) []*promv1.ActiveTarg
 		}
 	}
 	return ret
-}
-
-// When the ConfigMap for a VMAlertmanager is updated, VictoriaMetrics operator should update the StatefulSet for the VMAlertmanager to refer to the new ConfigMap.
-// The operator sometimes fails to do this because the old StatefulSet gets unstable due to the deletion of the old ConfigMap.
-// The operator cannot reconcile unstable StatefulSets.
-// So this function deletes the old StatefulSet until the StatefulSet refers to the proper ConfigMap.
-func deleteOldStatefulSet(sts *appsv1.StatefulSet) error {
-	configMapName := ""
-	for _, v := range sts.Spec.Template.Spec.Volumes {
-		if v.Name == "alertmanager-config-volume" && v.ConfigMap != nil {
-			configMapName = v.ConfigMap.Name
-			break
-		}
-	}
-	if configMapName == "" {
-		return fmt.Errorf("reference to ConfigMap not found in StatefulSet %s", sts.Name)
-	}
-
-	_, _, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "get", "configmap", configMapName)
-	if err == nil {
-		return nil
-	}
-
-	// VM operator even blocks deletion of StatefulSet when unstable, so remove the finalizers.
-	_, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "patch", "statefulset", sts.Name, "--type=json", `--patch='[{"op":"remove","path":"/metadata/finalizers"}]'`)
-	if err != nil {
-		return fmt.Errorf("failed to patch StatefulSet %s: stderr=%s, err=%w", sts.Name, stderr, err)
-	}
-
-	_, stderr, err = ExecAt(boot0, "kubectl", "--namespace=monitoring", "delete", "statefulset", sts.Name)
-	if err != nil {
-		return fmt.Errorf("failed to delete StatefulSet %s: stderr=%s, err=%w", sts.Name, stderr, err)
-	}
-
-	return fmt.Errorf("old ConfigMap %s was used in StatefulSet %s", configMapName, sts.Name)
 }
