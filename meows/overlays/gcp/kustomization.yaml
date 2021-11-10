@@ -2,15 +2,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
   - name: quay.io/cybozu/meows-controller
-    newTag: 0.3.1
+    newTag: 0.4.0
 resources:
   - ./upstream/crd
   - ./upstream/controller
   - ./upstream/agent
   - ./upstream/runnerpool/runnerpool_editor_role.yaml
   - ./upstream/runnerpool/runnerpool_viewer_role.yaml
-  - ./clusterrole.yaml
   - ./namespace.yaml
 patchesStrategicMerge:
   - ./deployment.yaml
-  - ./webhook.yaml
