@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       annotations:
-        config_hash: 801a773e6c6afb059d6b0662a94cee8c
+        config_hash: 6c40177b9079a2ceb4a3ce445e4a6ea2
       labels:
         name: ingester
     spec:

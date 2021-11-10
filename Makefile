@@ -61,7 +61,8 @@ update-customer-egress:
 .PHONY: update-eck
 update-eck:
 	$(call get-latest-gh,elastic/cloud-on-k8s)
-	curl -sLf -o elastic/base/upstream/all-in-one.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/all-in-one.yaml
+	curl -sLf -o elastic/base/upstream/crds.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/crds.yaml
+	curl -sLf -o elastic/base/upstream/operator.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/operator.yaml
 
 .PHONY: update-external-dns
 update-external-dns:
@@ -133,25 +134,28 @@ update-logging-loki:
 	cd /tmp/loki; \
 	tk init && \
 	tk env add environments/loki --namespace=logging && \
+	tk env add environments/loki-old --namespace=logging && \
 	tk env add environments/loki-canary --namespace=logging && \
 	jb install github.com/grafana/loki/production/ksonnet/loki@$(call upstream-tag,$(latest_tag)) && \
 	jb install github.com/grafana/loki/production/ksonnet/loki-canary@$(call upstream-tag,$(latest_tag)) && \
 	jb install github.com/jsonnet-libs/k8s-alpha/$(JSONNET_LIBS_K8S_ALPHA_VERSION) && \
 	echo "import 'github.com/jsonnet-libs/k8s-alpha/$(JSONNET_LIBS_K8S_ALPHA_VERSION)/main.libsonnet'" > lib/k.libsonnet
 
-	cp logging/base/loki/main.jsonnet /tmp/loki/environments/loki/main.jsonnet
+	cp logging/base/loki/upstream/main.jsonnet /tmp/loki/environments/loki/main.jsonnet
+	cp logging/base/loki-old/upstream/main.jsonnet /tmp/loki/environments/loki-old/main.jsonnet
 	cp logging/base/loki-canary/main.jsonnet /tmp/loki/environments/loki-canary/main.jsonnet
-	rm -rf logging/base/loki/upstream/* logging/base/loki-canary/upstream/*
+	rm -rf logging/base/loki/upstream/generated/* logging/base/loki-old/upstream/generated/* logging/base/loki-canary/upstream/*
 	cd /tmp/loki && \
-	tk export $(shell pwd)/logging/base/loki/upstream/ environments/loki/ -t '!.*/consul(-sidekick)?' && \
+	tk export $(shell pwd)/logging/base/loki/upstream/generated environments/loki/ -t '!.*/consul(-sidekick)?' && \
+	tk export $(shell pwd)/logging/base/loki-old/upstream/generated environments/loki-old/ -t '!.*/consul(-sidekick)?' && \
 	tk export $(shell pwd)/logging/base/loki-canary/upstream/ environments/loki-canary/
 
 	sed -i -E '/name:.*loki$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki*/kustomization.yaml
 
 	$(call get-latest-tag,memcached)
-	sed -i -E '/name:.*memcached$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml
+	sed -i -E '/name:.*memcached$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml logging/base/loki-old/kustomization.yaml
 	$(call get-latest-tag,memcached-exporter)
-	sed -i -E '/name:.*memcached-exporter$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml
+	sed -i -E '/name:.*memcached-exporter$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml logging/base/loki-old/kustomization.yaml
 
 .PHONY: update-logging-promtail
 update-logging-promtail:
@@ -219,8 +223,9 @@ update-pushgateway:
 
 .PHONY: update-pvc-autoresizer
 update-pvc-autoresizer:
-	$(call get-latest-helm,pvc-autoresizer,https://topolvm.github.io/pvc-autoresizer)
-	yq eval -i '.spec.source.targetRevision = "$(latest_helm)"' argocd-config/base/pvc-autoresizer.yaml
+	sed -i -E \
+		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
+		pvc-autoresizer/base/kustomization.yaml
 
 .PHONY: update-s3gw
 update-s3gw:
