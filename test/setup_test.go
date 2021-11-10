@@ -391,21 +391,6 @@ func testSetup() {
 }
 
 func applyAndWaitForApplications(commitID string) {
-	By("grafting maneki namespaces")
-	if doUpgrade {
-		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "none")
-		nss := []string{"app-comconv-earthlab", "app-elasticsearch", "app-endpoint-discovery", "app-es-cluster-allocator", "app-forest-archive", "app-forest-certs",
-			"app-kodama", "app-maneki-static-cybozu-com", "app-misc", "app-monitoring", "app-monitoring-elasticstack", "app-oauth-redirector", "app-octodns",
-		}
-		for _, ns := range nss {
-			_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
-			if err == nil {
-				ExecSafeAt(boot0, "kubectl", "label", "ns", ns, "app.kubernetes.io/instance-")
-				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "app-maneki")
-			}
-		}
-	}
-
 	By("creating Argo CD app")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "argocd", "app", "create", "argocd-config",
@@ -505,12 +490,6 @@ func applyAndWaitForApplications(commitID string) {
 				fmt.Printf("%s sync rook app manually: syncStatus=%s, healthStatus=%s\n",
 					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
 				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
-				// ignore error
-			}
-
-			// TODO: remove this block after release
-			if doUpgrade && app.Name == "pod-security-admission" {
-				ExecAt(boot0, "kubectl", "annotate", "namespace", "psa-system", "admission.cybozu.com/i-am-sure-to-delete=psa-system")
 				// ignore error
 			}
 
