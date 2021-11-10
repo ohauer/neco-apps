@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"golang.org/x/sync/semaphore"
 	"io"
 	"os"
 	"os/exec"
@@ -15,6 +14,7 @@ import (
 	"strings"
 	"testing"
 
+	"golang.org/x/sync/semaphore"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
@@ -41,7 +41,7 @@ func isKustomizationFile(name string) bool {
 	return false
 }
 
-func kustomizeBuild(dir string) ([]byte, []byte, error) {
+func kustomizeBuild(dir string, opts ...string) ([]byte, []byte, error) {
 	outBuf := new(bytes.Buffer)
 	errBuf := new(bytes.Buffer)
 	workdir, err := os.Getwd()
@@ -49,7 +49,10 @@ func kustomizeBuild(dir string) ([]byte, []byte, error) {
 		return nil, nil, err
 	}
 
-	cmd := exec.Command(filepath.Join(workdir, "bin", "kustomize"), "build", "--enable-helm", dir)
+	args := []string{"build", "--enable-helm"}
+	args = append(args, opts...)
+	args = append(args, dir)
+	cmd := exec.Command(filepath.Join(workdir, "bin", "kustomize"), args...)
 	cmd.Stdout = outBuf
 	cmd.Stderr = errBuf
 	err = cmd.Run()

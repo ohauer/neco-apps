@@ -193,6 +193,9 @@ $ git diff
 
 Check [loki releases](https://github.com/grafana/loki/releases).
 
+Check installation document for [loki](https://grafana.com/docs/loki/latest/installation/tanka/) and [loki-canary](https://grafana.com/docs/loki/latest/operations/loki-canary/).
+If install procedures for loki or loki-canary are updated, update Makefile accordingly.
+
 Check [k8s-alpha](https://github.com/jsonnet-libs/k8s-alpha/) jsonnet library to find the appropriate value for `JSONNET_LIBS_K8S_ALPHA_VERSION` in Makefile.
 If the library supports the currently used Kubernetes version, i.e. if the repository contains a directory with the name of the current Kubernetes version, then use that version as the value.
 If not, use the latest Kubernetes version that the library supports.
@@ -418,10 +421,12 @@ $ git diff
 
 Check [the CHANGELOG](https://github.com/topolvm/pvc-autoresizer/blob/main/CHANGELOG.md).
 
+Check the latest Helm chart for pvc-autoresizer on https://github.com/topolvm/pvc-autoresizer/releases .
+
 Update the manifest as follows:
 
 ```console
-$ make update-pvc-autoresizer
+$ make update-pvc-autoresizer CHART_VERSION=0.3.2
 $ git diff
 ```
 

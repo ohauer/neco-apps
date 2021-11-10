@@ -18,6 +18,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
+var nss = []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"}
+
 //go:embed testdata/storage-load.yaml
 var storageLoadYAML []byte
 
@@ -74,7 +76,6 @@ func prepareRookCeph() {
 }
 
 func testRookOperator() {
-	nss := []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"}
 	for _, ns := range nss {
 		By("checking rook-ceph-operator Deployment for "+ns, func() {
 			Eventually(func() error {
@@ -138,7 +139,6 @@ func testRookOperator() {
 }
 
 func testClusterStable() {
-	nss := []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"}
 	for _, ns := range nss {
 		By("checking stability of rook/ceph cluster "+ns, func() {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
@@ -160,16 +160,7 @@ func testClusterStable() {
 			numMonExpected, err := strconv.Atoi(strings.TrimSpace(string(stdout)))
 			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
 
-			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns,
-				"get", "cephcluster", ns, "-o", "jsonpath='{.spec.storage.storageClassDeviceSets[*].count}'")
-			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
-			numOsdList := strings.Fields(string(stdout))
-			numOsdExpected := 0
-			for _, numOsd := range numOsdList {
-				num, err := strconv.Atoi(strings.TrimSpace(string(numOsd)))
-				Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
-				numOsdExpected += num
-			}
+			numOsdExpected := getNumOsd(ns)
 
 			numRgwExpected := 0
 			if ns == "ceph-hdd" || ns == "ceph-object-store" {
@@ -195,11 +186,6 @@ func testClusterStable() {
 
 				deployments := new(appsv1.DeploymentList)
 				err = json.Unmarshal(stdout, deployments)
-				if err != nil {
-					return err
-				}
-
-				err := confirmOsdPrepare(ns, numOsdExpected)
 				if err != nil {
 					return err
 				}
@@ -262,56 +248,74 @@ func testClusterStable() {
 	}
 }
 
-func confirmOsdPrepare(ns string, numOsdExpected int) error {
+func getNumOsd(ns string) int {
 	stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
-		"get", "pod", "-l", "app=rook-ceph-osd-prepare", "-o=json")
-	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-
-	pods := new(corev1.PodList)
-	err = json.Unmarshal(stdout, pods)
-	Expect(err).ShouldNot(HaveOccurred(), "json=%s", stdout)
-
-	if len(pods.Items) != numOsdExpected {
-		return fmt.Errorf("number of OSD prepare pods is %d, expected is %d", len(pods.Items), numOsdExpected)
+		"get", "cephcluster", ns, "-o", "jsonpath='{.spec.storage.storageClassDeviceSets[*].count}'")
+	Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+	numOsdList := strings.Fields(string(stdout))
+	numOsdExpected := 0
+	for _, numOsd := range numOsdList {
+		num, err := strconv.Atoi(strings.TrimSpace(string(numOsd)))
+		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", stdout)
+		numOsdExpected += num
 	}
+	return numOsdExpected
+}
 
-	for _, pod := range pods.Items {
-		if pod.Status.Phase != corev1.PodSucceeded {
-			return fmt.Errorf("OSD prepare pod has not finished yet.")
-		}
+func confirmOsdPrepare() {
+	for _, ns := range nss {
+		numOsdExpected := getNumOsd(ns)
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
+				"get", "pod", "-l", "app=rook-ceph-osd-prepare", "-o=json")
+			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns, "logs", pod.Name, "--tail=1")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+			pods := new(corev1.PodList)
+			err = json.Unmarshal(stdout, pods)
+			Expect(err).ShouldNot(HaveOccurred(), "json=%s", stdout)
 
-		if !strings.Contains(string(stdout), "skipping OSD configuration as no devices matched") {
-			continue
-		}
-		// log for checking
-		fmt.Println("delete PVC and Job to re-create prepare Job")
-		stdout, _, _ = ExecAt(boot0, "kubectl", "--namespace="+ns, "get", "pod")
-		fmt.Println(string(stdout))
-
-		pvcName := ""
-		for _, volume := range pod.Spec.Volumes {
-			if volume.PersistentVolumeClaim != nil && len(volume.PersistentVolumeClaim.ClaimName) != 0 {
-				pvcName = volume.PersistentVolumeClaim.ClaimName
+			if len(pods.Items) != numOsdExpected {
+				return fmt.Errorf("number of OSD prepare pods is %d, expected is %d", len(pods.Items), numOsdExpected)
 			}
-		}
-		Expect(pvcName).ShouldNot(Equal(""))
 
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pvc", pvcName, "--wait=false")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+			for _, pod := range pods.Items {
+				if pod.Status.Phase != corev1.PodSucceeded {
+					return fmt.Errorf("OSD prepare pod has not finished yet.")
+				}
 
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "job", "-l", "ceph.rook.io/pvc="+pvcName)
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+				stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns, "logs", pod.Name, "--tail=1")
+				Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pod", "-l", "app=rook-ceph-operator")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+				if !strings.Contains(string(stdout), "skipping OSD configuration as no devices matched") {
+					continue
+				}
+				// log for checking
+				fmt.Println("delete PVC and Job to re-create prepare Job")
+				stdout, _, _ = ExecAt(boot0, "kubectl", "--namespace="+ns, "get", "pod")
+				fmt.Println(string(stdout))
 
-		return fmt.Errorf("the osd prepare job gets failed and restarted")
+				pvcName := ""
+				for _, volume := range pod.Spec.Volumes {
+					if volume.PersistentVolumeClaim != nil && len(volume.PersistentVolumeClaim.ClaimName) != 0 {
+						pvcName = volume.PersistentVolumeClaim.ClaimName
+					}
+				}
+				Expect(pvcName).ShouldNot(Equal(""))
+
+				stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pvc", pvcName, "--wait=false")
+				Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+				stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "job", "-l", "ceph.rook.io/pvc="+pvcName)
+				Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+				stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+ns, "delete", "pod", "-l", "app=rook-ceph-operator")
+				Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+
+				return fmt.Errorf("the osd prepare job gets failed and restarted")
+			}
+			return nil
+		}).Should(Succeed())
 	}
-
-	return nil
 }
 
 func confirmCephPod(ns string) error {
