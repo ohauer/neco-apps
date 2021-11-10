@@ -3,29 +3,26 @@ kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: rook-ceph-operator-egress-allow
 spec:
-  endpointSelector:
-    matchLabels:
-      app: rook-ceph-operator
+  endpointSelector: {}
   egress:
     - toPorts:
       - ports:
         - port: "3300"
           protocol: TCP
-      toCIDR:
-        - 10.68.0.0/16
----
-apiVersion: cilium.io/v2
-kind: CiliumClusterwideNetworkPolicy
-metadata:
-  name: rook-ceph-mon-egress-allow
-spec:
-  endpointSelector:
-    matchLabels:
-      app: rook-ceph-mon
-  egress:
-    - toPorts:
-      - ports:
-        - port: "3300"
-          protocol: TCP
-      toCIDR:
-        - 10.68.0.0/16
+# ---
+# apiVersion: cilium.io/v2
+# kind: CiliumClusterwideNetworkPolicy
+# metadata:
+#   name: rook-ceph-mon-egress-allow
+# spec:
+#   endpointSelector:
+#     matchLabels:
+#       app: rook-ceph-mon
+#   egress:
+#     - toPorts:
+#       - ports:
+#         - port: "3300"
+#           protocol: TCP
+#       toCIDRSet:
+#         - cidr: 10.64.0.0/14
+#         - cidr: 10.68.0.0/16
