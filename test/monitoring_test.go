@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,7 +22,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	promv1 "github.com/prometheus/client_golang/api/prometheus/v1"
-	"github.com/prometheus/common/model"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
@@ -112,19 +110,7 @@ func testKubeStateMetrics() {
 		}
 
 		Eventually(func() error {
-			promql := `{__name__=~"kube_.*_(labels|annotations)"}`
-			querystr := url.QueryEscape(promql)
-			stdout, stderr, err := ExecAt(boot0, "curl", "-sf", "http://vmselect-vmcluster-largeset.monitoring.svc:8481/select/0/prometheus/api/v1/query?query="+querystr)
-			if err != nil {
-				return fmt.Errorf("stderr=%s: %w", string(stderr), err)
-			}
-
-			result := struct {
-				Data struct {
-					Result model.Vector `json:"result"`
-				} `json:"data"`
-			}{}
-			err = json.Unmarshal(stdout, &result)
+			result, err := queryMetrics(MonitoringLargeset, `{__name__=~"kube_.*_(labels|annotations)"}`)
 			if err != nil {
 				return err
 			}
