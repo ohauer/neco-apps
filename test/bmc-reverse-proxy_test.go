@@ -9,7 +9,6 @@ import (
 	"github.com/cybozu-go/sabakan/v2"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -19,23 +18,7 @@ func testBMCReverseProxy() {
 	It("should be accessed via https", func() {
 		By("confirming it has be successfully deployed")
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=bmc-reverse-proxy",
-				"get", "deployment", "bmc-reverse-proxy", "-o=json")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return fmt.Errorf("stdout: %s, err: %v", stdout, err)
-			}
-
-			if deployment.Status.AvailableReplicas != 2 {
-				return fmt.Errorf("bmc-reverse-proxy deployment's AvailableReplica is not 2: %d", int(deployment.Status.AvailableReplicas))
-			}
-
-			return nil
+			return checkDeploymentReplicas("bmc-reverse-proxy", "bmc-reverse-proxy", 2)
 		}).Should(Succeed())
 
 		By("confirming ConfigMap has been created")

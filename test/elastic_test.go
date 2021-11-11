@@ -2,12 +2,10 @@ package test
 
 import (
 	_ "embed"
-	"encoding/json"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 	"sigs.k8s.io/yaml"
 )
 
@@ -25,22 +23,7 @@ func testElastic() {
 	It("should deploy Elasticsearch cluster", func() {
 		By("confirming elastic-operator is deployed")
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=elastic-system",
-				"get", "statefulset/elastic-operator", "-o=json")
-			if err != nil {
-				return err
-			}
-
-			ss := new(appsv1.StatefulSet)
-			err = json.Unmarshal(stdout, ss)
-			if err != nil {
-				return err
-			}
-
-			if ss.Status.ReadyReplicas != 1 {
-				return fmt.Errorf("elastic-operator statefulset's ReadyReplica is not 1: %d", int(ss.Status.ReadyReplicas))
-			}
-			return nil
+			return checkStatefulSetReplicas("elastic-operator", "elastic-system", 1)
 		}).Should(Succeed())
 
 		By("waiting Elasticsearch resource health becomes green")
