@@ -13,3 +13,4 @@ spec:
   publishNotReadyAddresses: true
   selector:
     gossip_ring_member: "true"
+    deployVersion: v2

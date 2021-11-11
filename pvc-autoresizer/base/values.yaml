@@ -1,0 +1,3 @@
+controller:
+  args:
+    prometheusURL: http://vmselect-vmcluster-largeset.monitoring.svc:8481/select/0/prometheus
