@@ -8,3 +8,9 @@ data:
     [client]
     rgw enable ops log = true
     debug rgw = 20/20
+    [global]
+    debug_bluefs = 20/20
+    debug_bluestore = 20/20
+    log_to_stderr = true
+    err_to_stderr = true
+    log_file =
