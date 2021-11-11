@@ -12,5 +12,4 @@ metadata:
   labels:
     team: neco
     pod-security.cybozu.com/policy: privileged
-    meows.cybozu.com/pod-mutate: "true"
     development: "true"
