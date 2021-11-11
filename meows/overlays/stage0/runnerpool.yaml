@@ -4,7 +4,6 @@ metadata:
   name: dctest-runner
   namespace: meows-runner
 spec:
-  repositoryName: neco-tenant-apps
   replicas: 3
   slackAgent:
     serviceName: slack-agent.meows.svc
