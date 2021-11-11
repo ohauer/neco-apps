@@ -1,8 +1,0 @@
-# This file is used only for upgrade.
-# TODO: Remove this after release.
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - ../../elastic/base/upstream/crds.yaml
-patchesStrategicMerge:
-  - ../../elastic/base/crds.yaml
