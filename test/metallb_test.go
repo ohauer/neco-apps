@@ -5,13 +5,11 @@ import (
 	_ "embed"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os/exec"
 	"text/template"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -36,62 +34,16 @@ func prepareMetalLB() {
 func testMetalLB() {
 	It("should be deployed successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=metallb-system",
-				"get", "daemonsets/speaker", "-o=json")
-			if err != nil {
-				return err
-			}
-			ds := new(appsv1.DaemonSet)
-			err = json.Unmarshal(stdout, ds)
-			if err != nil {
-				return err
-			}
-
-			if ds.Status.DesiredNumberScheduled <= 0 {
-				return errors.New("speaker daemonset's desiredNumberScheduled is not updated")
-			}
-
-			if ds.Status.DesiredNumberScheduled != ds.Status.NumberAvailable {
-				return fmt.Errorf("not all nodes running speaker daemonset: %d", ds.Status.NumberAvailable)
-			}
-			return nil
+			return checkDaemonSetNumber("speaker", "metallb-system", -1)
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=metallb-system",
-				"get", "deployments/controller", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.AvailableReplicas) != 1 {
-				return fmt.Errorf("AvailableReplicas is not 1: %d", int(deployment.Status.AvailableReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("controller", "metallb-system", 1)
 		}).Should(Succeed())
 
 		By("waiting pods are ready")
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "get", "deployments/testhttpd", "-o", "json")
-			if err != nil {
-				return err
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.ReadyReplicas != 2 {
-				return errors.New("ReadyReplicas is not 2")
-			}
-			return nil
+			return checkDeploymentReplicas("testhttpd", "default", 2)
 		}).Should(Succeed())
 	})
 

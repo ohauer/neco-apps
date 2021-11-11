@@ -15,7 +15,6 @@ import (
 	. "github.com/onsi/gomega"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/sync/errgroup"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -34,108 +33,24 @@ func prepareNetworkPolicy() {
 
 	It("should wait for patched pods to become ready", func() {
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=internet-egress", "get", "deployment/squid", "-o=json")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.ReadyReplicas != 2 {
-				return fmt.Errorf("squid deployment's ReadyReplicas is not 2: %d", int(deployment.Status.ReadyReplicas))
-			}
-			if deployment.Status.UpdatedReplicas != 2 {
-				return fmt.Errorf("squid deployment's UpdatedReplicas is not 2: %d", int(deployment.Status.UpdatedReplicas))
-			}
-
-			return nil
+			return checkDeploymentReplicas("squid", "internet-egress", 2)
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=customer-egress", "get", "deployment/squid", "-o=json")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.ReadyReplicas != 2 {
-				return fmt.Errorf("squid deployment's ReadyReplicas is not 2: %d", int(deployment.Status.ReadyReplicas))
-			}
-			if deployment.Status.UpdatedReplicas != 2 {
-				return fmt.Errorf("squid deployment's UpdatedReplicas is not 2: %d", int(deployment.Status.UpdatedReplicas))
-			}
-
-			return nil
+			return checkDeploymentReplicas("squid", "customer-egress", 2)
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=internet-egress", "get", "deployment/unbound", "-o=json")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.ReadyReplicas != 2 {
-				return fmt.Errorf("unbound deployment's ReadyReplicas is not 2: %d", int(deployment.Status.ReadyReplicas))
-			}
-			if deployment.Status.UpdatedReplicas != 2 {
-				return fmt.Errorf("unbound deployment's UpdatedReplicas is not 2: %d", int(deployment.Status.UpdatedReplicas))
-			}
-
-			return nil
+			return checkDeploymentReplicas("unbound", "internet-egress", 2)
 		}).Should(Succeed())
 
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "get", "deployments/vmagent-vmagent-smallset", "-o=json")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.AvailableReplicas != 1 {
-				return errors.New("vmagent-smallset AvailableReplicas is not 1")
-			}
-
-			return nil
+			return checkDeploymentReplicas("vmagent-vmagent-smallset", "monitoring", 1)
 		}).Should(Succeed())
 
 		const vmagentLargesetCount = 3
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "get", "deployments/vmagent-vmagent-largeset", "-o=json")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.AvailableReplicas != vmagentLargesetCount {
-				return fmt.Errorf("vmagent-smallset AvailableReplicas is not %d", vmagentLargesetCount)
-			}
-
-			return nil
+			return checkDeploymentReplicas("vmagent-vmagent-largeset", "monitoring", vmagentLargesetCount)
 		}).Should(Succeed())
 	})
 }
@@ -144,21 +59,7 @@ func testNetworkPolicy() {
 	It("should pass/block packets appropriately", func() {
 		By("waiting for testhttpd pods")
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "-n", "test-netpol", "get", "deployments/testhttpd", "-o", "json")
-			if err != nil {
-				return err
-			}
-
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.ReadyReplicas != 2 {
-				return errors.New("ReadyReplicas is not 2")
-			}
-			return nil
+			return checkDeploymentReplicas("testhttpd", "test-netpol", 2)
 		}).Should(Succeed())
 
 		By("waiting for ubuntu pod")

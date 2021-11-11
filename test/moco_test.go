@@ -2,13 +2,11 @@ package test
 
 import (
 	_ "embed"
-	"encoding/json"
 	"errors"
 	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 )
 
 //go:embed testdata/moco.yaml
@@ -25,21 +23,7 @@ func prepareMoco() {
 func testMoco() {
 	It("should be deployed successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=moco-system",
-				"get", "deployment/moco-controller", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if deployment.Status.AvailableReplicas != 2 {
-				return fmt.Errorf("AvailableReplicas is not 2: %d", deployment.Status.AvailableReplicas)
-			}
-			return nil
+			return checkDeploymentReplicas("moco-controller", "moco-system", 2)
 		}).Should(Succeed())
 	})
 

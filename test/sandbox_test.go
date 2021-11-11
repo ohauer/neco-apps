@@ -9,7 +9,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 )
 
 var sandboxGrafanaFQDN = testID + "-sandbox-grafana.gcp0.dev-ne.co"
@@ -32,21 +31,7 @@ func testSandboxGrafana() {
 	It("should have data sources and dashboards", func() {
 		By("confirming grafana is deployed successfully")
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=sandbox",
-				"get", "statefulset/grafana", "-o=json")
-			if err != nil {
-				return err
-			}
-			statefulSet := new(appsv1.StatefulSet)
-			err = json.Unmarshal(stdout, statefulSet)
-			if err != nil {
-				return err
-			}
-
-			if int(statefulSet.Status.ReadyReplicas) != 1 {
-				return fmt.Errorf("ReadyReplicas is not 1: %d", int(statefulSet.Status.ReadyReplicas))
-			}
-			return nil
+			return checkStatefulSetReplicas("grafana", "sandbox", 1)
 		}).Should(Succeed())
 
 		By("confirming created Certificate")
