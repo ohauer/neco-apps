@@ -4,7 +4,6 @@ metadata:
   name: dctest-runner
   namespace: meows-runner
 spec:
-  repositoryName: neco-tenant-apps
   replicas: 3
   slackAgent:
     serviceName: slack-agent.meows.svc
@@ -30,6 +29,15 @@ spec:
         memory: 100Gi
       limits:
         cpu: 20000m
+    workVolume:
+      ephemeral:
+        volumeClaimTemplate:
+          spec:
+            storageClassName: topolvm-flash1-xfs
+            accessModes: [ "ReadWriteOnce" ]
+            resources:
+              requests:
+                storage: 15Gi
     volumeMounts:
         - name: scratch
           mountPath: /var/scratch
@@ -42,8 +50,6 @@ spec:
           readOnly: false
         - name: home
           mountPath: /home/actions
-        - name: work
-          mountPath: /runner/_work
         - name: tools
           mountPath: /opt/hostedtoolcache
         - name: tmp
@@ -70,15 +76,6 @@ spec:
                   requests:
                     storage: 400Gi
         - name: home
-          ephemeral:
-            volumeClaimTemplate:
-              spec:
-                storageClassName: topolvm-flash1-xfs
-                accessModes: [ "ReadWriteOnce" ]
-                resources:
-                  requests:
-                    storage: 15Gi
-        - name: work
           ephemeral:
             volumeClaimTemplate:
               spec:
