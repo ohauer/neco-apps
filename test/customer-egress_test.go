@@ -7,7 +7,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -24,21 +23,7 @@ func prepareCustomerEgress() {
 func testCustomerEgress() {
 	It("should deploy squid successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=customer-egress",
-				"get", "deployment/squid", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.ReadyReplicas) != 2 {
-				return fmt.Errorf("ReadyReplicas is not 2: %d", int(deployment.Status.ReadyReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("squid", "customer-egress", 2)
 		}).Should(Succeed())
 	})
 
@@ -67,21 +52,7 @@ func testCustomerEgress() {
 
 	It("should deploy coil egress successfully", func() {
 		Eventually(func() error {
-			stdout, _, err := ExecAt(boot0, "kubectl", "--namespace=customer-egress",
-				"get", "deployment/nat", "-o=json")
-			if err != nil {
-				return err
-			}
-			deployment := new(appsv1.Deployment)
-			err = json.Unmarshal(stdout, deployment)
-			if err != nil {
-				return err
-			}
-
-			if int(deployment.Status.ReadyReplicas) != 2 {
-				return fmt.Errorf("ReadyReplicas is not 2: %d", int(deployment.Status.ReadyReplicas))
-			}
-			return nil
+			return checkDeploymentReplicas("nat", "customer-egress", 2)
 		}).Should(Succeed())
 
 		By("executing curl to web page on the Internet without squid")
