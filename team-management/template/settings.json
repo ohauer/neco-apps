@@ -193,6 +193,13 @@
         "app.kubernetes.io/name": "maneki"
       }
     },
+    "neco-guests": {
+      "dev-guests": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
+    },
     "network": {
       "app-network": {
         "accurate.cybozu.com/template": "init-template",

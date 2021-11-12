@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"text/template"
 
 	. "github.com/onsi/ginkgo"
@@ -78,13 +77,16 @@ func testMeows() {
 
 		By("checking that runner pods become online")
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "set", "-o", "pipefail", "&&", "curl", "-sSLf", "-X", "GET", `'http://vmselect-vmcluster-largeset.monitoring.svc:8481/select/0/prometheus/api/v1/query?query=count(meows_runner_online)'`, "|", "jq", "-r", ".data.result[0].value[1]")
+			result, err := queryMetrics(MonitoringLargeset, `count(meows_runner_online)`)
 			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+				return err
 			}
-			onlineRunners := strings.TrimSpace(string(stdout))
-			if onlineRunners != "1" {
-				return fmt.Errorf("there is not an online runner pod, the metrics of count(meows_runner_online) is %s", onlineRunners)
+			if len(result.Data.Result) <= 0 {
+				return fmt.Errorf("no count metrics is retrieved")
+			}
+			onlineRunners := int(result.Data.Result[0].Value)
+			if onlineRunners != 1 {
+				return fmt.Errorf("there is not an online runner pod, the metrics of count(meows_runner_online) is %d", onlineRunners)
 			}
 			return nil
 		}).Should(Succeed())

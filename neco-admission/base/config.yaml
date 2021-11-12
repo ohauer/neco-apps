@@ -9,6 +9,7 @@ ArgoCDApplicationValidator:
         - garoon
         - kintone-neco
         - maneki
+        - neco-guests
         - network
         - tenant-app-of-apps
         - tenant-apps
@@ -21,6 +22,9 @@ ArgoCDApplicationValidator:
     - projects:
         - default
       repository: https://cybozu-go.github.io/accurate
+    - projects:
+        - default
+      repository: https://cybozu-go.github.io/moco
     - projects:
         - default
       repository: https://github.com/cybozu-go/neco-apps.git

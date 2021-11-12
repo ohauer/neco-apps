@@ -12,6 +12,7 @@ resources:
   - garoon.yaml
   - kintone-neco.yaml
   - maneki.yaml
+  - neco-guests.yaml
   - neco.yaml
   - network.yaml
   - serviceaccount.yaml
