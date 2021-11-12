@@ -9,6 +9,7 @@ ArgoCDApplicationValidator:
         - garoon
         - kintone-neco
         - maneki
+        - neco-guests
         - network
         - tenant-app-of-apps
         - tenant-apps

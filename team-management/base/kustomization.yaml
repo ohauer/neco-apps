@@ -10,6 +10,7 @@ resources:
   - ./kintone-neco
   - ./maneki
   - ./neco
+  - ./neco-guests
   - ./neco-readonly
   - ./network
   - ./sandbox
