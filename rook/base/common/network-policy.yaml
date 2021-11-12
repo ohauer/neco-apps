@@ -28,3 +28,17 @@ spec:
 #       toCIDRSet:
 #         - cidr: 10.64.0.0/14
 #         - cidr: 10.68.0.0/16
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: rook-ceph-mgr-egress-allow
+spec:
+  endpointSelector:
+    matchLabels:
+      app: rook-ceph-mgr
+  egress:
+    - toPorts:
+      - ports:
+        - port: "3300"
+          protocol: TCP
