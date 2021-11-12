@@ -128,7 +128,8 @@ func testApplicationResources(t *testing.T) {
 	}
 	tenantSyncWave := "9"
 
-	targetRevisions := map[string]string{
+	// Default target revisions for each overlay.
+	defaultTargetRevisions := map[string]string{
 		"gcp":      "release",
 		"neco-dev": "release",
 		"osaka0":   "release",
@@ -177,10 +178,11 @@ func testApplicationResources(t *testing.T) {
 				if app.Name == "argocd-config" {
 					continue
 				}
+				isTenant := app.GetLabels()["is-tenant"] == "true"
 
 				// Check the sync wave
 				var expectedWave string
-				if app.GetLabels()["is-tenant"] == "true" {
+				if isTenant {
 					expectedWave = tenantSyncWave
 				} else {
 					if syncWaves[app.Name] == "" {
@@ -192,19 +194,24 @@ func testApplicationResources(t *testing.T) {
 					t.Errorf("invalid sync-wave. application: %s, sync-wave: %s (should be %s)", app.Name, app.GetAnnotations()["argocd.argoproj.io/sync-wave"], expectedWave)
 				}
 
-				// Skip when the application provides from helm chart.
-				if app.Spec.Source.RepoURL != necoAppsRepoURL {
+				// Check the targetRevision
+				if isTenant {
+					// Tenant's Application resources are auto-generated. So need not check the target revision.
 					continue
 				}
 
-				// Check the targetRevision
-				expectedTargetRevision := targetRevisions[overlay]
-
-				if expectedTargetRevision == "" {
-					t.Errorf("expected targetRevision should be defined. application: %s, overlay: %s", app.Name, overlay)
+				defRevision := defaultTargetRevisions[overlay]
+				if defRevision == "" {
+					t.Errorf("default targetRevision should be defined. application: %s, overlay: %s", app.Name, overlay)
 				}
-				if app.Spec.Source.TargetRevision != expectedTargetRevision {
-					t.Errorf("invalid targetRevision. application: %s, targetRevision: %s (should be %s)", app.Name, app.Spec.Source.TargetRevision, expectedTargetRevision)
+				if app.Spec.Source.Helm != nil {
+					if app.Spec.Source.TargetRevision == defRevision {
+						t.Errorf("invalid targetRevision. application: %s, targetRevision: %s (should not be %s)", app.Name, app.Spec.Source.TargetRevision, defRevision)
+					}
+				} else {
+					if app.Spec.Source.TargetRevision != defRevision {
+						t.Errorf("invalid targetRevision. application: %s, targetRevision: %s (should be %s)", app.Name, app.Spec.Source.TargetRevision, defRevision)
+					}
 				}
 			}
 		})
