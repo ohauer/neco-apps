@@ -12,10 +12,10 @@ spec:
         - ports:
           - port: "3100"
             protocol: TCP
-  # egress:
-  #   - toCIDRSet:
-  #     - cidr: 10.0.0.0/8
-  #     toPorts:
-  #       - ports:
-  #         - port: "3101"
-  #           protocol: TCP
+  egress:
+    - toCIDRSet:
+      - cidr: 10.68.0.0/16
+      toPorts:
+        - ports:
+          - port: "3100"
+            protocol: TCP

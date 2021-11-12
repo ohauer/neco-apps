@@ -7,13 +7,9 @@ spec:
     matchLabels:
       app: rook-ceph-operator
   egress:
-    - toPorts:
-      - ports:
-        - port: "3300"
-          protocol: TCP
-      - ports:
-        - port: "6800"
-          protocol: TCP
+    - toEndpoints:
+      - matchLabels:
+          "k8s:io.cilium.k8s.namespace.labels.team": neco
 ---
 apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
@@ -100,6 +96,19 @@ spec:
   endpointSelector:
     matchLabels:
       app: csi-rbdplugin-provisioner
+  egress:
+    - toEndpoints:
+      - matchLabels:
+          "k8s:io.cilium.k8s.namespace.labels.team": neco
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: csi-rbdplugin-egress-allow
+spec:
+  endpointSelector:
+    matchLabels:
+      app: csi-rbdplugin
   egress:
     - toEndpoints:
       - matchLabels:
