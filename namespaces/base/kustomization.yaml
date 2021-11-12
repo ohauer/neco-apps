@@ -13,6 +13,7 @@ resources:
 - kube-system.yaml
 - logging.yaml
 - metallb.yaml
+- moco.yaml
 - monitoring.yaml
 - prometheus-adapter.yaml
 - pvc-autoresizer.yaml
