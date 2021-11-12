@@ -16,6 +16,7 @@ patchesStrategicMerge:
   - nodes/garoon.yaml
   - nodes/kintone-neco.yaml
   - nodes/maneki.yaml
+  - nodes/neco-guests.yaml
   - nodes/neco.yaml
   - nodes/network.yaml
   - statefulset.yaml

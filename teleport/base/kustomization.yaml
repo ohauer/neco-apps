@@ -9,6 +9,7 @@ configMapGenerator:
       - conf/garoon-role.yaml
       - conf/kintone-neco-role.yaml
       - conf/maneki-role.yaml
+      - conf/neco-guests-role.yaml
       - conf/neco-readonly-role.yaml
       - conf/network-role.yaml
     name: teleport-role

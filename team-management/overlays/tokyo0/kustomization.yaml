@@ -9,6 +9,7 @@ patchesStrategicMerge:
   - dev-garoon.yaml
   - dev-kintone.yaml
   - dev-maneki.yaml
+  - dev-guests.yaml
   - dev-network.yaml
 resources:
   - ../../base

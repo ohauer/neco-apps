@@ -9,7 +9,6 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/prometheus/common/model"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -57,17 +56,7 @@ func testTopoLVM() {
 
 		By("waiting for the PV getting resized")
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n=monitoring", "exec", "vmselect-vmcluster-largeset-0", "-i", "--", "curl", "-sf", "http://localhost:8481/select/0/prometheus/api/v1/query?query=kubelet_volume_stats_capacity_bytes")
-			if err != nil {
-				return fmt.Errorf("stderr=%s: %w", string(stderr), err)
-			}
-
-			result := struct {
-				Data struct {
-					Result model.Vector `json:"result"`
-				} `json:"data"`
-			}{}
-			err = json.Unmarshal(stdout, &result)
+			result, err := queryMetrics(MonitoringLargeset, `kubelet_volume_stats_capacity_bytes`)
 			if err != nil {
 				return err
 			}
