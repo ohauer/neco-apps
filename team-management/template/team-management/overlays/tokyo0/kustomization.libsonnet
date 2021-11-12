@@ -5,6 +5,5 @@ function(teams, all_dev_namespaces) [{
     '../../base',
   ],
   patchesStrategicMerge: [
-    'elastic-serviceaccount.yaml',
   ] + std.map(function(x) x + '.yaml', all_dev_namespaces),
 }]

@@ -1,5 +1,4 @@
 local utility = import '../../../utility.libsonnet';
-local elastic_template = import 'elastic-serviceaccount.libsonnet';
 local kustomization_template = import 'kustomization.libsonnet';
 local namespace_template = import 'namespace.libsonnet';
 local get_team_devns = function(settings, team)
@@ -12,6 +11,5 @@ function(settings)
   local teams = utility.get_teams(settings);
   local team_files = std.map(function(team) get_team_files(team, get_team_devns(settings, team)), teams);
   utility.union_map([{
-    'elastic-serviceaccount.yaml': elastic_template(all_dev_namespaces),
     'kustomization.yaml': kustomization_template(teams, all_dev_namespaces),
   }] + team_files)
