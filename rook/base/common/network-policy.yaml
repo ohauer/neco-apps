@@ -11,6 +11,9 @@ spec:
       - ports:
         - port: "3300"
           protocol: TCP
+      - ports:
+        - port: "6800"
+          protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
@@ -25,9 +28,9 @@ spec:
       - ports:
         - port: "3300"
           protocol: TCP
-#       toCIDRSet:
-#         - cidr: 10.64.0.0/14
-#         - cidr: 10.68.0.0/16
+      - ports:
+        - port: "6800"
+          protocol: TCP
 ---
 apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
@@ -42,3 +45,36 @@ spec:
       - ports:
         - port: "3300"
           protocol: TCP
+      - ports:
+        - port: "6800"
+          protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: rook-ceph-osd-prepare-egress-allow
+spec:
+  endpointSelector:
+    matchLabels:
+      app: rook-ceph-osd-prepare
+  egress:
+    - toPorts:
+      - ports:
+        - port: "3300"
+          protocol: TCP
+      - ports:
+        - port: "6800"
+          protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: rook-ceph-osd-egress-allow
+spec:
+  endpointSelector:
+    matchLabels:
+      app: rook-ceph-osd
+  egress:
+    - toEndpoints:
+      - matchLabels:
+          "k8s:io.cilium.k8s.namespace.labels.team": neco
