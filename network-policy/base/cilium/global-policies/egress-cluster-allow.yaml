@@ -7,10 +7,13 @@ metadata:
 spec:
   endpointSelector: {}
   egress:
-    - toCIDRSet:
-      - cidr: 10.64.0.0/14
-      - cidr: 10.68.0.0/16
+    - toEndpoints:
+      - matchLabels:
+          "k8s:io.kubernetes.pod.namespace.labels.team": neco
     - toPorts:
       - ports:
         - port: "3128"
           protocol: TCP
+    - toCIDRSet:
+      - cidr: 10.64.0.0/14
+      - cidr: 10.68.0.0/16
