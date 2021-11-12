@@ -351,6 +351,7 @@ func testVMCustomResources(t *testing.T) {
 		"victoriametrics-operator",
 	}
 	expectedSmallsetNodeScrapes := []string{
+		"kube-proxy",
 		"kubernetes-cadvisor",
 		"kubernetes-nodes",
 	}
