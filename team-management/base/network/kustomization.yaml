@@ -6,5 +6,4 @@ kind: Kustomization
 resources:
   - app-network.yaml
   - dev-network.yaml
-  - elastic-serviceaccount.yaml
   - project.yaml

@@ -6,5 +6,4 @@ kind: Kustomization
 resources:
   - app-ept.yaml
   - dev-ept.yaml
-  - elastic-serviceaccount.yaml
   - project.yaml

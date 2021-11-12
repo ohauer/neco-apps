@@ -6,5 +6,4 @@ kind: Kustomization
 resources:
   - app-cydec.yaml
   - dev-cydec.yaml
-  - elastic-serviceaccount.yaml
   - project.yaml

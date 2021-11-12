@@ -10,5 +10,4 @@ resources:
   - app-dbre.yaml
   - app-mysql-tenant-service.yaml
   - dev-dbre.yaml
-  - elastic-serviceaccount.yaml
   - project.yaml
