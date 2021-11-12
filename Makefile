@@ -191,9 +191,8 @@ update-metallb:
 
 .PHONY: update-moco
 update-moco:
-	$(call get-latest-gh,cybozu-go/moco)
-	curl -sfL -o moco/base/upstream/moco.yaml \
-		https://github.com/cybozu-go/moco/releases/download/$(latest_gh)/moco.yaml
+	$(call get-latest-helm,moco,https://cybozu-go.github.io/moco)
+	yq eval -i '.spec.source.targetRevision = "$(latest_helm)"' argocd-config/base/moco.yaml
 
 .PHONY: update-neco-admission
 update-neco-admission:
