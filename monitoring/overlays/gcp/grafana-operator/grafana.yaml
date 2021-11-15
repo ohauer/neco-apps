@@ -1,0 +1,9 @@
+apiVersion: integreatly.org/v1alpha1
+kind: Grafana
+metadata:
+  name: grafana
+spec:
+  # If Grafana uses MySQL, main container initialization takes muuuuuuch longer on dctest.
+  livenessProbeSpec:
+    periodSeconds: 10
+    failureThreshold: 90

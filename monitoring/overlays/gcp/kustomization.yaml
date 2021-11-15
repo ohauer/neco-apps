@@ -3,9 +3,9 @@ kind: Kustomization
 resources:
   - ../../base
 patchesStrategicMerge:
+  - grafana-operator/grafana.yaml
   - victoriametrics/vmsingle-smallset.yaml
 patchesJSON6902:
-  # Temporary configuration for storage performance measurement
   - target:
       group: moco.cybozu.com
       version: v1beta1
