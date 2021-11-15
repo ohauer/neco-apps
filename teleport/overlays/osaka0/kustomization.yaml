@@ -5,3 +5,4 @@ resources:
   - certificate.yaml
 patchesStrategicMerge:
   - node-neco-guests.yaml
+  - node-set-cloud-platform.yaml

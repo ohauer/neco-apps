@@ -12,6 +12,7 @@ configMapGenerator:
       - conf/neco-guests-role.yaml
       - conf/neco-readonly-role.yaml
       - conf/network-role.yaml
+      - conf/set-cloud-platform-role.yaml
     name: teleport-role
     namespace: teleport
 images:

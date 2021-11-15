@@ -16,3 +16,4 @@ resources:
   - neco.yaml
   - network.yaml
   - serviceaccount.yaml
+  - set-cloud-platform.yaml

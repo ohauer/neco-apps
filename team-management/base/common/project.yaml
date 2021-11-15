@@ -71,6 +71,7 @@ spec:
         - cybozu-private:maneki
         - cybozu-private:neco-guests
         - cybozu-private:network
+        - cybozu-private:set-cloud-platform
       name: tenant-apps
       policies:
         - p, proj:tenant-app-of-apps:tenant-apps, applications, get, tenant-app-of-apps/tenant-apps, allow
@@ -117,6 +118,7 @@ spec:
         - cybozu-private:neco
         - cybozu-private:neco-guests
         - cybozu-private:network
+        - cybozu-private:set-cloud-platform
       name: admin
       policies:
         - p, proj:tenant-apps:admin, applications, *, tenant-apps/*, allow
