@@ -6,6 +6,5 @@ kind: Kustomization
 resources:
   - app-maneki.yaml
   - dev-maneki.yaml
-  - elastic-serviceaccount.yaml
   - maneki.yaml
   - project.yaml

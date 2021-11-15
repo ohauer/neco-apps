@@ -5,7 +5,6 @@ function(team, namespaces) [
     resources: std.set(
       [
         'project.yaml',
-        'elastic-serviceaccount.yaml',
       ] +
       std.map(function(x) x + '.yaml', namespaces)
     ),

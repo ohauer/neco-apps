@@ -5,5 +5,4 @@ commonLabels:
 kind: Kustomization
 resources:
   - dev-guests.yaml
-  - elastic-serviceaccount.yaml
   - project.yaml
