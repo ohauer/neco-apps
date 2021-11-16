@@ -7,5 +7,13 @@ metadata:
     argocd.argoproj.io/sync-wave: "-1"
 data:
   config: |
+    [mon]
+    ; Suppress the folowing warning.
+    ;
+    ; ```
+    ; health: HEALTH_WARN
+    ;        1 pools have many more objects per pg than average
+    ; ```
+    mon_pg_warn_max_object_skew = 0
     [rgw]
     rgw_dynamic_resharding = false
