@@ -77,7 +77,7 @@ spec:
           value: "0.23.0.1"
         - name: VM_VMALERTMANAGER_CONFIGRELOADERIMAGE
           value: quay.io/cybozu/configmap-reload:0.5.0.1
-        image: quay.io/cybozu/victoriametrics-operator:0.19.1.1
+        image: quay.io/cybozu/victoriametrics-operator:0.20.3.1
         imagePullPolicy: IfNotPresent
         name: manager
         ports:
