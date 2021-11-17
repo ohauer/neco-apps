@@ -465,15 +465,23 @@ func applyAndWaitForApplications(commitID string) {
 
 	By("waiting initialization")
 	checkAllAppsSynced := func() error {
+		appStdout, stderr, err := ExecAt(boot0, "argocd", "app", "list", "-o", "json")
+		if err != nil {
+			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", appStdout, stderr, err)
+		}
+		var appResources []Application
+		err = json.Unmarshal(appStdout, &appResources)
+		if err != nil {
+			return fmt.Errorf("stdout: %s, err: %v", appStdout, err)
+		}
+		appResourceMap := make(map[string]Application)
+		for _, a := range appResources {
+			appResourceMap[a.Name] = a
+		}
 		for _, target := range appList {
-			appStdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", target.name)
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", appStdout, stderr, err)
-			}
-			var app Application
-			err = json.Unmarshal(appStdout, &app)
-			if err != nil {
-				return fmt.Errorf("stdout: %s, err: %v", appStdout, err)
+			app, ok := appResourceMap[target.name]
+			if !ok {
+				return fmt.Errorf("%s has not started synchronization yet", target.name)
 			}
 
 			// Skip checking since the target revision is not matching neco-apps commit id when the target is Helm.
