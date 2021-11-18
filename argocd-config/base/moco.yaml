@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://cybozu-go.github.io/moco
     chart: moco
-    targetRevision: 0.1.1
+    targetRevision: 0.1.2
     helm:
       version: v3
   destination:
