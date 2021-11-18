@@ -4,6 +4,17 @@ resources:
   - ../../base
 patchesStrategicMerge:
   - victoriametrics/vmsingle-smallset.yaml
+patchesJSON6902:
+  # Temporary configuration for storage performance measurement
+  - target:
+      group: moco.cybozu.com
+      version: v1beta1
+      kind: MySQLCluster
+      name: grafana-mysql
+      namespace: monitoring
+    patch: |-
+      - op: remove
+        path: /spec/podTemplate/spec/containers/0/resources
 configMapGenerator:
   - name: vmalertmanager
     behavior: merge

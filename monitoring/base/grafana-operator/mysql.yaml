@@ -1,0 +1,38 @@
+apiVersion: moco.cybozu.com/v1beta1
+kind: MySQLCluster
+metadata:
+  namespace: monitoring
+  name: grafana-mysql
+spec:
+  replicas: 3
+  podTemplate:
+    spec:
+      containers:
+      - name: mysqld
+        image: quay.io/cybozu/mysql:8.0.27
+        resources:
+          limits:
+            cpu: "8"
+            memory: "10Gi"
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app.kubernetes.io/name: mysql
+            app.kubernetes.io/instance: grafana-mysql # must be same as MySQLCluster's name
+        maxSkew: 1
+        topologyKey: topology.kubernetes.io/zone
+        whenUnsatisfiable: DoNotSchedule
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-data
+      annotations:
+        resize.topolvm.io/storage_limit: 20Gi  # for pvc-autoresizer
+    spec:
+      storageClassName: topolvm-flash1-xfs
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Gi
+  collectors:
+  - binlog_size
+  - info_schema.innodb_metrics

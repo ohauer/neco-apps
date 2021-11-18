@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -381,6 +382,23 @@ func testSetup() {
 			}
 			return nil
 		}).Should(Succeed())
+	})
+
+	It("should add initial user and database to grafana's MySQL", func() {
+		Eventually(func() error {
+			return checkStatefulSetReplicas("moco-grafana-mysql", "monitoring", 3)
+		}).Should(Succeed())
+
+		execSafeMysql := func(stmt string) {
+			// Special characters including whitespaces must be escaped in ssh command execution arguments
+			r := regexp.MustCompile("[^A-Za-z0-9]")
+			stmt = r.ReplaceAllStringFunc(stmt, func(x string) string { return "\\" + x })
+			ExecSafeAt(boot0, "kubectl", "moco", "mysql", "-u", "moco-writable", "-n", "monitoring", "grafana-mysql", "--", "-e", stmt)
+		}
+		// "IF NOT EXISTS" is important because these statements may be executed twice during upgrade-* workflow.
+		execSafeMysql(`CREATE USER IF NOT EXISTS 'grafana'@'%' IDENTIFIED BY 'grafana'`)
+		execSafeMysql(`CREATE DATABASE IF NOT EXISTS grafana`)
+		execSafeMysql(`GRANT ALL ON grafana.* TO 'grafana'@'%'`)
 	})
 
 	It("exports a list of images used", func() {
