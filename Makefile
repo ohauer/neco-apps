@@ -31,6 +31,17 @@ update-bmc-reverse-proxy:
 	$(call get-latest-tag,bmc-reverse-proxy)
 	sed -i -E 's,image: quay.io/cybozu/bmc-reverse-proxy:.*$$,image: quay.io/cybozu/bmc-reverse-proxy:$(latest_tag),' bmc-reverse-proxy/base/bmc-reverse-proxy/deployment.yaml
 
+.PHYNY: update-cadvisor
+update-cadvisor:
+	$(call get-latest-tag,cadvisor)
+	rm -rf /tmp/cadvisor
+	cd /tmp; git clone --depth 1 -b $(call upstream-tag,$(latest_tag)) https://github.com/google/cadvisor
+	rm -rf monitoring/base/cadvisor/upstream/*
+	cp -r /tmp/cadvisor/deploy/kubernetes/base monitoring/base/cadvisor/upstream
+	cp -r /tmp/cadvisor/deploy/kubernetes/overlays monitoring/base/cadvisor/upstream
+	rm -rf /tmp/cadvisor
+	sed -i -E '/newName:.*cadvisor$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
+
 .PHONY: update-calico
 update-calico:
 	$(call get-latest-tag,calico)

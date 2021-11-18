@@ -4,6 +4,7 @@ How to maintain neco-apps
 - [accurate](#accurate)
 - [argocd](#argocd)
 - [bmc-reverse-proxy](#bmc-reverse-proxy)
+- [cadvisor](#cadvisor)
 - [cert-manager](#cert-manager)
 - [customer-egress (Squid and unbound)](#customer-egress-squid-and-unbound)
 - [elastic (ECK)](#elastic-eck)
@@ -71,6 +72,15 @@ Update image tags as follows,
 $ make update-bmc-reverse-proxy
 $ git diff
 ```
+
+## cadvisor
+
+1. Check the [release page](https://github.com/google/cadvisor/releases) for changes.
+2. Run the following commands to update the manifests and to check the diff.
+   ```console
+   $ make update-cadvisor
+   $ git diff
+   ```
 
 ## cert-manager
 

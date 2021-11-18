@@ -1,0 +1,37 @@
+# This patch is based on "upstream/overlays/examples/cadvisor-args.yaml".
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cadvisor
+  namespace: cadvisor
+spec:
+  template:
+    spec:
+      containers:
+      - name: cadvisor
+        args:
+        - --housekeeping_interval=10s
+        - --max_housekeeping_interval=15s
+        - --event_storage_event_limit=default=0
+        - --event_storage_age_limit=default=0
+        - --enable_metrics=app,cpu,cpuLoad,disk,diskIO,memory,network,process
+        - --containerd=/var/run/k8s-containerd.sock
+        - --store_container_labels=false
+        - --whitelisted_container_labels=io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+          hostPort: 9110
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+            - DAC_READ_SEARCH
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+      tolerations:
+      - key: cke.cybozu.com/role
+        operator: Equal
+        value: storage
