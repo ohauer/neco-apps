@@ -11,7 +11,68 @@ tests:
         alertname: MocoControllerDown
         exp_alerts:
           - exp_labels:
-              severity: error
+              severity: critical
             exp_annotations:
               runbook: TBD
               summary: moco controller is down.
+  - interval: 1m
+    input_series:
+      - series: 'moco_cluster_checks_total{namespace="foo",name="bar"}'
+        values: '0+0x20'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: MocoControllerIsNotChecking
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: moco controller is not checking cluster state.
+
+  - interval: 1m
+    input_series:
+      - series: 'moco_cluster_available{namespace="foo",name="bar"}'
+        values: '0+0x15'
+      - series: 'kube_namespace_labels{namespace="foo",label_team="neco"}'
+        values: '1+0x15'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: MySQLClusterIsNotAvailable
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              namespace: foo
+              name: bar
+            exp_annotations:
+              summary: MySQL cluster foo/bar is not available.
+  - interval: 1m
+    input_series:
+      - series: 'moco_cluster_healthy{namespace="foo",name="bar"}'
+        values: '0+0x60'
+      - series: 'kube_namespace_labels{namespace="foo",label_team="neco"}'
+        values: '1+0x60'
+    alert_rule_test:
+      - eval_time: 60m
+        alertname: MySQLClusterIsNotHealthy
+        exp_alerts:
+          - exp_labels:
+              severity: error
+              namespace: foo
+              name: bar
+            exp_annotations:
+              summary: MySQL cluster foo/bar is not healthy.
+  - interval: 1m
+    input_series:
+      - series: 'moco_cluster_errant_replicas{namespace="foo",name="bar"}'
+        values: '1+0x60'
+      - series: 'kube_namespace_labels{namespace="foo",label_team="neco"}'
+        values: '1+0x60'
+    alert_rule_test:
+      - eval_time: 60m
+        alertname: MySQLClusterHasErrantTransactions
+        exp_alerts:
+          - exp_labels:
+              severity: error
+              namespace: foo
+              name: bar
+            exp_annotations:
+              summary: MySQL cluster foo/bar has errant transactions.

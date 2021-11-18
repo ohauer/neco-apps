@@ -11,8 +11,47 @@ spec:
           expr: |
             absent(up{job="moco-controller"} == 1)
           labels:
-            severity: error
+            severity: critical
           for: 15m
           annotations:
             summary: moco controller is down.
             runbook: TBD
+        - alert: MocoControllerIsNotChecking
+          expr: |
+            sum(rate(moco_cluster_checks_total[5m])) == 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: moco controller is not checking cluster state.
+
+        - alert: MySQLClusterIsNotAvailable
+          expr: |
+            moco_cluster_available
+            * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            == 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: MySQL cluster {{ $labels.namespace }}/{{ $labels.name }} is not available.
+        - alert: MySQLClusterIsNotHealthy
+          expr: |
+            moco_cluster_healthy
+            * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            == 0
+          for: 60m
+          labels:
+            severity: error
+          annotations:
+            summary: MySQL cluster {{ $labels.namespace }}/{{ $labels.name }} is not healthy.
+        - alert: MySQLClusterHasErrantTransactions
+          expr: |
+            moco_cluster_errant_replicas
+            * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            > 0
+          for: 60m
+          labels:
+            severity: error
+          annotations:
+            summary: MySQL cluster {{ $labels.namespace }}/{{ $labels.name }} has errant transactions.
