@@ -6,6 +6,8 @@ metadata:
   namespace: argocd
 spec:
   destinations:
+    - namespace: app-csa
+      server: '*'
     - namespace: dev-*
       server: '*'
     - namespace: sandbox

@@ -4,4 +4,5 @@ commonLabels:
   team: csa
 kind: Kustomization
 resources:
+  - app-csa.yaml
   - project.yaml
