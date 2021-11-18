@@ -2,6 +2,7 @@
 ArgoCDApplicationValidator:
   rules:
     - projects:
+        - csa
         - cydec
         - dbre
         - default

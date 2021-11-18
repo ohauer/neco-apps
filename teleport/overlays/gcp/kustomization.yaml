@@ -10,6 +10,7 @@ patchesStrategicMerge:
   - apps/vmalertmanager-largeset.yaml
   - apps/vmalertmanager-smallset.yaml
   - deployment.yaml
+  - nodes/csa.yaml
   - nodes/cydec.yaml
   - nodes/dbre.yaml
   - nodes/ept.yaml
