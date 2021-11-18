@@ -2,7 +2,7 @@ apiVersion: meows.cybozu.com/v1alpha1
 kind: RunnerPool
 metadata:
   name: {{.RunnerPoolName}}
-  namespace: meows-runner
+  namespace: {{.Namespace}}
 spec:
   repositoryName: meows-ci
   replicas: 1
