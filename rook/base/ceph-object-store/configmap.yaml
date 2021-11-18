@@ -8,7 +8,7 @@ metadata:
 data:
   # this is patched by overlays, please check overlays if you update it.
   config: |
-    [mon]
+    [mgr]
     ; Suppress the folowing warning.
     ;
     ; ```

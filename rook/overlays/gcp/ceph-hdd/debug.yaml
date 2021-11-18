@@ -5,7 +5,7 @@ metadata:
   namespace: ceph-hdd
 data:
   config: |
-    [mon]
+    [mgr]
     ; Suppress the folowing warning.
     ;
     ; ```

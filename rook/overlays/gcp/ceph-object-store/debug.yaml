@@ -5,7 +5,7 @@ metadata:
   namespace: ceph-object-store
 data:
   config: |
-    [mon]
+    [mgr]
     ; Suppress the folowing warning.
     ;
     ; ```
