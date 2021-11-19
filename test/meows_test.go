@@ -53,7 +53,7 @@ func prepareMeows() {
 }
 
 func testMeows() {
-	It("should deploy meows-controller", func() {
+	It("should deploy meows-controller and slack-agent", func() {
 		if meowsDisabled() {
 			Skip("meows is disabled")
 		}
@@ -61,16 +61,23 @@ func testMeows() {
 		Eventually(func() error {
 			return checkDeploymentReplicas("meows-controller", "meows", 2)
 		}).Should(Succeed())
-	})
-
-	It("should deploy slack-agent", func() {
-		if meowsDisabled() {
-			Skip("meows is disabled")
-		}
 
 		Eventually(func() error {
 			return checkDeploymentReplicas("slack-agent", "meows", 2)
 		}).Should(Succeed())
+
+		By("accessing to slack-agent: should be allow")
+		runnerPoolName := genRunnerPoolName()
+		// This command does not want to check the communication with the slack api, so ignore the error.
+		// Cannot be checked by curl command or other methods.
+		ExecAt(boot0, "kubectl", "exec", "-n", "meows", "deploy/meows-controller", "--", "/usr/local/bin/meows", "slackagent", "send", runnerPoolName, "success", "-s", "http://slack-agent.meows.svc", "-c", "test1")
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "logs", "-n", "meows", "-l", "app.kubernetes.io/component=slack-agent", "|", "grep", "-e", "'success to send slack message'", "-e", "'failed to send slack message'", "|", "grep", "-q", runnerPoolName)
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+			return nil
+		}).ShouldNot(HaveOccurred())
 	})
 
 	It("should deploy runner pool", func() {
