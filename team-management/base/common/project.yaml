@@ -15,6 +15,12 @@ spec:
     warn: false
   roles:
     - groups:
+        - cybozu-private:csa
+      name: csa-apps
+      policies:
+        - p, proj:tenant-app-of-apps:csa-apps, applications, get, tenant-app-of-apps/csa-apps, allow
+        - p, proj:tenant-app-of-apps:csa-apps, applications, sync, tenant-app-of-apps/csa-apps, allow
+    - groups:
         - cybozu-private:cydec
       name: cydec-apps
       policies:

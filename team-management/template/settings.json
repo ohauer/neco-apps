@@ -32,6 +32,15 @@
     ]
   },
   "apps": {
+    "csa-apps": {
+      "destinations": {
+        "osaka0": "release",
+        "stage0": "stage",
+        "tokyo0": "release"
+      },
+      "repo": "https://github.com/cybozu-private/csa-apps.git",
+      "team": "csa"
+    },
     "cydec-apps": {
       "destinations": {
         "osaka0": "release",
@@ -113,7 +122,12 @@
     }
   },
   "namespaces": {
-    "csa": {},
+    "csa": {
+      "app-csa": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      }
+    },
     "cydec": {
       "app-cydec": {
         "accurate.cybozu.com/template": "init-template",
