@@ -144,6 +144,10 @@ func teleportSSHConnectionTest() {
 		return cmd.Wait()
 	}).Should(Succeed())
 
+	By("switching kubectl's current context")
+	output, err = exec.Command("kubectl", "config", "use-context", "gcp0-gcp0").CombinedOutput()
+	Expect(err).ShouldNot(HaveOccurred(), "output=%s", output)
+
 	By("getting node resources with kubectl via teleport proxy")
 	output, err = exec.Command("kubectl", "get", "nodes").CombinedOutput()
 	Expect(err).ShouldNot(HaveOccurred(), "output=%s", output)
