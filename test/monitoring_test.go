@@ -247,7 +247,7 @@ func prepareGrafanaOperator() {
 func testGrafanaOperator() {
 	It("should be deployed successfully", func() {
 		Eventually(func() error {
-			return checkDeploymentReplicas("grafana-deployment", "monitoring", 1)
+			return checkDeploymentReplicas("grafana-deployment", "monitoring", 2)
 		}).Should(Succeed())
 
 		By("confirming created Certificate")

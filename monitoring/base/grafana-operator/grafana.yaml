@@ -6,6 +6,7 @@ spec:
   service:
     type: ClusterIP
   deployment:
+    replicas: 2
     envFrom:
       - configMapRef:
           name: https-proxy
@@ -30,6 +31,12 @@ spec:
       token_url: https://github.com/login/oauth/access_token
       api_url: https://api.github.com/user
       allowed_organizations: cybozu-private
+    database:
+      type: mysql
+      host: moco-grafana-mysql-primary.monitoring.svc:3306
+      name: grafana
+      user: grafana
+      password: grafana
     server:
       domain: grafana.monitoring.gcp0.dev-ne.co
       root_url: https://grafana.monitoring.gcp0.dev-ne.co
@@ -43,3 +50,14 @@ spec:
   dashboardLabelSelector:
     - matchExpressions:
         - {key: app.kubernetes.io/name, operator: In, values: [grafana]}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: grafana
