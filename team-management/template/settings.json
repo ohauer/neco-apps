@@ -93,6 +93,13 @@
       "repo": "https://github.com/cybozu-private/hazama-apps.git",
       "team": "maneki"
     },
+    "kintone-apps": {
+      "destinations": {
+        "stage0": "main"
+      },
+      "repo": "https://github.com/kintone-private/kintone-apps.git",
+      "team": "kintone-neco"
+    },
     "maneki-apps": {
       "destinations": {
         "osaka0": "release",
