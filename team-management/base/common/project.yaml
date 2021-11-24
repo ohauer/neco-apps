@@ -57,6 +57,12 @@ spec:
         - p, proj:tenant-app-of-apps:hazama-apps, applications, get, tenant-app-of-apps/hazama-apps, allow
         - p, proj:tenant-app-of-apps:hazama-apps, applications, sync, tenant-app-of-apps/hazama-apps, allow
     - groups:
+        - cybozu-private:kintone-neco
+      name: kintone-apps
+      policies:
+        - p, proj:tenant-app-of-apps:kintone-apps, applications, get, tenant-app-of-apps/kintone-apps, allow
+        - p, proj:tenant-app-of-apps:kintone-apps, applications, sync, tenant-app-of-apps/kintone-apps, allow
+    - groups:
         - cybozu-private:maneki
       name: maneki-apps
       policies:
