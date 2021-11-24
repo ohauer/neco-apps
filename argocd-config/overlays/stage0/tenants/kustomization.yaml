@@ -9,6 +9,7 @@ resources:
   - ept-apps.yaml
   - garoon-apps.yaml
   - hazama-apps.yaml
+  - kintone-apps.yaml
   - maneki-apps.yaml
   - network-apps.yaml
   - tenant-apps.yaml
