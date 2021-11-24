@@ -530,7 +530,7 @@ Please check changes in [CHANGELOG.md](https://github.com/gravitational/teleport
 ```console
 $ git clone https://github.com/gravitational/teleport.git
 $ cd teleport
-$ git diff vx.y.z...vX.Y.Z examples/chart/teleport
+$ git diff vx.y.z...vX.Y.Z examples/chart/teleport-cluster
 ```
 
 - Update `newTag` in `team-management/template/teleport/base/kustomization.libsonnet` and regenerate files.
