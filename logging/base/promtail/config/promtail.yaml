@@ -109,6 +109,14 @@ scrape_configs:
     relabel_configs:
       - source_labels: ["__journal__systemd_unit"]
         target_label: "unit"
+      - source_labels: ["__journal__systemd_unit"]
+        regex: ^session-\d+\.scope$
+        target_label: "unit"
+        replacement: session.scope
+      - source_labels: ["__journal__systemd_unit"]
+        regex: ^sshd@\d+-\d+\.\d+\.\d+\.\d+:\d+-\d+\.\d+\.\d+\.\d+:\d+\.service$
+        target_label: "unit"
+        replacement: sshd.service
       - source_labels: ["__journal_syslog_identifier"]
         target_label: "syslog_identifier"
       - source_labels: ["__journal_container_name"]
