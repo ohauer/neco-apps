@@ -335,7 +335,8 @@ type VMRule struct {
 		Groups []struct {
 			Name  string `json:"name"`
 			Rules []struct {
-				Alert string `json:"alert"`
+				Alert  string `json:"alert"`
+				Record string `json:"record"`
 			} `json:"rules"`
 		} `json:"groups"`
 	} `json:"spec"`
@@ -349,6 +350,9 @@ type VMAlertAPIV1GroupsResult struct {
 			AlertingRules []struct {
 				Name string `json:"name"`
 			} `json:"alerting_rules"`
+			RecordingRules []struct {
+				Name string `json:"name"`
+			} `json:"recording_rules"`
 		} `json:"groups"`
 	} `json:"data"`
 }
@@ -402,7 +406,8 @@ func testVMCommonClusterComponents(setType vmSetType) {
 
 	It("should reply successfully (vmalert)", func() {
 		By("reading VMRules")
-		expected := []string{}
+		expectedAlerts := []string{}
+		expectedRecords := []string{}
 		err := filepath.Walk("../monitoring/base/victoriametrics/rules", func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -433,14 +438,19 @@ func testVMCommonClusterComponents(setType vmSetType) {
 				}
 				for _, group := range r.Spec.Groups {
 					for _, rule := range group.Rules {
-						expected = append(expected, rule.Alert)
+						if len(rule.Alert) != 0 {
+							expectedAlerts = append(expectedAlerts, rule.Alert)
+						} else if len(rule.Record) != 0 {
+							expectedRecords = append(expectedRecords, rule.Record)
+						}
 					}
 				}
 			}
 			return nil
 		})
 		Expect(err).NotTo(HaveOccurred())
-		sort.Strings(expected)
+		sort.Strings(expectedAlerts)
+		sort.Strings(expectedRecords)
 
 		By("checking vmalerts")
 		Eventually(func() error {
@@ -470,18 +480,29 @@ func testVMCommonClusterComponents(setType vmSetType) {
 				if err != nil {
 					return err
 				}
-				actual := []string{}
+				actualAlerts := []string{}
+				actualRecords := []string{}
 				for _, group := range r.Data.Groups {
 					for _, rule := range group.AlertingRules {
 						if len(rule.Name) != 0 {
-							actual = append(actual, rule.Name)
+							actualAlerts = append(actualAlerts, rule.Name)
+						}
+					}
+					for _, rule := range group.RecordingRules {
+						if len(rule.Name) != 0 {
+							actualRecords = append(actualRecords, rule.Name)
 						}
 					}
 				}
-				sort.Strings(actual)
-				if !reflect.DeepEqual(actual, expected) {
-					return fmt.Errorf("vmalert does not load all rules actual=%v, expected=%v",
-						actual, expected)
+				sort.Strings(actualAlerts)
+				sort.Strings(actualRecords)
+				if !reflect.DeepEqual(actualAlerts, expectedAlerts) {
+					return fmt.Errorf("vmalert does not load all rules actualAlerts=%v, expectedAlerts=%v",
+						actualAlerts, expectedAlerts)
+				}
+				if !reflect.DeepEqual(actualRecords, expectedRecords) {
+					return fmt.Errorf("vmalert does not load all rules actualRecords=%v, expectedRecords=%v",
+						actualRecords, expectedRecords)
 				}
 			}
 			return nil

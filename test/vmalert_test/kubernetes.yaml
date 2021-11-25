@@ -510,6 +510,71 @@ tests:
               summary: CronJob test1/test-cronjob is taking more than 1h to complete.
   - interval: 1m
     input_series:
+      - series: 'kube_job_status_succeeded{job="kube-state-metrics",namespace="test1",job_name="test-job1"}'
+        values: '1+0x130'
+      - series: 'kube_job_spec_completions{job="kube-state-metrics",namespace="test1",job_name="test-job1"}'
+        values: '1+0x60 3+0x70'
+      - series: 'kube_job_status_start_time{job_name="test-job1", namespace="test1"}'
+        values: '50+0x130'
+      - series: 'kube_job_owner{job_name="test-job1",owner_name="cron1",namespace="test1", owner_kind="CronJob"}'
+        values: '1+0x130'
+      - series: 'kube_job_status_succeeded{job="kube-state-metrics",namespace="test1",job_name="test-job2"}'
+        values: '1+0x130'
+      - series: 'kube_job_spec_completions{job="kube-state-metrics",namespace="test1",job_name="test-job2"}'
+        values: '1+0x60 3+0x70'
+      - series: 'kube_job_status_start_time{job_name="test-job2", namespace="test1"}'
+        values: '30+0x130'
+      - series: 'kube_job_owner{job_name="test-job2",owner_name="cron1",namespace="test1", owner_kind="CronJob"}'
+        values: '1+0x130'
+      - series: 'kube_job_status_succeeded{job="kube-state-metrics",namespace="test1",job_name="test-job3"}'
+        values: '1+0x130'
+      - series: 'kube_job_spec_completions{job="kube-state-metrics",namespace="test1",job_name="test-job3"}'
+        values: '3+0x130'
+      - series: 'kube_job_status_start_time{job_name="test-job3", namespace="test1"}'
+        values: '70+0x130'
+      - series: 'kube_job_owner{job_name="test-job3",owner_name="<none>",namespace="test1", owner_kind="<none>"}'
+        values: '1+0x130'
+      - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="neco", namespace="test1"}'
+        values: '1+0x130'
+    alert_rule_test:
+      - eval_time: 2h10m
+        alertname: KubeCronJobCompletion
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              namespace: test1
+              owner_name: cron1
+              job_name: test-job1
+              job: kube-state-metrics
+            exp_annotations:
+              runbook: TBD
+              summary: CronJob test1/cron1 is taking more than one hour to complete.
+  - interval: 1m
+    input_series:
+      - series: 'kube_job_status_succeeded{job="kube-state-metrics",namespace="test1",job_name="test-job1"}'
+        values: '1+0x130'
+      - series: 'kube_job_spec_completions{job="kube-state-metrics",namespace="test1",job_name="test-job1"}'
+        values: '1+0x70'
+      - series: 'kube_job_status_start_time{job_name="test-job1", namespace="test1"}'
+        values: '50+0x70'
+      - series: 'kube_job_owner{job_name="test-job1",owner_name="cron1",namespace="test1", owner_kind="CronJob"}'
+        values: '1+0x70'
+      - series: 'kube_job_status_succeeded{job="kube-state-metrics",namespace="test1",job_name="test-job2"}'
+        values: '1+0x130'
+      - series: 'kube_job_spec_completions{job="kube-state-metrics",namespace="test1",job_name="test-job2"}'
+        values: '3+0x70'
+      - series: 'kube_job_status_start_time{job_name="test-job2", namespace="test1"}'
+        values: '30+0x70'
+      - series: 'kube_job_owner{job_name="test-job2",owner_name="cron1",namespace="test1", owner_kind="CronJob"}'
+        values: '1+0x70'
+      - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="neco", namespace="test1"}'
+        values: '1+0x70'
+    alert_rule_test:
+      - eval_time: 1h10m
+        alertname: KubeCronJobCompletion
+        exp_alerts: []
+  - interval: 1m
+    input_series:
       - series: 'kube_job_spec_completions{job="kube-state-metrics",namespace="test1",job_name="test-job"}'
         values: '1+0x60 3+0x70'
       - series: 'kube_job_spec_completions{job="kube-state-metrics",namespace="test2",job_name="test-job"}'
@@ -522,6 +587,10 @@ tests:
         values: '1+0x130'
       - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="tenant", namespace="test2"}'
         values: '1+0x130'
+      - series: 'kube_job_owner{job_name="test-job",owner_name="<none>",namespace="test1", owner_kind="<none>"}'
+        values: '1+0x130'
+      - series: 'kube_job_owner{job_name="test-job",owner_name="<none>",namespace="test2", owner_kind="<none>"}'
+        values: '1+0x130'
     alert_rule_test:
       - eval_time: 2h10m
         alertname: KubeJobCompletion
@@ -531,6 +600,7 @@ tests:
               namespace: test1
               job: kube-state-metrics
               job_name: test-job
+              owner_name: "<none>"
             exp_annotations:
               runbook: TBD
               summary: Job test1/test-job is taking more than one hour to complete.
@@ -554,6 +624,12 @@ tests:
         values: '50+0x30'
       - series: 'kube_job_owner{job_name="test-job3",owner_name="<none>",namespace="test1", owner_kind="<none>"}'
         values: '1+0x30'
+      - series: 'kube_job_status_failed{job="kube-state-metrics",namespace="test1",job_name="test-job4"}'
+        values: '0+0x30'
+      - series: 'kube_job_status_start_time{job_name="test-job4", namespace="test1"}'
+        values: '50+0x30'
+      - series: 'kube_job_owner{job_name="test-job4",owner_name="cron2",namespace="test1", owner_kind="CronJob"}'
+        values: '1+0x30'
       - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="neco", namespace="test1"}'
         values: '1+0x30'
     alert_rule_test:
@@ -564,6 +640,8 @@ tests:
               severity: error
               namespace: test1
               owner_name: cron1
+              job_name: test-job1
+              job: kube-state-metrics
             exp_annotations:
               runbook: TBD
               summary: CronJob test1/cron1 failed to complete.
@@ -585,7 +663,7 @@ tests:
         values: '1+0x30'
     alert_rule_test:
       - eval_time: 30m
-        alertname: KubeOwnerJobFailed
+        alertname: KubeCronJobFailed
         exp_alerts: []
   - interval: 1m
     input_series:

@@ -437,15 +437,38 @@ spec:
           for: 1h
           labels:
             severity: warning
+        - record: cronjob:kube_job_status_start_time:max
+          expr: |
+            clamp_max ( 
+              topk(1,
+                kube_job_status_start_time
+                  * on (job_name, namespace) group_left(owner_name) kube_job_owner{owner_kind="CronJob"}
+                  * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+              ) by(namespace, owner_name)
+            , 1)
+        - alert: KubeCronJobCompletion
+          annotations:
+            summary: CronJob {{ $labels.namespace }}/{{ $labels.owner_name }} is taking more
+              than one hour to complete.
+            runbook: TBD
+          expr: |
+            cronjob:kube_job_status_start_time:max
+              * on (job_name, namespace) group_right(owner_name) kube_job_spec_completions{job="kube-state-metrics"}
+              > 
+            cronjob:kube_job_status_start_time:max
+              * on (job_name, namespace) group_right(owner_name) kube_job_status_succeeded{job="kube-state-metrics"}
+          for: 1h
+          labels:
+            severity: warning
         - alert: KubeJobCompletion
           annotations:
             summary: Job {{ $labels.namespace }}/{{ $labels.job_name }} is taking more
               than one hour to complete.
             runbook: TBD
           expr: |
-            (kube_job_spec_completions{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
+            (kube_job_spec_completions{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}* on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_kind!="CronJob"})
               -
-            (kube_job_status_succeeded{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}) > 0
+            (kube_job_status_succeeded{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"}* on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_kind!="CronJob"}) > 0
           for: 1h
           labels:
             severity: warning
@@ -454,19 +477,7 @@ spec:
             summary: CronJob {{ $labels.namespace }}/{{ $labels.owner_name }} failed to complete.
             runbook: TBD
           expr: |
-            max(
-              kube_job_status_start_time
-                * on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_kind="CronJob"}
-                * on(namespace) group_left kube_namespace_labels{label_team="neco"} 
-                * on (job_name, namespace) group_right(owner_name) kube_job_status_failed{job="kube-state-metrics"} 
-            ) by(namespace, owner_name)
-              > 
-            max(
-              kube_job_status_start_time 
-                * on (job_name,namespace) group_left(owner_name) kube_job_owner{owner_kind="CronJob"} 
-                * on(namespace) group_left kube_namespace_labels{label_team="neco"} 
-                * on (job_name, namespace) group_right(owner_name) kube_job_status_succeeded{job="kube-state-metrics"} 
-            ) by(namespace, owner_name)
+            cronjob:kube_job_status_start_time:max * on (job_name, namespace) group_right(owner_name) kube_job_status_failed{job="kube-state-metrics"} > 0
           for: 15m
           labels:
             severity: error
