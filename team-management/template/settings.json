@@ -1,5 +1,8 @@
 {
   "allowed_namespaces": {
+    "csa": [
+      "app-forest-archive"
+    ],
     "cydec": [
       "app-gorush"
     ],
@@ -17,7 +20,6 @@
       "app-elasticsearch",
       "app-endpoint-discovery",
       "app-es-cluster-allocator",
-      "app-forest-archive",
       "app-forest-certs",
       "app-kodama",
       "app-maneki-static-cybozu-com",
