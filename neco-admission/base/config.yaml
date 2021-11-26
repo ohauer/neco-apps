@@ -22,6 +22,11 @@ ArgoCDApplicationValidator:
         - tenant-app-of-apps
       repositoryPrefix: https://github.com/garoon-private
     - projects:
+        - kintone-neco
+        - maneki
+        - tenant-app-of-apps
+      repositoryPrefix: https://github.com/kintone-private
+    - projects:
         - default
       repository: https://cybozu-go.github.io/accurate
     - projects:

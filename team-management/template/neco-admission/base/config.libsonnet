@@ -32,6 +32,14 @@ function(settings) [{
           ],
         },
         {
+          repositoryPrefix: 'https://github.com/kintone-private',
+          projects: [
+            'kintone-neco',
+            'maneki',
+            'tenant-app-of-apps',
+          ],
+        },
+        {
           repository: 'https://topolvm.github.io/pvc-autoresizer',
           projects: [
             'default',
