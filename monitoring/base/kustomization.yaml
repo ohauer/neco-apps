@@ -1,6 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - cadvisor
   - grafana-operator
   - machines-endpoints/cronjob.yaml
   - machines-endpoints/role.yaml
@@ -22,6 +23,9 @@ resources:
 patchesStrategicMerge:
   - patch-kube-state-metrics.yaml
 images:
+  - name: gcr.io/cadvisor/cadvisor
+    newName: quay.io/cybozu/cadvisor
+    newTag: 0.43.0.1
   - name: quay.io/cybozu/pushgateway
     newTag: 1.4.1.1
   - name: k8s.gcr.io/kube-state-metrics/kube-state-metrics

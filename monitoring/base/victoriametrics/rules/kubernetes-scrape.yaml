@@ -81,20 +81,22 @@ metadata:
   labels:
     smallset: "true"
 spec:
-  scheme: https
-  tlsConfig:
-    caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-  bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+  path: /metrics
+  port: "9110"
   relabelConfigs:
     - replacement: kubernetes-cadvisor
       targetLabel: job
     - action: labelmap
       regex: __meta_kubernetes_node_label_(.+)
-    - targetLabel: __address__
-      replacement: kubernetes.default.svc:443
-    - sourceLabels: [__meta_kubernetes_node_name]
-      targetLabel: __metrics_path__
-      replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+  metricRelabelConfigs:
+    - sourceLabels: [container_label_io_kubernetes_container_name]
+      targetLabel: container
+    - sourceLabels: [container_label_io_kubernetes_pod_name]
+      targetLabel: pod
+    - sourceLabels: [container_label_io_kubernetes_pod_namespace]
+      targetLabel: namespace
+    - action: labeldrop
+      regex: container_label_io_kubernetes_.*
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMNodeScrape
