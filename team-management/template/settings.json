@@ -1,6 +1,7 @@
 {
   "allowed_namespaces": {
     "csa": [
+      "app-csa-*",
       "app-forest-archive"
     ],
     "cydec": [
