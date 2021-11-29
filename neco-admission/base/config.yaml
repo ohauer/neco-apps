@@ -2,10 +2,8 @@
 ArgoCDApplicationValidator:
   rules:
     - projects:
-        - csa
         - cydec
         - dbre
-        - default
         - ept
         - garoon
         - kintone-neco
@@ -14,7 +12,6 @@ ArgoCDApplicationValidator:
         - network
         - set-cloud-platform
         - tenant-app-of-apps
-        - tenant-apps
       repositoryPrefix: https://github.com/cybozu-private
     - projects:
         - garoon
@@ -35,6 +32,15 @@ ArgoCDApplicationValidator:
     - projects:
         - default
       repository: https://github.com/cybozu-go/neco-apps.git
+    - projects:
+        - csa
+      repository: https://github.com/cybozu-private/csa-apps.git
+    - projects:
+        - default
+      repository: https://github.com/cybozu-private/neco-apps-secret.git
+    - projects:
+        - tenant-apps
+      repository: https://github.com/cybozu-private/neco-tenant-apps.git
     - projects:
         - default
       repository: https://prometheus-community.github.io/helm-charts

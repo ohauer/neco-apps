@@ -16,10 +16,26 @@ function(settings) [{
           ],
         },
         {
-          repositoryPrefix: 'https://github.com/cybozu-private',
-          projects: std.set(utility.get_teams(settings) + [
+          repository: 'https://github.com/cybozu-private/csa-apps.git',
+          projects: [
+            'csa',
+          ],
+        },
+        {
+          repository: 'https://github.com/cybozu-private/neco-apps-secret.git',
+          projects: [
             'default',
+          ],
+        },
+        {
+          repository: 'https://github.com/cybozu-private/neco-tenant-apps.git',
+          projects: [
             'tenant-apps',
+          ],
+        },
+        {
+          repositoryPrefix: 'https://github.com/cybozu-private',
+          projects: std.filter(function(x) x != 'csa', utility.get_teams(settings) + [
             'tenant-app-of-apps',
           ]),
         },
