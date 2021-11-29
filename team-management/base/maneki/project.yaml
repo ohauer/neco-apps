@@ -10,6 +10,8 @@ spec:
       server: '*'
     - namespace: app-csa
       server: '*'
+    - namespace: app-csa-*
+      server: '*'
     - namespace: app-cybozu-com-mysql
       server: '*'
     - namespace: app-cybozu-com-mysql-replica
