@@ -85,7 +85,7 @@ spec:
   storage:
     storageClassDeviceSets:
       - name: set1
-        count: 20
+        count: 43
         volumeClaimTemplates:
           - metadata:
               name: data
