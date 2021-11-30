@@ -48,7 +48,7 @@ spec:
           containerPort: 3020
         volumeMounts:
         - mountPath: /etc/teleport
-          name: teleport-general-secret
+          name: teleport-app-secret
           readOnly: true
         - mountPath: /var/lib/teleport
           name: teleport-storage
@@ -56,9 +56,9 @@ spec:
         runAsNonRoot: true
         runAsUser: 10000
       volumes:
-      - name: teleport-general-secret
+      - name: teleport-app-secret
         secret:
-          secretName: teleport-general-secret-20210310
+          secretName: teleport-app-secret-20211130
       - name: teleport-storage
         emptyDir: {}
       serviceAccountName: teleport
