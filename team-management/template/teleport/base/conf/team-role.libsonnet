@@ -6,7 +6,9 @@ function(team) [{
   },
   spec: {
     allow: {
-      app_labels: {
+      app_labels: if team == 'csa' then {
+        team: [team, 'neco'],
+      } else {
         team: team,
       },
       kubernetes_groups: [

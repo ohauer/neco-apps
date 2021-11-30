@@ -61,7 +61,7 @@ team-management:
 teleport:
 	# Cleanup existing files
 	set -e; for i in $$(ls $(ROOT_DIR)/teleport/base/conf); do \
-		if ! echo $$i | grep -E '^(admin|neco-readonly)-role[.]yaml$$' > /dev/null; then \
+		if ! echo $$i | grep -E '^(admin|boot-admin|neco-readonly)-role[.]yaml$$' > /dev/null; then \
 			rm $(ROOT_DIR)/teleport/base/conf/$$i; \
 		fi; \
 	done
