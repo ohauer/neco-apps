@@ -6,6 +6,8 @@ metadata:
   namespace: argocd
 spec:
   destinations:
+    - namespace: app-kintone
+      server: '*'
     - namespace: dev-*
       server: '*'
     - namespace: sandbox

@@ -100,7 +100,7 @@
       "destinations": {
         "stage0": "main"
       },
-      "repo": "https://github.com/kintone-private/kintone-apps.git",
+      "repo": "https://github.com/cybozu-private/kintone-apps.git",
       "team": "kintone-neco"
     },
     "maneki-apps": {
@@ -198,6 +198,10 @@
       }
     },
     "kintone-neco": {
+      "app-kintone": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      },
       "dev-kintone": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
