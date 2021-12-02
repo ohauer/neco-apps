@@ -5,6 +5,7 @@ images:
     newName: quay.io/gravitational/teleport
 kind: Kustomization
 patchesStrategicMerge:
+  - apps/vmalertmanager-app-csa-monitoring.yaml
   - apps/vmalertmanager-app-cybozu-com-mysql.yaml
   - apps/vmalertmanager-app-monitoring.yaml
   - apps/vmalertmanager-largeset.yaml
