@@ -4,5 +4,6 @@ commonLabels:
   team: kintone-neco
 kind: Kustomization
 resources:
+  - app-kintone.yaml
   - dev-kintone.yaml
   - project.yaml

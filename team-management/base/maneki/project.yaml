@@ -48,6 +48,8 @@ spec:
       server: '*'
     - namespace: app-gorush
       server: '*'
+    - namespace: app-kintone
+      server: '*'
     - namespace: app-kodama
       server: '*'
     - namespace: app-maneki
