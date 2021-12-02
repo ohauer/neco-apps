@@ -61,7 +61,7 @@ function(team) [{
             volumeMounts: [
               {
                 mountPath: '/etc/teleport',
-                name: 'teleport-general-secret',
+                name: 'teleport-node-secret',
                 readOnly: true,
               },
               {
@@ -86,9 +86,9 @@ function(team) [{
         },
         volumes: [
           {
-            name: 'teleport-general-secret',
+            name: 'teleport-node-secret',
             secret: {
-              secretName: 'teleport-general-secret-20210310',
+              secretName: 'teleport-node-secret-20211130',
             },
           },
           {

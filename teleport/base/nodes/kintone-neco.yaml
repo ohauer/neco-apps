@@ -48,7 +48,7 @@ spec:
               memory: 256Mi
           volumeMounts:
             - mountPath: /etc/teleport
-              name: teleport-general-secret
+              name: teleport-node-secret
               readOnly: true
             - mountPath: /var/lib/teleport
               name: teleport-storage
@@ -59,9 +59,9 @@ spec:
         runAsUser: 10000
       serviceAccountName: node-kintone-neco
       volumes:
-        - name: teleport-general-secret
+        - name: teleport-node-secret
           secret:
-            secretName: teleport-general-secret-20210310
+            secretName: teleport-node-secret-20211130
         - emptyDir: {}
           name: teleport-storage
         - ephemeral:
