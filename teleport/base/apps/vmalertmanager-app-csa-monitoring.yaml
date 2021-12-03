@@ -58,7 +58,7 @@ spec:
       volumes:
       - name: teleport-app-secret
         secret:
-          secretName: teleport-app-secret-20201203
+          secretName: teleport-app-secret-20211130
       - name: teleport-storage
         emptyDir: {}
       serviceAccountName: teleport
