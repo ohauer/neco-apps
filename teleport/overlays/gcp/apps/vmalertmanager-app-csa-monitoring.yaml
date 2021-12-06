@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teleport-app-vmalertmanager-app-csa-monitoring
+  namespace: teleport
+spec:
+  template:
+    spec:
+      containers:
+      - name: teleport-app
+        args:
+        - --insecure
+        - --roles=app
+        - --app-name=vmalertmanager-app-csa-monitoring
+        - --app-uri=http://vmalertmanager-vmalertmanager.app-csa-monitoring.svc:9093/
+        - --labels=team=csa
+        - --diag-addr=0.0.0.0:3020
