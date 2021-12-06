@@ -17,6 +17,7 @@ function(teams) [{
       namespace: 'teleport',
       files: std.set([
         'conf/admin-role.yaml',
+        'conf/boot-admin-role.yaml',
         'conf/neco-readonly-role.yaml',
       ] + std.map(function(x) 'conf/' + x + '-role.yaml', teams)),
     },
