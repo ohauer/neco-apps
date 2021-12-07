@@ -8,10 +8,6 @@ spec:
   destinations:
     - namespace: app-comconv-earthlab
       server: '*'
-    - namespace: app-csa
-      server: '*'
-    - namespace: app-csa-*
-      server: '*'
     - namespace: app-cybozu-com-mysql
       server: '*'
     - namespace: app-cybozu-com-mysql-replica
@@ -35,8 +31,6 @@ spec:
     - namespace: app-ept-wiki
       server: '*'
     - namespace: app-es-cluster-allocator
-      server: '*'
-    - namespace: app-forest-archive
       server: '*'
     - namespace: app-forest-certs
       server: '*'

@@ -22,12 +22,6 @@ subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
     name: csa
-  - apiGroup: rbac.authorization.k8s.io
-    kind: Group
-    name: maneki
   - kind: ServiceAccount
     name: node-csa
-    namespace: teleport
-  - kind: ServiceAccount
-    name: node-maneki
     namespace: teleport
