@@ -17,7 +17,7 @@ update-accurate:
 .PHONY: update-argocd
 update-argocd:
 	$(call get-latest-tag,argocd)
-	curl -sLf -o argocd/base/upstream/install.yaml \
+	curl -sSLf -o argocd/base/upstream/install.yaml \
 		https://raw.githubusercontent.com/argoproj/argo-cd/$(call upstream-tag,$(latest_tag))/manifests/install.yaml
 	sed -i -E '/name:.*argocd$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' argocd/base/kustomization.yaml
 	sed -i -e 's/ARGOCD_VERSION *:=.*/ARGOCD_VERSION := $(subst v,,$(call upstream-tag,$(latest_tag)))/' test/Makefile
@@ -45,20 +45,20 @@ update-cadvisor:
 .PHONY: update-calico
 update-calico:
 	$(call get-latest-tag,calico)
-	curl -sfL -o network-policy/base/calico/upstream/calico-policy-only.yaml \
+	curl -sSLf -o network-policy/base/calico/upstream/calico-policy-only.yaml \
 		https://docs.projectcalico.org/v$(shell echo $(latest_tag) | sed -E 's/^(.*)\.[[:digit:]]+\.[[:digit:]]+$$/\1/')/manifests/calico-policy-only.yaml
 	sed -i -E 's/newTag:.*$$/newTag: $(latest_tag)/' network-policy/base/kustomization.yaml
 
 .PHONY: update-cert-manager
 update-cert-manager:
 	$(call get-latest-tag,cert-manager)
-	curl -sLf -o cert-manager/base/upstream/cert-manager.yaml \
+	curl -sSLf -o cert-manager/base/upstream/cert-manager.yaml \
 		https://github.com/jetstack/cert-manager/releases/download/$(call upstream-tag,$(latest_tag))/cert-manager.yaml
 	sed -i -E 's/newTag:.*$$/newTag: $(latest_tag)/' cert-manager/base/kustomization.yaml
 
 .PHONY: update-customer-egress
 update-customer-egress:
-	curl -sLf -o customer-egress/base/neco/squid.yaml \
+	curl -sSLf -o customer-egress/base/neco/squid.yaml \
 		https://raw.githubusercontent.com/cybozu-go/neco/release/etc/squid.yml
 	sed -e 's/internet-egress/customer-egress/g' \
 		-e 's,{{ .squid }},quay.io/cybozu/squid,g' \
@@ -72,13 +72,13 @@ update-customer-egress:
 .PHONY: update-eck
 update-eck:
 	$(call get-latest-gh,elastic/cloud-on-k8s)
-	curl -sLf -o elastic/base/upstream/crds.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/crds.yaml
-	curl -sLf -o elastic/base/upstream/operator.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/operator.yaml
+	curl -sSLf -o elastic/base/upstream/crds.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/crds.yaml
+	curl -sSLf -o elastic/base/upstream/operator.yaml https://download.elastic.co/downloads/eck/$(latest_gh)/operator.yaml
 
 .PHONY: update-external-dns
 update-external-dns:
 	$(call get-latest-tag,external-dns)
-	curl -sLf -o external-dns/base/upstream/crd.yaml \
+	curl -sSLf -o external-dns/base/upstream/crd.yaml \
 		https://raw.githubusercontent.com/kubernetes-sigs/external-dns/$(call upstream-tag,$(latest_tag))/docs/contributing/crd-source/crd-manifest.yaml
 	sed -i -E 's,quay.io/cybozu/external-dns:.*$$,quay.io/cybozu/external-dns:$(latest_tag),' external-dns/base/deployment.yaml
 
@@ -205,7 +205,7 @@ update-moco:
 .PHONY: update-neco-admission
 update-neco-admission:
 	$(call get-latest-tag,neco-admission)
-	curl -sfL -o neco-admission/base/upstream/manifests.yaml \
+	curl -sSLf -o neco-admission/base/upstream/manifests.yaml \
 		https://raw.githubusercontent.com/cybozu/neco-containers/main/admission/config/webhook/manifests.yaml
 	sed -i -E 's/newTag:.*$$/newTag: $(latest_tag)/' neco-admission/base/kustomization.yaml
 
@@ -221,7 +221,7 @@ update-prometheus-adapter:
 .PHONY: update-pod-security-admission
 update-pod-security-admission:
 	$(call get-latest-gh,cybozu-go/pod-security-admission)
-	curl -sfL -o pod-security-admission/base/upstream/install.yaml \
+	curl -sSLf -o pod-security-admission/base/upstream/install.yaml \
 		https://github.com/cybozu-go/pod-security-admission/releases/download/$(latest_gh)/install.yaml
 
 .PHONY: update-pushgateway
@@ -243,7 +243,7 @@ update-s3gw:
 .PHONY: update-sealed-secrets
 update-sealed-secrets:
 	$(call get-latest-tag,sealed-secrets)
-	curl -sfL -o sealed-secrets/base/upstream/controller.yaml \
+	curl -sSLf -o sealed-secrets/base/upstream/controller.yaml \
 		https://github.com/bitnami-labs/sealed-secrets/releases/download/$(call upstream-tag,$(latest_tag))/controller.yaml
 	sed -i -E 's/newTag:.*$$/newTag: $(latest_tag)/' sealed-secrets/base/kustomization.yaml
 
@@ -286,7 +286,7 @@ update-victoriametrics:
 
 # usage: get-latest-tag NAME
 define get-latest-tag
-$(eval latest_tag := $(shell curl -sf https://quay.io/api/v1/repository/cybozu/$1/tag/ | jq -r '.tags[] | .name' | awk '/.*\..*\./ {print $$1; exit}'))
+$(eval latest_tag := $(shell curl -sSf https://quay.io/api/v1/repository/cybozu/$1/tag/ | jq -r '.tags[] | .name' | awk '/.*\..*\./ {print $$1; exit}'))
 endef
 
 # usage: upstream-tag 1.2.3.4
@@ -296,7 +296,7 @@ endef
 
 # usage get-latest-gh OWNER/REPO
 define get-latest-gh
-$(eval latest_gh := $(shell curl -sf https://api.github.com/repos/$1/releases/latest | jq -r '.tag_name'))
+$(eval latest_gh := $(shell curl -sSf https://api.github.com/repos/$1/releases/latest | jq -r '.tag_name'))
 endef
 
 # usage get-latest-helm REPO URL
@@ -307,20 +307,20 @@ endef
 .PHONY: setup
 setup:
 	# helm
-	curl -o /tmp/helm.tgz -fsL https://get.helm.sh/helm-v$(HELM_VERSION)-linux-amd64.tar.gz
+	curl -sSLf -o /tmp/helm.tgz https://get.helm.sh/helm-v$(HELM_VERSION)-linux-amd64.tar.gz
 	mkdir -p $$(go env GOPATH)/bin
 	tar --strip-components=1 -C $$(go env GOPATH)/bin -xzf /tmp/helm.tgz linux-amd64/helm
 	rm -f /tmp/helm.tgz
 
 	# tanka
-	curl -o $$(go env GOPATH)/bin/tk -fsL https://github.com/grafana/tanka/releases/download/v$(TANKA_VERSION)/tk-linux-amd64
+	curl -sSLf -o $$(go env GOPATH)/bin/tk https://github.com/grafana/tanka/releases/download/v$(TANKA_VERSION)/tk-linux-amd64
 	chmod +x $$(go env GOPATH)/bin/tk
 
 	# jb
 	go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
 
 	# yq
-	curl -o /tmp/yq.tar.gz -fsL https://github.com/mikefarah/yq/releases/download/v$(YQ_VERSION)/yq_linux_amd64.tar.gz
+	curl -sSLf -o /tmp/yq.tar.gz https://github.com/mikefarah/yq/releases/download/v$(YQ_VERSION)/yq_linux_amd64.tar.gz
 	tar --strip-components=1 -C $$(go env GOPATH)/bin -xzf /tmp/yq.tar.gz
 	mv $$(go env GOPATH)/bin/yq_linux_amd64 $$(go env GOPATH)/bin/yq
 	rm -f /tmp/yq.tar.gz

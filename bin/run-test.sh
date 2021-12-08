@@ -26,7 +26,7 @@ cp /home/cybozu/meows-secret.json ./ || true
 cp /home/cybozu/ghcr_dockerconfig.json ./ || true
 cp /home/cybozu/quay_dockerconfig.json ./ || true
 cp /home/cybozu/cybozu_private_repo_read_pat ./ || true
-curl -sfL -o lets.crt https://letsencrypt.org/certs/fakelerootx1.pem
+curl -sSLf -o lets.crt https://letsencrypt.org/certs/fakelerootx1.pem
 make setup
 make $TARGET COMMIT_ID=${CIRCLE_SHA1} BASE_BRANCH=${BASE_BRANCH} SUITE=prepare
 make $TARGET COMMIT_ID=${CIRCLE_SHA1} BASE_BRANCH=${BASE_BRANCH} SUITE=run
