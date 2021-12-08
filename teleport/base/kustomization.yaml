@@ -3,6 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 configMapGenerator:
   - files:
       - conf/admin-role.yaml
+      - conf/boot-admin-role.yaml
       - conf/csa-role.yaml
       - conf/cydec-role.yaml
       - conf/dbre-role.yaml
