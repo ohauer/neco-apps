@@ -13,6 +13,7 @@ resources:
   - coil.yaml
   - contour.yaml
   - cpu-usage.yaml
+  - csa-overview.yaml
   - envoy.yaml
   - etcd.yaml
   - ingress-watcher.yaml
