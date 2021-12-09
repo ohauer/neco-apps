@@ -13,17 +13,14 @@ import (
 //go:embed testdata/accurate-subnamespace.yaml
 var accurateSubNamespaceYAML []byte
 
-const accurateParentNamespaceName = "accurate-parent"
-const accurateChildNamespaceName = "accurate-child"
+const accurateParentNamespaceName = "app-accurate-parent"
+const accurateChildNamespaceName = "app-accurate-child"
 
 // accuratePropagatedNamespaceLabels is labels to be propagated.
 // `team` is not included because it requires special handling.
 var accuratePropagatedNamespaceLabels = []string{
 	"development",
 	"pod-security.cybozu.com/policy",
-}
-var accuratePropagatedNamespaceAnnotations = []string{
-	"metallb.universe.tf/address-pool",
 }
 
 //go:embed testdata/accurate-propagated.yaml
@@ -43,9 +40,6 @@ func prepareAccurate() {
 		ExecSafeAt(boot0, "kubectl", "label", "namespace", accurateParentNamespaceName, "team=neco")
 		for _, k := range accuratePropagatedNamespaceLabels {
 			ExecSafeAt(boot0, "kubectl", "label", "namespace", accurateParentNamespaceName, k+"=to-be-propagated")
-		}
-		for _, k := range accuratePropagatedNamespaceAnnotations {
-			ExecSafeAt(boot0, "kubectl", "annotate", "namespace", accurateParentNamespaceName, k+"=to-be-propagated")
 		}
 	})
 }
@@ -80,13 +74,11 @@ func testAccurate() {
 					return fmt.Errorf("namespace label '%s' is not propagated", k)
 				}
 			}
-			if meta.ObjectMeta.Annotations == nil {
-				return fmt.Errorf("namespace annotations are not propagated")
+			if meta.ObjectMeta.Labels["cybozu.com/alert-group"] != "sample" {
+				return fmt.Errorf("namespace label 'cybozu.com/alert-group' is not set")
 			}
-			for _, k := range accuratePropagatedNamespaceAnnotations {
-				if meta.ObjectMeta.Annotations[k] != "to-be-propagated" {
-					return fmt.Errorf("namespace annotation '%s' is not propagated", k)
-				}
+			if _, ok := meta.ObjectMeta.Labels["cybozu.com/not-allowed"]; ok {
+				return fmt.Errorf("disallowed label is set")
 			}
 			return nil
 		}).Should(Succeed())

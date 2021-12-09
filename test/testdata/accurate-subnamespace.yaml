@@ -1,5 +1,9 @@
 apiVersion: accurate.cybozu.com/v1
 kind: SubNamespace
 metadata:
-  namespace: accurate-parent
-  name: accurate-child
+  namespace: app-accurate-parent
+  name: app-accurate-child
+spec:
+  labels:
+    cybozu.com/alert-group: sample
+    cybozu.com/not-allowed: test

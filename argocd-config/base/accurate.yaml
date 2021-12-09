@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://cybozu-go.github.io/accurate
     chart: accurate
-    targetRevision: 0.2.0
+    targetRevision: 0.2.2
     helm:
       version: v3
       values: |
@@ -23,7 +23,7 @@ spec:
 
           # image.tag -- Accurate image tag to use.
           # @default -- `{{ .Chart.AppVersion }}`
-          # tag:  0.2.0
+          # tag:  0.3.0
 
           # image.pullPolicy -- Accurate image pullPolicy.
           # pullPolicy: IfNotPresent
@@ -56,10 +56,23 @@ spec:
             # controller.config.annotationKeys -- Annotations to be propagated to sub-namespaces.
             # It is also possible to specify a glob pattern that can be interpreted by Go's "path.Match" func.
             ## https://pkg.go.dev/path#Match
-            annotationKeys:
+            annotationKeys: []
             # An example to propagate an annotation for MetalLB
             # https://metallb.universe.tf/usage/#requesting-specific-ips
-            - metallb.universe.tf/address-pool
+            # - metallb.universe.tf/address-pool
+
+            # controller.config.subNamespaceLabelKeys -- Labels to be propagated to sub-namespaces from SubNamespace resource.
+            # It is also possible to specify a glob pattern that can be interpreted by Go's "path.Match" func.
+            # https://pkg.go.dev/path#Match
+            subNamespaceLabelKeys:
+            - cybozu.com/alert-group
+            # - app
+
+            # controller.config.subNamespaceAnnotationKeys -- Annotations to be propagated to sub-namespaces from SubNamespace resource.
+            # It is also possible to specify a glob pattern that can be interpreted by Go's "path.Match" func.
+            # https://pkg.go.dev/path#Match
+            subNamespaceAnnotationKeys: []
+            # - foo.bar/baz
 
             # controller.config.watches -- List of GVK for namespace-scoped resources that can be propagated.
             # Any namespace-scoped resource is allowed.
@@ -74,6 +87,30 @@ spec:
                 kind: Secret
               - version: v1
                 kind: ResourceQuota
+
+            # controller.config.namingPolicies -- List of nameing policy for SubNamespaces.
+            # root and match are both regular expressions.
+            # When a SubNamespace is created in a tree starting from a root namespace and the root namespace's name matches the "root" regular expression, the SubNamespace name is validated with the "match" regular expression.
+            #
+            # "match" namingPolicies can use variables of regexp capture group naming of "root" namingPolicies.
+            # example:
+            #   root: ^app-(?P<team>.*)
+            #   match: ^app-${team}-.*
+            #   root namespace: app-team1
+            #   compiled match naming policy: ^app-team1-.*
+            # This feature is provided using https://pkg.go.dev/regexp#Regexp.Expand
+            namingPolicies: []
+            #   - root:  ^dev-.*
+            #     match: ^dev-.*
+            #   - root:  ^app-.*
+            #     match: ^app-.*
+            #   - root:  foo
+            #     match: foo_.*
+            #   - root:  bar
+            #     match: bar_.*
+            #   - root:  ^app-(?P<team>.*)
+            #     match: ^app-${team}-.*
+
           additionalRBAC:
             # controller.additionalRBAC.rules -- Specify the RBAC rules to be added to the controller.
             # ClusterRole and ClusterRoleBinding are created with the names `{{ release name }}-additional-resources`.
