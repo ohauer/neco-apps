@@ -6,3 +6,12 @@ metadata:
 spec:
   generateBucketName: session-log
   storageClassName: ceph-hdd-bucket
+---
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  name: session-log-bucket
+  namespace: session-log
+spec:
+  generateBucketName: session-log-bucket
+  storageClassName: ceph-object-store-bucket
