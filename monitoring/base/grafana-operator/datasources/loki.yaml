@@ -15,13 +15,3 @@ spec:
       jsonData:
         tlsSkipVerify: true
         timeInterval: "30s"
-    - name: loki-old
-      type: loki
-      access: proxy
-      url: http://query-frontend-old.logging.svc:3100
-      version: 1
-      isDefault: false
-      editable: false
-      jsonData:
-        tlsSkipVerify: true
-        timeInterval: "30s"
