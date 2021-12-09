@@ -26,9 +26,9 @@ spec:
             value: 10.72.48.0/24
           envFrom:
           - configMapRef:
-              name: session-log
+              name: session-log-bucket
           - secretRef:
-              name: session-log
+              name: session-log-bucket
           ports:
           - name: http
             containerPort: 20080
