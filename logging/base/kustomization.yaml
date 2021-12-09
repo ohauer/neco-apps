@@ -4,5 +4,4 @@ namespace: logging
 resources:
   - ./loki
   - ./loki-canary
-  - ./loki-old
   - ./promtail
