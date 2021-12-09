@@ -25,7 +25,7 @@ patchesStrategicMerge:
 images:
   - name: gcr.io/cadvisor/cadvisor
     newName: quay.io/cybozu/cadvisor
-    newTag: 0.43.0.1
+    newTag: 0.43.0.2
   - name: quay.io/cybozu/pushgateway
     newTag: 1.4.1.1
   - name: k8s.gcr.io/kube-state-metrics/kube-state-metrics
@@ -35,4 +35,4 @@ images:
     newName: quay.io/cybozu/grafana-operator
     newTag: 3.10.3.1
   - name: quay.io/cybozu/heartbeat
-    newTag: 1.0.4
+    newTag: 1.0.5
