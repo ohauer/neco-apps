@@ -16,15 +16,24 @@ spec:
             "hide": true,
             "iconColor": "rgba(0, 211, 255, 1)",
             "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
             "type": "dashboard"
           }
         ]
       },
       "editable": true,
+      "fiscalYearStartMonth": 0,
       "gnetId": null,
       "graphTooltip": 0,
-      "iteration": 1586927544417,
+      "id": 59,
+      "iteration": 1639025286405,
       "links": [],
+      "liveNow": false,
       "panels": [
         {
           "aliasColors": {},
@@ -32,6 +41,12 @@ spec:
           "dashLength": 10,
           "dashes": false,
           "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -55,9 +70,10 @@ spec:
           "linewidth": 1,
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "alertThreshold": true
           },
           "percentage": false,
+          "pluginVersion": "8.2.2",
           "pointradius": 2,
           "points": true,
           "renderer": "flot",
@@ -120,6 +136,12 @@ spec:
           "dashLength": 10,
           "dashes": false,
           "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -143,9 +165,10 @@ spec:
           "linewidth": 1,
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "alertThreshold": true
           },
           "percentage": false,
+          "pluginVersion": "8.2.2",
           "pointradius": 2,
           "points": true,
           "renderer": "flot",
@@ -204,24 +227,39 @@ spec:
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorPostfix": false,
-          "colorPrefix": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": null,
-          "description": "The percentage of healthy machines",
-          "format": "none",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
           },
           "gridPos": {
             "h": 6,
@@ -229,81 +267,72 @@ spec:
             "x": 16,
             "y": 0
           },
-          "id": 10,
+          "id": 7,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "%",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(192, 216, 255, 0.26)",
-            "full": false,
-            "lineColor": "#C0D8FF",
-            "show": true,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                  "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "",
+          "pluginVersion": "8.2.2",
           "targets": [
             {
-              "expr": "100 * max(sum(max(sabakan_machine_status{status=\"healthy\"}) by (address, serial,instance)) by (instance) / sum(sabakan_machine_status) by (instance))",
+              "expr": "sum(sabakan_assets_bytes_total)",
               "refId": "A"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
-          "title": "Healthy Machines",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "avg"
+          "title": "Total Bytes of Assets",
+          "type": "stat"
         },
         {
           "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
           "datasource": null,
-          "format": "bytes",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
           },
           "gridPos": {
             "h": 6,
@@ -311,63 +340,36 @@ spec:
             "x": 16,
             "y": 6
           },
-          "id": 7,
+          "id": 8,
           "interval": null,
           "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
           "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false,
-            "ymax": null,
-            "ymin": null
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                  "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "text": {},
+            "textMode": "auto"
           },
-          "tableColumn": "",
+          "pluginVersion": "8.2.2",
           "targets": [
             {
-              "expr": "sum(sabakan_assets_bytes_total)",
+              "expr": "sum(sabakan_images_bytes_total)",
               "refId": "A"
             }
           ],
-          "thresholds": "",
           "timeFrom": null,
           "timeShift": null,
-          "title": "Total Bytes of Assets",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "avg"
+          "title": "Total Bytes of Images",
+          "type": "stat"
         },
         {
           "columns": [
@@ -407,9 +409,9 @@ spec:
               "align": "left",
               "colorMode": null,
               "colors": [
-                "rgba(245, 54, 54, 0.9)",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(50, 172, 45, 0.97)"
+                  "rgba(245, 54, 54, 0.9)",
+                  "rgba(237, 129, 40, 0.89)",
+                  "rgba(50, 172, 45, 0.97)"
               ],
               "dateFormat": "YYYY-MM-DD HH:mm:ss",
               "decimals": 2,
@@ -433,7 +435,7 @@ spec:
           "timeShift": null,
           "title": "Unhealthy Nodes",
           "transform": "timeseries_aggregations",
-          "type": "table"
+          "type": "table-old"
         },
         {
           "columns": [
@@ -473,9 +475,9 @@ spec:
               "align": "left",
               "colorMode": null,
               "colors": [
-                "rgba(245, 54, 54, 0.9)",
-                "rgba(237, 129, 40, 0.89)",
-                "rgba(50, 172, 45, 0.97)"
+                  "rgba(245, 54, 54, 0.9)",
+                  "rgba(237, 129, 40, 0.89)",
+                  "rgba(50, 172, 45, 0.97)"
               ],
               "dateFormat": "YYYY-MM-DD HH:mm:ss",
               "decimals": 2,
@@ -499,89 +501,7 @@ spec:
           "timeShift": null,
           "title": "Unreachable Nodes",
           "transform": "timeseries_aggregations",
-          "type": "table"
-        },
-        {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "#299c46",
-            "rgba(237, 129, 40, 0.89)",
-            "#d44a3a"
-          ],
-          "datasource": null,
-          "format": "bytes",
-          "gauge": {
-            "maxValue": 100,
-            "minValue": 0,
-            "show": false,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 4,
-            "x": 16,
-            "y": 12
-          },
-          "id": 8,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": "",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false,
-            "ymax": null,
-            "ymin": null
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "expr": "sum(sabakan_images_bytes_total)",
-              "refId": "A"
-            }
-          ],
-          "thresholds": "",
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Total Bytes of Images",
-          "type": "singlestat",
-          "valueFontSize": "80%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "avg"
+          "type": "table-old"
         },
         {
           "aliasColors": {},
@@ -589,6 +509,12 @@ spec:
           "dashLength": 10,
           "dashes": false,
           "datasource": null,
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -612,9 +538,10 @@ spec:
           "linewidth": 1,
           "nullPointMode": "null",
           "options": {
-            "dataLinks": []
+            "alertThreshold": true
           },
           "percentage": false,
+          "pluginVersion": "8.2.2",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -690,10 +617,10 @@ spec:
           }
         }
       ],
-      "schemaVersion": 22,
+      "schemaVersion": 31,
       "style": "dark",
       "tags": [
-        "node"
+          "node"
       ],
       "templating": {
         "list": [
@@ -706,20 +633,23 @@ spec:
             },
             "datasource": "vmcluster-largeset",
             "definition": "label_values(sabakan_assets_bytes_total, instance)",
+            "description": null,
+            "error": null,
             "hide": 0,
             "includeAll": true,
-            "index": -1,
             "label": null,
             "multi": false,
             "name": "instance",
             "options": [],
-            "query": "label_values(sabakan_assets_bytes_total, instance)",
+            "query": {
+              "query": "label_values(sabakan_assets_bytes_total, instance)",
+              "refId": "vmcluster-largeset-instance-Variable-Query"
+            },
             "refresh": 1,
             "regex": "",
             "skipUrlSync": false,
             "sort": 1,
             "tagValuesQuery": "",
-            "tags": [],
             "tagsQuery": "",
             "type": "query",
             "useTags": false
@@ -732,23 +662,21 @@ spec:
       },
       "timepicker": {
         "refresh_intervals": [
-          "5s",
-          "10s",
-          "30s",
-          "1m",
-          "5m",
-          "15m",
-          "30m",
-          "1h",
-          "2h",
-          "1d"
+            "5s",
+            "10s",
+            "30s",
+            "1m",
+            "5m",
+            "15m",
+            "30m",
+            "1h",
+            "2h",
+            "1d"
         ]
       },
       "timezone": "",
       "title": "Sabakan",
       "uid": "Gi8iM9EWk",
-      "variables": {
-        "list": []
-      },
-      "version": 8
+      "version": 21
     }
+   
