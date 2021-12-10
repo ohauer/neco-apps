@@ -383,7 +383,7 @@ func testVMCommonClusterComponents(setType vmSetType) {
 				podName := pod.Name
 
 				_, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "exec",
-					podName, "curl", "http://localhost:9093/-/healthy")
+					podName, "--", "curl", "http://localhost:9093/-/healthy")
 				if err != nil {
 					return fmt.Errorf("unable to curl http://%s:9093/-/healthy, stderr: %s, err: %v", podName, stderr, err)
 				}
@@ -471,7 +471,7 @@ func testVMCommonClusterComponents(setType vmSetType) {
 				podName := pod.Name
 
 				stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "exec",
-					podName, "curl", "http://localhost:8080/api/v1/groups")
+					podName, "--", "curl", "http://localhost:8080/api/v1/groups")
 				if err != nil {
 					return fmt.Errorf("unable to curl :8080/api/v1/groups, stderr: %s, err: %v", stderr, err)
 				}
@@ -690,7 +690,7 @@ func testVMSmallsetClusterComponents() {
 			podName := podList.Items[0].Name
 
 			_, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "exec",
-				podName, "curl", "http://localhost:8429/api/v1/labels")
+				podName, "--", "curl", "http://localhost:8429/api/v1/labels")
 			if err != nil {
 				return fmt.Errorf("unable to curl :8429/api/v1/labels, stderr: %s, err: %v", stderr, err)
 			}
@@ -749,7 +749,7 @@ func testVMLargesetClusterComponents() {
 				podName := pod.Name
 
 				_, stderr, err := ExecAt(boot0, "kubectl", "--namespace=monitoring", "exec",
-					podName, "curl", "http://localhost:8481/select/0/prometheus/api/v1/labels")
+					podName, "--", "curl", "http://localhost:8481/select/0/prometheus/api/v1/labels")
 				if err != nil {
 					return fmt.Errorf("unable to curl http://%s:8429/select/0/prometheus/api/v1/labels, stderr: %s, err: %v", podName, stderr, err)
 				}

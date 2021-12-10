@@ -57,8 +57,8 @@ func teleportNodeServiceTest() {
 
 func teleportSSHConnectionTest() {
 	By("creating user")
-	ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "tctl", "users", "rm", "cybozu")
-	stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "tctl", "users", "add", "cybozu", "cybozu,root")
+	ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "--", "tctl", "users", "rm", "cybozu")
+	stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "--", "tctl", "users", "add", "cybozu", "cybozu,root")
 	Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
 	tctlOutput := string(stdout)
 	fmt.Println("output:")
@@ -198,14 +198,14 @@ func teleportSSHConnectionTest() {
 
 func teleportAuthTest() {
 	By("getting the node list before recreating the teleport-auth pod")
-	stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "tctl", "get", "nodes")
+	stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "--", "tctl", "get", "nodes")
 	Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
 	beforeNodes := decodeNodes(stdout)
 
 	By("recreating the teleport-auth pod")
 	ExecSafeAt(boot0, "kubectl", "-n", "teleport", "delete", "pod", "teleport-auth-0")
 	Eventually(func() error {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "tctl", "status")
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "--", "tctl", "status")
 		if err != nil {
 			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 		}
@@ -214,7 +214,7 @@ func teleportAuthTest() {
 
 	By("comparing the current node list with the obtained before")
 	Eventually(func() error {
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "tctl", "get", "nodes")
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "--", "tctl", "get", "nodes")
 		if err != nil {
 			return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 		}
