@@ -44,7 +44,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -150,7 +150,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -241,7 +241,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -326,7 +326,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "decimals": 2,
                 "editable": true,
                 "error": false,
@@ -463,7 +463,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "decimals": 2,
                 "editable": true,
                 "error": false,
@@ -579,7 +579,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -685,7 +685,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -753,7 +753,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -821,7 +821,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -889,7 +889,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -949,7 +949,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "links": []
@@ -1057,7 +1057,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "decimals": null,
                 "fieldConfig": {
                     "defaults": {
@@ -1273,7 +1273,7 @@ spec:
                         "text": "ceph-hdd",
                         "value": "ceph-hdd"
                     },
-                    "datasource": "vmsingle-smallset",
+                    "datasource": null,
                     "definition": "label_values(ceph_osd_up, namespace)",
                     "description": null,
                     "error": null,
@@ -1304,7 +1304,7 @@ spec:
                         "text": "osd.0",
                         "value": "osd.0"
                     },
-                    "datasource": "vmsingle-smallset",
+                    "datasource": null,
                     "definition": "label_values(ceph_osd_up, ceph_daemon)",
                     "description": null,
                     "error": null,
@@ -1327,6 +1327,27 @@ spec:
                     "tagsQuery": "",
                     "type": "query",
                     "useTags": false
+                },
+                {
+                    "current": {
+                        "selected": true,
+                        "text": "vmcluster-largeset",
+                        "value": "vmcluster-largeset"
+                    },
+                    "description": null,
+                    "error": null,
+                    "hide": 0,
+                    "includeAll": false,
+                    "label": null,
+                    "multi": false,
+                    "name": "datasource",
+                    "options": [],
+                    "query": "prometheus",
+                    "queryValue": "",
+                    "refresh": 1,
+                    "regex": "",
+                    "skipUrlSync": false,
+                    "type": "datasource"
                 }
             ]
         },

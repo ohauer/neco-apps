@@ -45,7 +45,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -142,7 +142,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "decimals": 1,
@@ -210,7 +210,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "decimals": 1,
@@ -278,7 +278,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -346,7 +346,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -422,7 +422,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -497,7 +497,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "decimals": 1,
@@ -565,7 +565,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "decimals": 1,
@@ -633,7 +633,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [],
@@ -701,7 +701,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "decimals": 2,
@@ -769,7 +769,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "decimals": 2,
@@ -837,7 +837,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -905,7 +905,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -975,7 +975,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1066,7 +1066,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1142,7 +1142,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1218,7 +1218,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1290,7 +1290,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1362,7 +1362,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1438,7 +1438,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1514,7 +1514,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1590,7 +1590,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1665,7 +1665,7 @@ spec:
             },
             {
                 "cacheTimeout": null,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "mappings": [
@@ -1754,7 +1754,7 @@ spec:
             },
             {
                 "columns": [],
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -1815,7 +1815,7 @@ spec:
             },
             {
                 "columns": [],
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -1878,7 +1878,7 @@ spec:
             },
             {
                 "columns": [],
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -1954,7 +1954,7 @@ spec:
                         "bars": false,
                         "dashLength": 10,
                         "dashes": false,
-                        "datasource": "vmsingle-smallset",
+                        "datasource": null,
                         "fieldConfig": {
                             "defaults": {
                                 "custom": {}
@@ -2055,7 +2055,7 @@ spec:
                         "bars": false,
                         "dashLength": 10,
                         "dashes": false,
-                        "datasource": "vmsingle-smallset",
+                        "datasource": null,
                         "fieldConfig": {
                             "defaults": {
                                 "custom": {}
@@ -2156,7 +2156,7 @@ spec:
                         "bars": false,
                         "dashLength": 10,
                         "dashes": false,
-                        "datasource": "vmsingle-smallset",
+                        "datasource": null,
                         "fieldConfig": {
                             "defaults": {
                                 "custom": {}
@@ -2257,7 +2257,7 @@ spec:
                         "bars": false,
                         "dashLength": 10,
                         "dashes": false,
-                        "datasource": "vmsingle-smallset",
+                        "datasource": null,
                         "fieldConfig": {
                             "defaults": {
                                 "custom": {}
@@ -2384,7 +2384,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "editable": true,
                 "error": false,
                 "fieldConfig": {
@@ -2522,7 +2522,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "decimals": 0,
                 "editable": true,
                 "error": false,
@@ -2638,7 +2638,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "editable": true,
                 "error": false,
                 "fieldConfig": {
@@ -2753,7 +2753,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "description": "",
                 "fieldConfig": {
                     "defaults": {
@@ -2854,7 +2854,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "description": "",
                 "fieldConfig": {
                     "defaults": {
@@ -2955,7 +2955,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "links": []
@@ -3055,7 +3055,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "links": []
@@ -3153,7 +3153,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "links": []
@@ -3253,7 +3253,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "links": []
@@ -3376,7 +3376,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "editable": true,
                 "error": false,
                 "fieldConfig": {
@@ -3486,7 +3486,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "editable": true,
                 "error": false,
                 "fieldConfig": {
@@ -3767,7 +3767,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "editable": true,
                 "error": false,
                 "fieldConfig": {
@@ -3895,7 +3895,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "editable": true,
                 "error": false,
                 "fieldConfig": {
@@ -4021,7 +4021,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -4089,7 +4089,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -4156,7 +4156,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -4223,7 +4223,7 @@ spec:
                     "mode": "opacity"
                 },
                 "dataFormat": "timeseries",
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {},
                     "overrides": []
@@ -4284,7 +4284,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "fieldConfig": {
                     "defaults": {
                         "links": []
@@ -4392,7 +4392,7 @@ spec:
                 "bars": false,
                 "dashLength": 10,
                 "dashes": false,
-                "datasource": "vmsingle-smallset",
+                "datasource": null,
                 "decimals": null,
                 "fieldConfig": {
                     "defaults": {
@@ -4613,7 +4613,7 @@ spec:
                         "text": "ceph-ssd",
                         "value": "ceph-ssd"
                     },
-                    "datasource": "vmsingle-smallset",
+                    "datasource": null,
                     "definition": "label_values(namespace)",
                     "description": null,
                     "error": null,
@@ -4636,6 +4636,27 @@ spec:
                     "tagsQuery": "",
                     "type": "query",
                     "useTags": false
+                },
+                {
+                    "current": {
+                        "selected": true,
+                        "text": "vmcluster-largeset",
+                        "value": "vmcluster-largeset"
+                    },
+                    "description": null,
+                    "error": null,
+                    "hide": 0,
+                    "includeAll": false,
+                    "label": null,
+                    "multi": false,
+                    "name": "datasource",
+                    "options": [],
+                    "query": "prometheus",
+                    "queryValue": "",
+                    "refresh": 1,
+                    "regex": "",
+                    "skipUrlSync": false,
+                    "type": "datasource"
                 }
             ]
         },
