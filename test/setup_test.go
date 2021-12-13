@@ -408,7 +408,7 @@ func testSetup() {
 	})
 }
 
-func getRevisionOfApplication(appName string) string {
+func getApplicationRevision(appName string) string {
 	stdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", appName)
 	Expect(err).ShouldNot(HaveOccurred(), "failed to argocd app get: stdout=%s, stderr=%s", stdout, stderr)
 
@@ -440,7 +440,7 @@ func applyAndWaitForApplications(commitID string) {
 	// https://github.com/cybozu-go/neco-apps/pull/2083
 	var oldRookRevision string
 	if doUpgrade {
-		oldRookRevision = getRevisionOfApplication("rook")
+		oldRookRevision = getApplicationRevision("rook")
 	}
 
 	Eventually(func() error {
@@ -459,7 +459,7 @@ func applyAndWaitForApplications(commitID string) {
 	// https://github.com/cybozu-go/neco-apps/pull/2083
 	if doUpgrade {
 		Eventually(func() error {
-			newRookRevision := getRevisionOfApplication("rook")
+			newRookRevision := getApplicationRevision("rook")
 			if newRookRevision == oldRookRevision {
 				return fmt.Errorf("rook is not updated yet")
 			}
