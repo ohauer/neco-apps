@@ -70,9 +70,9 @@ func testMetalLB() {
 			return nil
 		}).Should(Succeed())
 
-		By("access service from boot-0")
+		By("access service from boot-0 (via cke-localproxy)")
 		Eventually(func() error {
-			_, _, err := ExecInNetns("external", "curl", targetIP, "-m", "5")
+			_, _, err := ExecAt(boot0, "curl", "http://testhttpd.default.svc/", "-m", "5")
 			return err
 		}).Should(Succeed())
 
