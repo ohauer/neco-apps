@@ -16,8 +16,6 @@ spec:
       server: '*'
     - namespace: app-cydec
       server: '*'
-    - namespace: app-dbre
-      server: '*'
     - namespace: app-elasticsearch
       server: '*'
     - namespace: app-endpoint-discovery
@@ -69,6 +67,8 @@ spec:
     - namespace: maneki
       server: '*'
     - namespace: sandbox
+      server: '*'
+    - namespace: team-dbre
       server: '*'
     - namespace: team-kintone
       server: '*'
