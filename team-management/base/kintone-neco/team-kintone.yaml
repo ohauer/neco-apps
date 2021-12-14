@@ -5,7 +5,7 @@ metadata:
   labels:
     accurate.cybozu.com/template: init-template
     accurate.cybozu.com/type: root
-  name: app-kintone
+  name: team-kintone
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -13,7 +13,7 @@ metadata:
   annotations:
     accurate.cybozu.com/propagate: update
   name: kintone-neco-role-binding
-  namespace: app-kintone
+  namespace: team-kintone
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole

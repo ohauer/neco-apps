@@ -42,8 +42,6 @@ spec:
       server: '*'
     - namespace: app-gorush
       server: '*'
-    - namespace: app-kintone
-      server: '*'
     - namespace: app-kodama
       server: '*'
     - namespace: app-maneki
@@ -71,6 +69,8 @@ spec:
     - namespace: maneki
       server: '*'
     - namespace: sandbox
+      server: '*'
+    - namespace: team-kintone
       server: '*'
   namespaceResourceBlacklist:
     - group: ""
