@@ -4,7 +4,7 @@ metadata:
   name: dctest-runner
   namespace: meows-runner
 spec:
-  replicas: 3
+  replicas: 2
   slackAgent:
     serviceName: slack-agent.meows.svc
     channel: "#neco"
