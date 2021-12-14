@@ -9,24 +9,25 @@ kind: ClusterRole
 metadata:
   name: external-dns
 rules:
-- apiGroups: [""]
-  resources: ["services","endpoints","pods"]
-  verbs: ["get","watch","list"]
-- apiGroups: ["extensions","networking.k8s.io"]
-  resources: ["ingresses"]
-  verbs: ["get","watch","list"]
+# Setting for Service source (`--source=service`). See the following template.
+# https://github.com/kubernetes-sigs/external-dns/blob/v0.10.2/charts/external-dns/templates/clusterrole.yaml
 - apiGroups: [""]
   resources: ["nodes"]
-  verbs: ["list"]
+  verbs: ["list","watch"]
 - apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["list"]
+  resources: ["pods"]
+  verbs: ["get","watch","list"]
+- apiGroups: [""]
+  resources: ["services","endpoints"]
+  verbs: ["get","watch","list"]
+# Setting for CRD source (`--source=crd`). See the following document.
+# https://github.com/kubernetes-sigs/external-dns/blob/v0.10.2/docs/contributing/crd-source.md#rbac-configuration
 - apiGroups: ["externaldns.k8s.io"]
   resources: ["dnsendpoints"]
   verbs: ["get","watch","list"]
 - apiGroups: ["externaldns.k8s.io"]
   resources: ["dnsendpoints/status"]
-  verbs: ["update"]
+  verbs: ["*"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
