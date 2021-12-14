@@ -552,6 +552,22 @@ func applyAndWaitForApplications(commitID string) {
 				// ignore error
 			}
 
+			// TODO: remove this block after release the PR below
+			// https://github.com/cybozu-go/neco-apps/pull/2112
+			if doUpgrade && app.Name == "team-management" {
+				nss := []string{"app-kintone", "app-dbre"}
+				for _, ns := range nss {
+					_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
+					if err != nil {
+						continue
+					}
+					_, _, err = ExecAt(boot0, "kubectl", "annotate", "ns", ns, "admission.cybozu.com/i-am-sure-to-delete="+ns)
+					if err != nil {
+						return err
+					}
+				}
+			}
+
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.
 			// It leads to ArgoCD's improper behavior. In spite of the network-policy app becomes Synced/Healthy, the operation does not end.
 			// So terminate the unexpected operation manually in upgrade test.
