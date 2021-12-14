@@ -122,8 +122,9 @@ var viewableResources = []string{
 // prohibitedResources is a list of namespace resources that are not allowed to be created or viewed by unprivileged teams.
 var prohibitedResources = []string{
 	// Contour
-	// This resource is classified as prohibitedResources, but that is not intentionally done by Neco team.
-	"extensionservices.projectcontour.io",
+	"contourconfigurations.projectcontour.io",
+	"contourdeployments.projectcontour.io",
+	"extensionservices.projectcontour.io", // This resource is classified as prohibitedResources, but that is not intentionally done by Neco team.
 
 	// Rook
 	"cephblockpools.ceph.rook.io",

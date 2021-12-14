@@ -148,6 +148,7 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
       automountServiceAccountToken: false
+      serviceAccountName: envoy
       terminationGracePeriodSeconds: 300
       volumes:
         - name: envoy-admin
@@ -158,3 +159,7 @@ spec:
           secret:
             secretName: envoycert
       restartPolicy: Always
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534

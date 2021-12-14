@@ -92,6 +92,10 @@ spec:
         name: contour-plus
       dnsPolicy: ClusterFirst
       serviceAccountName: contour
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
       volumes:
         - name: contourcert
           secret:
@@ -99,7 +103,7 @@ spec:
         - name: contour-config
           configMap:
             name: contour
-            defaultMode: 420
+            defaultMode: 0644
             items:
             - key: contour.yaml
               path: contour.yaml
