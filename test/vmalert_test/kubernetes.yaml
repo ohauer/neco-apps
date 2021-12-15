@@ -22,13 +22,13 @@ tests:
   - interval: 1m
     input_series:
       - series: 'up{job="kubernetes-apiservers",instance="10.0.0.1"}'
-        values: '1+0x15'
+        values: '1+0x30'
       - series: 'up{job="kubernetes-apiservers",instance="10.0.0.2"}'
-        values: '1+0x15'
+        values: '1+0x30'
       - series: 'up{job="kubernetes-apiservers",instance="10.0.0.3"}'
-        values: '0+0x15'
+        values: '0+0x30'
     alert_rule_test:
-      - eval_time: 15m
+      - eval_time: 30m
         alertname: K8sAPIServersDegraded
         exp_alerts:
           - exp_labels:
@@ -39,13 +39,13 @@ tests:
   - interval: 1m
     input_series:
       - series: 'up{job="kubernetes-apiservers",instance="10.0.0.1"}'
-        values: '1+0x15'
+        values: '1+0x30'
       - series: 'up{job="kubernetes-apiservers",instance="10.0.0.2"}'
-        values: '1+0x15'
+        values: '1+0x30'
       - series: 'up{job="kubernetes-apiservers",instance="10.0.0.3"}'
-        values: '1+0x15'
+        values: '1+0x30'
     alert_rule_test:
-      - eval_time: 15m
+      - eval_time: 30m
         alertname: K8sAPIServersDegraded
         exp_alerts: []
   - interval: 1m
