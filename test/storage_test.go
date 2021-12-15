@@ -48,7 +48,7 @@ func prepareRookCeph() {
 
 	It("should create a POD for testRookRBD", func() {
 		tmpl := template.Must(template.New("").Parse(storageRBDYAML))
-		for _, storageClassName := range []string{"ceph-hdd-block", "ceph-ssd-block"} {
+		for _, storageClassName := range []string{"ceph-ssd-block"} {
 			buf := new(bytes.Buffer)
 			err := tmpl.Execute(buf, storageClassName)
 			Expect(err).NotTo(HaveOccurred())
@@ -121,7 +121,7 @@ func testClusterStable() {
 			numOsdExpected := getNumOsd(ns)
 
 			numRgwExpected := 0
-			if ns == "ceph-hdd" || ns == "ceph-object-store" {
+			if ns == "ceph-object-store" {
 				stdout, stderr, err := ExecAt(boot0, "kubectl", "--namespace="+ns,
 					"get", "cephobjectstore", "-o", "jsonpath='{.items[*].spec.gateway.instances}'")
 				Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
@@ -388,19 +388,18 @@ func testDaemonPodsSpread(daemonName, appLabel, cephClusterNamespace string, exp
 }
 
 func testMONPodsSpreadAll() {
-	for _, namespace := range []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"} {
+	for _, namespace := range []string{"ceph-ssd", "ceph-object-store"} {
 		testDaemonPodsSpread("MON", "app=rook-ceph-mon", namespace, 3, 1, 1)
 	}
 }
 
 func testMGRPodsSpreadAll() {
-	for _, namespace := range []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"} {
+	for _, namespace := range []string{"ceph-ssd", "ceph-object-store"} {
 		testDaemonPodsSpread("MGR", "app=rook-ceph-mgr", namespace, 2, 1, 1)
 	}
 }
 
 func testRGWPodsSpreadAll() {
-	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw", "ceph-hdd", 3, 1, 1)
 	testDaemonPodsSpread("RGW", "app=rook-ceph-rgw", "ceph-object-store", 3, 1, 1)
 }
 
@@ -409,64 +408,79 @@ func testOSDPodsSpread() {
 		return
 	}
 
-	cephClusterName := "ceph-hdd"
-	cephClusterNamespace := "ceph-hdd"
+	cephClusterName := "ceph-object-store"
+	cephClusterNamespace := "ceph-object-store"
 	nodeRole := "ss"
+	type testTarget struct {
+		nodeRole string
+		device   string
+	}
+	for _, target := range []testTarget{
+		{
+			nodeRole: "cs",
+			device:   "ssd",
+		},
+		{
+			nodeRole: "ss",
+			device:   "hdd",
+		},
+	} {
+		By("checking OSD Pods for "+cephClusterName+" are spread on "+nodeRole+" nodes", func() {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "node", "-l", "node-role.kubernetes.io/"+target.nodeRole+"=true", "-o=json")
+			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 
-	By("checking OSD Pods for "+cephClusterName+" are spread on "+nodeRole+" nodes", func() {
-		stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "node", "-l", "node-role.kubernetes.io/"+nodeRole+"=true", "-o=json")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+			nodes := new(corev1.NodeList)
+			err = json.Unmarshal(stdout, nodes)
+			Expect(err).ShouldNot(HaveOccurred())
 
-		nodes := new(corev1.NodeList)
-		err = json.Unmarshal(stdout, nodes)
-		Expect(err).ShouldNot(HaveOccurred())
-
-		nodeCounts := make(map[string]int)
-		for _, node := range nodes.Items {
-			nodeCounts[node.Name] = 0
-		}
-
-		stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+cephClusterNamespace,
-			"get", "pod", "-l", "app=rook-ceph-osd", "-o=json")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-
-		pods := new(corev1.PodList)
-		err = json.Unmarshal(stdout, pods)
-		Expect(err).ShouldNot(HaveOccurred())
-
-		for _, pod := range pods.Items {
-			nodeCounts[pod.Spec.NodeName]++
-		}
-
-		var min int = math.MaxInt32
-		var max int
-		for _, v := range nodeCounts {
-			if v < min {
-				min = v
+			nodeCounts := make(map[string]int)
+			for _, node := range nodes.Items {
+				nodeCounts[node.Name] = 0
 			}
-			if v > max {
-				max = v
-			}
-		}
-		Expect(max-min).Should(BeNumerically("<=", 1), "nodeCounts=%v", nodeCounts)
 
-		rackCounts := make(map[string]int)
-		for _, node := range nodes.Items {
-			rackCounts[node.Labels["topology.kubernetes.io/zone"]] += nodeCounts[node.Name]
-		}
+			label := "app=rook-ceph-osd,ceph.rook.io/DeviceSet=" + target.device
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "--namespace="+cephClusterNamespace,
+				"get", "pod", "-l", label, "-o=json")
+			Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
 
-		min = math.MaxInt32
-		max = 0
-		for _, v := range rackCounts {
-			if v < min {
-				min = v
+			pods := new(corev1.PodList)
+			err = json.Unmarshal(stdout, pods)
+			Expect(err).ShouldNot(HaveOccurred())
+
+			for _, pod := range pods.Items {
+				nodeCounts[pod.Spec.NodeName]++
 			}
-			if v > max {
-				max = v
+
+			var min int = math.MaxInt32
+			var max int
+			for _, v := range nodeCounts {
+				if v < min {
+					min = v
+				}
+				if v > max {
+					max = v
+				}
 			}
-		}
-		Expect(max-min).Should(BeNumerically("<=", 1), "rackCounts=%v", rackCounts)
-	})
+			Expect(max-min).Should(BeNumerically("<=", 1), "nodeCounts=%v", nodeCounts)
+
+			rackCounts := make(map[string]int)
+			for _, node := range nodes.Items {
+				rackCounts[node.Labels["topology.kubernetes.io/zone"]] += nodeCounts[node.Name]
+			}
+
+			min = math.MaxInt32
+			max = 0
+			for _, v := range rackCounts {
+				if v < min {
+					min = v
+				}
+				if v > max {
+					max = v
+				}
+			}
+			Expect(max-min).Should(BeNumerically("<=", 1), "rackCounts=%v", rackCounts)
+		})
+	}
 }
 
 func testRookRGW() {
@@ -494,7 +508,6 @@ func testRookRGW() {
 }
 
 func testRookRBDAll() {
-	testRookRBD("ceph-hdd-block")
 	testRookRBD("ceph-ssd-block")
 }
 

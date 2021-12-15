@@ -5,7 +5,7 @@ metadata:
   namespace: dctest
 spec:
   generateBucketName: obc-poc
-  storageClassName: ceph-hdd-bucket
+  storageClassName: ceph-object-store-bucket
 ---
 apiVersion: v1
 kind: Pod

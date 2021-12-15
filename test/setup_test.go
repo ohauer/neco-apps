@@ -428,6 +428,14 @@ func applyAndWaitForApplications(commitID string) {
 	// Write special process for upgrade.
 	// note: do not delete this comment and By.
 	By("running pre-sync special process")
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2123
+	if doUpgrade {
+		stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "cephblockpool", "-n", "ceph-hdd", "ceph-hdd-block-pool", "admission.cybozu.com/i-am-sure-to-delete=ceph-hdd-block-pool")
+		Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
+		stdout, stderr, err = ExecAt(boot0, "kubectl", "annotate", "cephobjectstore", "-n", "ceph-hdd", "ceph-hdd-object-store", "admission.cybozu.com/i-am-sure-to-delete=ceph-hdd-object-store")
+		Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
+	}
 
 	By("syncing argocd-config")
 	Eventually(func() error {
