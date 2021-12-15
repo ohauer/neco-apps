@@ -19,12 +19,12 @@ NUM_DASHBOARD = $(shell KUSTOMIZE_ENABLE_ALPHA_COMMANDS=true ./bin/kustomize cfg
 export BOOT0 BOOT1 BOOT2 GINKGO SSH_PRIVKEY TEST_ID COMMIT_ID NUM_DASHBOARD SUDO
 
 # Follow Argo CD installed kustomize version
-# https://github.com/cybozu/neco-containers/blob/main/argocd/Dockerfile#L22
+# https://github.com/cybozu/neco-containers/blob/main/argocd/Dockerfile#L11
 KUSTOMIZE_VERSION := 4.2.0
 PROMTOOL_VERSION := 2.30.0
 TELEPORT_VERSION := 7.3.3
 KUBERNETES_VERSION := 1.21.5
-ARGOCD_VERSION := 2.1.2
+ARGOCD_VERSION := 2.1.8
 
 # Cache
 ROOT_DIR := $(shell git rev-parse --show-toplevel)

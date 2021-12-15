@@ -50,12 +50,6 @@ rules:
   - list
   - watch
 - apiGroups:
-  - apiextensions.k8s.io
-  resources:
-  - customresourcedefinitions
-  verbs:
-  - list
-- apiGroups:
   - networking.k8s.io
   resources:
   - ingressclasses
@@ -82,7 +76,6 @@ rules:
 - apiGroups:
   - networking.x-k8s.io
   resources:
-  - backendpolicies
   - gatewayclasses
   - gateways
   - httproutes
@@ -96,7 +89,6 @@ rules:
 - apiGroups:
   - networking.x-k8s.io
   resources:
-  - backendpolicies/status
   - gatewayclasses/status
   - gateways/status
   - httproutes/status
@@ -104,6 +96,22 @@ rules:
   - tlsroutes/status
   - udproutes/status
   verbs:
+  - update
+- apiGroups:
+  - projectcontour.io
+  resources:
+  - contourconfigurations
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - projectcontour.io
+  resources:
+  - contourconfigurations/status
+  verbs:
+  - create
+  - get
   - update
 - apiGroups:
   - projectcontour.io

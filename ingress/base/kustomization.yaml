@@ -9,8 +9,8 @@ resources:
   - bastion
 images:
   - name: quay.io/cybozu/contour
-    newTag: 1.18.1.1
-  - name: quay.io/cybozu/contour-plus
-    newTag: 0.6.5
-  - name: quay.io/cybozu/envoy
     newTag: 1.19.1.1
+  - name: quay.io/cybozu/contour-plus
+    newTag: 0.6.6
+  - name: quay.io/cybozu/envoy
+    newTag: 1.19.1.2
