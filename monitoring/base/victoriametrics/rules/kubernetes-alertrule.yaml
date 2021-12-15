@@ -631,7 +631,7 @@ spec:
           expr: count(up{job="kubernetes-apiservers"} == 1) < 3
           labels:
             severity: warning
-          for: 15m
+          for: 30m
           annotations:
             summary: The number of kube-apiserver is less than 3.
             runbook: Please consider to find root causes, and solve the problems
