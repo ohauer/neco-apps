@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://cybozu-go.github.io/accurate
     chart: accurate
-    targetRevision: 0.2.2
+    targetRevision: 0.2.3
     helm:
       version: v3
       values: |
@@ -99,9 +99,9 @@ spec:
             #   root namespace: app-team1
             #   compiled match naming policy: ^app-team1-.*
             # This feature is provided using https://pkg.go.dev/regexp#Regexp.Expand
-            namingPolicies: []
-            #   - root:  ^dev-.*
-            #     match: ^dev-.*
+            namingPolicies:
+               - root:  ^dev-.*
+                 match: ^dev-.*
             #   - root:  ^app-.*
             #     match: ^app-.*
             #   - root:  foo

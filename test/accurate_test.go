@@ -13,8 +13,11 @@ import (
 //go:embed testdata/accurate-subnamespace.yaml
 var accurateSubNamespaceYAML []byte
 
-const accurateParentNamespaceName = "app-accurate-parent"
-const accurateChildNamespaceName = "app-accurate-child"
+//go:embed testdata/accurate-invalid-subnamespace.yaml
+var accurateInvalidSubNamespaceYAML []byte
+
+const accurateParentNamespaceName = "dev-accurate-parent"
+const accurateChildNamespaceName = "dev-accurate-child"
 
 // accuratePropagatedNamespaceLabels is labels to be propagated.
 // `team` is not included because it requires special handling.
@@ -82,6 +85,11 @@ func testAccurate() {
 			}
 			return nil
 		}).Should(Succeed())
+
+		By("creating invalid child namespace by creating SubNamespace")
+		_, stderr, err = ExecAtWithInput(boot0, accurateInvalidSubNamespaceYAML, "kubectl", "apply", "-f", "-")
+		Expect(err).To(HaveOccurred())
+		Expect(string(stderr)).Should(ContainSubstring(`admission webhook "vsubnamespace.kb.io" denied the request`))
 
 		By("checking whether deletion of parent namespace is blocked by webhook")
 		stdout, stderr, err = ExecAt(boot0, "kubectl", "delete", "ns", accurateParentNamespaceName)

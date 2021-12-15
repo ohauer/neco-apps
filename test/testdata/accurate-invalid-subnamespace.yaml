@@ -1,0 +1,5 @@
+apiVersion: accurate.cybozu.com/v1
+kind: SubNamespace
+metadata:
+  namespace: dev-accurate-parent
+  name: invalid-accurate-child
