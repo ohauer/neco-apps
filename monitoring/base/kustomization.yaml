@@ -30,7 +30,7 @@ images:
     newTag: 1.4.1.1
   - name: k8s.gcr.io/kube-state-metrics/kube-state-metrics
     newName: quay.io/cybozu/kube-state-metrics
-    newTag: 2.2.3.1
+    newTag: 2.2.4.1
   - name: quay.io/grafana-operator/grafana-operator
     newName: quay.io/cybozu/grafana-operator
     newTag: 3.10.3.1
