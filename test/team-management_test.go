@@ -259,6 +259,17 @@ func getActualVerbs(team, ns string) map[string][]string {
 	return ret
 }
 
+var privilegedTeams = []string{"neco", "csa"}
+
+func isPrivileged(team string) bool {
+	for _, privilegedTeam := range privilegedTeams {
+		if team == privilegedTeam {
+			return true
+		}
+	}
+	return false
+}
+
 func testTeamManagement() {
 	It("should give appropriate authority to unprivileged team", func() {
 		namespaceList := []string{}
@@ -323,7 +334,7 @@ func testTeamManagement() {
 		// make unprivileged team list
 		tenantTeamSet := make(map[string]struct{})
 		for _, t := range nsOwner {
-			if t != "neco" {
+			if !isPrivileged(t) {
 				tenantTeamSet[t] = struct{}{}
 			}
 		}
@@ -351,7 +362,7 @@ func testTeamManagement() {
 				for _, resource := range secretResources {
 					key := keyGen(team, ns, resource)
 
-					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && nsOwner[ns] != "neco") {
+					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && !isPrivileged(nsOwner[ns])) {
 						expectedVerbs[key] = adminVerbs
 					} else {
 						expectedVerbs[key] = prohibitedVerbs
@@ -368,7 +379,7 @@ func testTeamManagement() {
 				for _, resource := range requiredResources {
 					key := keyGen(team, ns, resource)
 
-					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && nsOwner[ns] != "neco") {
+					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && !isPrivileged(nsOwner[ns])) {
 						expectedVerbs[key] = adminVerbs
 					} else {
 						expectedVerbs[key] = viewVerbs

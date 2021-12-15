@@ -45,8 +45,9 @@ function(team, namespaces) [
           name: 'admin',
           groups: std.set([
             'cybozu-private:' + team,
+          ] + if team != 'csa' then [
             'cybozu-private:maneki',
-          ]),
+          ] else []),
           policies: [
             std.strReplace('p, proj:<team>:admin, applications, *, <team>/*, allow', '<team>', team),
           ],

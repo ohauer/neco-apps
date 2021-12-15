@@ -408,6 +408,17 @@ func testSetup() {
 	})
 }
 
+func getApplicationRevision(appName string) string {
+	stdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", appName)
+	Expect(err).ShouldNot(HaveOccurred(), "failed to argocd app get: stdout=%s, stderr=%s", stdout, stderr)
+
+	var appResource Application
+	err = json.Unmarshal(stdout, &appResource)
+	Expect(err).ShouldNot(HaveOccurred(), "failed to unmarshal json: stdout=%s", stdout)
+
+	return appResource.Status.Sync.Revision
+}
+
 func applyAndWaitForApplications(commitID string) {
 	By("creating Argo CD app")
 	Eventually(func() error {
@@ -425,6 +436,13 @@ func applyAndWaitForApplications(commitID string) {
 		return nil
 	}).Should(Succeed())
 
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2083
+	var oldRookRevision string
+	if doUpgrade {
+		oldRookRevision = getApplicationRevision("rook")
+	}
+
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "cd", "./neco-apps",
 			"&&", "argocd", "app", "sync", "argocd-config",
@@ -436,6 +454,21 @@ func applyAndWaitForApplications(commitID string) {
 		}
 		return nil
 	}).Should(Succeed())
+
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2083
+	if doUpgrade {
+		Eventually(func() error {
+			newRookRevision := getApplicationRevision("rook")
+			if newRookRevision == oldRookRevision {
+				return fmt.Errorf("rook is not updated yet")
+			}
+			return nil
+		}).Should(Succeed())
+
+		_, _, err := ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
+		Expect(err).ShouldNot(HaveOccurred())
+	}
 
 	By("getting application list")
 	stdout, _, err := kustomizeBuild("../argocd-config/overlays/" + overlayName)
@@ -517,16 +550,6 @@ func applyAndWaitForApplications(commitID string) {
 					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
 				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
 				// ignore error
-			}
-
-			// TODO: remove this block after release the PR bellow
-			// https://github.com/cybozu-go/neco-apps/pull/1970
-			if doUpgrade && app.Name == "logging" {
-				_, _, err := ExecAt(boot0, "argocd", "app", "sync", "logging", "--force", "--timeout", "300")
-				if err != nil {
-					ExecAt(boot0, "argocd", "app", "terminate-op", "logging")
-					return err
-				}
 			}
 
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.

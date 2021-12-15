@@ -13,7 +13,7 @@ TEST_ID := test$(CIRCLE_BUILD_NUM)
 BASE_BRANCH = main
 COMMIT_ID = $(shell git rev-parse HEAD)
 SUDO = sudo
-WGET=wget --retry-connrefused --no-verbose
+WGET=wget --retry-on-http-error=503 --retry-connrefused --no-verbose
 NUM_DASHBOARD = $(shell KUSTOMIZE_ENABLE_ALPHA_COMMANDS=true ./bin/kustomize cfg count ../monitoring/base/grafana-operator/dashboards | \
 	grep GrafanaDashboard | cut -d' ' -f2)
 export BOOT0 BOOT1 BOOT2 GINKGO SSH_PRIVKEY TEST_ID COMMIT_ID NUM_DASHBOARD SUDO

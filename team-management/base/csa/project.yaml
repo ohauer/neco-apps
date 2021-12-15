@@ -28,7 +28,6 @@ spec:
   roles:
     - groups:
         - cybozu-private:csa
-        - cybozu-private:maneki
       name: admin
       policies:
         - p, proj:csa:admin, applications, *, csa/*, allow

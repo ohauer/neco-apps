@@ -25,27 +25,32 @@ function(settings, team, namespace)
         kind: 'ClusterRole',
         name: 'admin',
       },
-      subjects: std.set([
-        {
-          kind: 'Group',
-          name: team,
-          apiGroup: 'rbac.authorization.k8s.io',
-        },
-        {
-          kind: 'Group',
-          name: 'maneki',
-          apiGroup: 'rbac.authorization.k8s.io',
-        },
-        {
-          kind: 'ServiceAccount',
-          name: 'node-maneki',
-          namespace: 'teleport',
-        },
-        {
-          kind: 'ServiceAccount',
-          name: 'node-' + team,
-          namespace: 'teleport',
-        },
-      ], function(x) x.kind + x.name),
+      subjects: std.set(
+        [
+          {
+            kind: 'Group',
+            name: team,
+            apiGroup: 'rbac.authorization.k8s.io',
+          },
+          {
+            kind: 'ServiceAccount',
+            name: 'node-' + team,
+            namespace: 'teleport',
+          },
+        ] +
+        if team != 'csa' then
+          [
+            {
+              kind: 'Group',
+              name: 'maneki',
+              apiGroup: 'rbac.authorization.k8s.io',
+            },
+            {
+              kind: 'ServiceAccount',
+              name: 'node-maneki',
+              namespace: 'teleport',
+            },
+          ] else [], function(x) x.kind + x.name
+      ),
     },
   ]
