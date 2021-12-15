@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  namespace: app-accurate-parent
+  namespace: dev-accurate-parent
   name: propagated
   annotations:
     accurate.cybozu.com/propagate: create
@@ -10,7 +10,7 @@ rules: []
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  namespace: app-accurate-parent
+  namespace: dev-accurate-parent
   name: propagated
   annotations:
     accurate.cybozu.com/propagate: create
@@ -23,7 +23,7 @@ subjects: []
 apiVersion: v1
 kind: Secret
 metadata:
-  namespace: app-accurate-parent
+  namespace: dev-accurate-parent
   name: propagated
   annotations:
     accurate.cybozu.com/propagate: create
