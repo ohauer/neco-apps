@@ -524,7 +524,28 @@ $ git diff
 
 Check the [release notes](https://github.com/bitnami-labs/sealed-secrets/blob/master/RELEASE-NOTES.md).
 
-Update the manifest as follows:
+Generate manifests from the official Helm charts.
+
+```
+cd $GOPATH/src/github.com/cybozu-go/neco-apps/sealed-secrets/base
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+helm repo update
+helm search repo -l sealed-secrets
+# Example output with a header line:
+# NAME                            CHART VERSION   APP VERSION     DESCRIPTION                                  
+# sealed-secrets/sealed-secrets   1.16.1          v0.16.0         Helm chart for the sealed-secrets controller.
+# sealed-secrets/sealed-secrets   1.16.0          v0.16.0         Helm chart for the sealed-secrets controller.
+# sealed-secrets/sealed-secrets   1.13.2          0.13.1          A Helm chart for Sealed Secrets              
+
+# Choose the latest `CHART VERSION` which matches the target sealed-secrets.
+SEALED_SECRETS_CHART_VERSION=X.Y.Z
+helm template sealed-secrets --namespace=kube-system sealed-secrets/sealed-secrets --version=${SEALED_SECRETS_CHART_VERSION} --include-crds > upstream/controller.yaml
+git diff
+```
+
+Check the difference between the existing manifest and the new manifest, and update the kustomization patch.
+
+Update the image tag as follows.
 
 ```console
 $ make update-sealed-secrets
