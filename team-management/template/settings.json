@@ -172,7 +172,8 @@
       },
       "team-dbre": {
         "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
+        "accurate.cybozu.com/type": "root",
+        "pod-security.cybozu.com/policy": "traceable"
       }
     },
     "ept": {
