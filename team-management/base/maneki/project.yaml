@@ -16,8 +16,6 @@ spec:
       server: '*'
     - namespace: app-cydec
       server: '*'
-    - namespace: app-dbre
-      server: '*'
     - namespace: app-elasticsearch
       server: '*'
     - namespace: app-endpoint-discovery
@@ -41,8 +39,6 @@ spec:
     - namespace: app-garoon-static
       server: '*'
     - namespace: app-gorush
-      server: '*'
-    - namespace: app-kintone
       server: '*'
     - namespace: app-kodama
       server: '*'
@@ -71,6 +67,10 @@ spec:
     - namespace: maneki
       server: '*'
     - namespace: sandbox
+      server: '*'
+    - namespace: team-dbre
+      server: '*'
+    - namespace: team-kintone
       server: '*'
   namespaceResourceBlacklist:
     - group: ""

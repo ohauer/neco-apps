@@ -5,15 +5,15 @@ metadata:
   labels:
     accurate.cybozu.com/template: init-template
     accurate.cybozu.com/type: root
-  name: app-dbre
+  name: team-kintone
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   annotations:
     accurate.cybozu.com/propagate: update
-  name: dbre-role-binding
-  namespace: app-dbre
+  name: kintone-neco-role-binding
+  namespace: team-kintone
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -21,12 +21,12 @@ roleRef:
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
-    name: dbre
+    name: kintone-neco
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
     name: maneki
   - kind: ServiceAccount
-    name: node-dbre
+    name: node-kintone-neco
     namespace: teleport
   - kind: ServiceAccount
     name: node-maneki

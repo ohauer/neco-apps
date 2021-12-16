@@ -12,13 +12,13 @@ spec:
       server: '*'
     - namespace: app-cybozu-com-mysql-restore
       server: '*'
-    - namespace: app-dbre
-      server: '*'
     - namespace: app-mysql-tenant-service
       server: '*'
     - namespace: dev-*
       server: '*'
     - namespace: sandbox
+      server: '*'
+    - namespace: team-dbre
       server: '*'
   namespaceResourceBlacklist:
     - group: ""

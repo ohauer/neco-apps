@@ -161,10 +161,6 @@
       "app-cybozu-com-mysql-restore": {
         "pod-security.cybozu.com/policy": "traceable"
       },
-      "app-dbre": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
-      },
       "app-mysql-tenant-service": {
         "cybozu.com/alert-group": "dbre"
       },
@@ -173,6 +169,10 @@
         "accurate.cybozu.com/type": "root",
         "development": "true",
         "pod-security.cybozu.com/policy": "traceable"
+      },
+      "team-dbre": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
       }
     },
     "ept": {
@@ -198,14 +198,14 @@
       }
     },
     "kintone-neco": {
-      "app-kintone": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
-      },
       "dev-kintone": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",
         "development": "true"
+      },
+      "team-kintone": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
       }
     },
     "maneki": {
