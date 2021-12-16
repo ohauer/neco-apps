@@ -49,3 +49,18 @@ tests:
             exp_annotations:
               summary: Not-healthy boot server(s) exist.
               runbook: TBD
+  - interval: 1m
+    input_series:
+      - series: sabakan_machine_status{instance="1.2.3.4", address="1.2.3.4", serial="abcd", status="healthy"}
+        values: 0+0x30
+      - series: sabakan_machine_status{instance="1.2.3.4", address="1.2.3.4", serial="abcd", status="unhealthy"}
+        values: 1+0x30
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: NodeFailure
+        exp_alerts:
+          - exp_labels:
+              severity: urgent
+            exp_annotations:
+              summary: Unhealthy node(s) exist.
+              runbook: "Perform the server retirement procedure."
