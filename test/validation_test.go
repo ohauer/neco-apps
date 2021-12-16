@@ -365,7 +365,6 @@ func testVMCustomResources(t *testing.T) {
 	expectedSmallsetProbes := []string{}
 	expectedSmallsetRules := []string{
 		"monitoring",
-		"rook",
 	}
 
 	// gather CRs in files
