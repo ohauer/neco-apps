@@ -265,11 +265,17 @@ spec:
             summary: Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container
               }}) is restarting {{ printf "%.2f" $value }} times / 5 minutes.
             runbook: TBD
+          # The restart count for pods in crash loop is reduced to once every 5 minutes by exponential
+          # backoff. The metrics may not increase every 5 minutes due to the scraping timing of
+          # VictoriaMetrics or etc., so we should check it if the restart happened over a longer period.
+          # Here, we choose 6 minutes, which seems long enough to at least one restart and scrape event
+          # happens. Regardless of the above, we will display the restart count in the last 5 minutes in the
+          # alert summary for clarity.
           expr: |
             max by (namespace, pod, container) (
-              rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[5m])
+              rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[6m])
               * on(namespace) group_left kube_namespace_labels{label_team="neco"}
-            ) * 60 * 5  > 0
+            ) * 60 * 5 > 0
           for: 15m
           labels:
             severity: error
