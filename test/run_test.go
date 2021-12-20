@@ -175,6 +175,13 @@ func ExecSafeAt(host string, args ...string) []byte {
 	return stdout
 }
 
+// ExecSafeAtWithInput executes command at given host with input and returns only stdout
+func ExecSafeAtWithInput(host string, input []byte, args ...string) []byte {
+	stdout, stderr, err := ExecAtWithInput(host, input, args...)
+	ExpectWithOffset(1, err).To(Succeed(), "[%s] %v, stdout: %s, stderr: %s", host, args, stdout, stderr)
+	return stdout
+}
+
 func ExecInNetns(netns string, args ...string) ([]byte, []byte, error) {
 	return ExecInNetnsWithInput(netns, nil, args...)
 }

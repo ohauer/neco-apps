@@ -1,0 +1,15 @@
+kind: user
+metadata:
+  name: cybozu
+spec:
+  roles:
+  - access
+  traits:
+    kubernetes_groups:
+    - ""
+    kubernetes_users:
+    - "cybozu"
+    logins:
+    - cybozu
+    - root
+version: v2

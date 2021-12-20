@@ -3,6 +3,7 @@ package test
 import (
 	"bufio"
 	"bytes"
+	_ "embed"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -20,6 +21,9 @@ import (
 	k8sYaml "k8s.io/apimachinery/pkg/util/yaml"
 	"sigs.k8s.io/yaml"
 )
+
+//go:embed testdata/teleport-user-cybozu.yaml
+var teleportUserCybozuYAML []byte
 
 type Node struct {
 	Kind     string
@@ -57,9 +61,12 @@ func teleportNodeServiceTest() {
 
 func teleportSSHConnectionTest() {
 	By("creating user")
+	// user `cybozu` may or may not exist and `tctl users rm` may return error. so we cannot check error.
 	ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "--", "tctl", "users", "rm", "cybozu")
-	stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "--", "tctl", "users", "add", "cybozu", "cybozu,root")
-	Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+	// in order to specify `kubernetes_users`, use `tctl create` instead of `tctl users add`.
+	ExecSafeAtWithInput(boot0, teleportUserCybozuYAML, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "-i", "--", "tctl", "create")
+	// run `tctl users reset` to issue an invitation url. (`tctl users add` issues it but `tctl create` does not.)
+	stdout := ExecSafeAt(boot0, "kubectl", "-n", "teleport", "exec", "teleport-auth-0", "-i", "--", "tctl", "users", "reset", "cybozu")
 	tctlOutput := string(stdout)
 	fmt.Println("output:")
 	fmt.Println(tctlOutput)
@@ -261,8 +268,8 @@ func teleportApplicationTest() {
 	By("checking applications are correctly deployed")
 	Eventually(func() error {
 		for _, n := range appNames {
-			query := fmt.Sprintf("'.[].spec.apps[].name | select(. == \"%s\")'", n)
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "-it", "teleport-auth-0", "--", "tctl", "apps", "ls", "--format=json", "--", "|", "jq", "-r", query)
+			query := fmt.Sprintf("'.[].spec.app.metadata.name | select(. == \"%s\")'", n)
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "teleport", "exec", "-i", "teleport-auth-0", "--", "tctl", "apps", "ls", "--format=json", "--", "|", "jq", "-r", query)
 			if err != nil {
 				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 			}
