@@ -11,6 +11,8 @@ spec:
   - url: "http://vmalertmanager-vmalertmanager-largeset-0.vmalertmanager-vmalertmanager-largeset.monitoring.svc:9093"
   - url: "http://vmalertmanager-vmalertmanager-largeset-1.vmalertmanager-vmalertmanager-largeset.monitoring.svc:9093"
   - url: "http://vmalertmanager-vmalertmanager-largeset-2.vmalertmanager-vmalertmanager-largeset.monitoring.svc:9093"
+  remoteWrite:
+    url: "http://vminsert-vmcluster-largeset.monitoring.svc:8480/insert/0/prometheus"
   evaluationInterval: "30s"
   ruleNamespaceSelector:
     matchLabels:
