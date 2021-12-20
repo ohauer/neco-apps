@@ -27,7 +27,7 @@ images:
     newName: quay.io/cybozu/cadvisor
     newTag: 0.43.0.2
   - name: quay.io/cybozu/pushgateway
-    newTag: 1.4.1.1
+    newTag: 1.4.2.1
   - name: k8s.gcr.io/kube-state-metrics/kube-state-metrics
     newName: quay.io/cybozu/kube-state-metrics
     newTag: 2.2.4.1
