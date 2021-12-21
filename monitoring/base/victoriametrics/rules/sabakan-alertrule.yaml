@@ -41,6 +41,6 @@ spec:
             runbook: "Perform the server retirement procedure."
           expr: |
             sum(sabakan_machine_status{status="unreachable"}) > 0
-          for: 30m
+          for: 60m
           labels:
             severity: urgent
