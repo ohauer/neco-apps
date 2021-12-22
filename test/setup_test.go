@@ -436,6 +436,10 @@ func applyAndWaitForApplications(commitID string) {
 		return nil
 	}).Should(Succeed())
 
+	// Write special process for upgrade.
+	// note: do not delete this comment and By.
+	By("running pre-sync special process")
+
 	// TODO: remove this block after release the PR bellow
 	// https://github.com/cybozu-go/neco-apps/pull/2083
 	var oldRookRevision string
@@ -443,6 +447,16 @@ func applyAndWaitForApplications(commitID string) {
 		oldRookRevision = getApplicationRevision("rook")
 	}
 
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2120
+	var oldSealedSecretsRevision string
+	var oldPrometheusAdapterRevision string
+	if doUpgrade {
+		oldSealedSecretsRevision = getApplicationRevision("sealed-secrets")
+		oldPrometheusAdapterRevision = getApplicationRevision("prometheus-adapter")
+	}
+
+	By("syncing argocd-config")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "cd", "./neco-apps",
 			"&&", "argocd", "app", "sync", "argocd-config",
@@ -454,6 +468,10 @@ func applyAndWaitForApplications(commitID string) {
 		}
 		return nil
 	}).Should(Succeed())
+
+	// Write special process for upgrade.
+	// note: do not delete this comment and By.
+	By("running post-sync special process")
 
 	// TODO: remove this block after release the PR bellow
 	// https://github.com/cybozu-go/neco-apps/pull/2083
@@ -468,6 +486,40 @@ func applyAndWaitForApplications(commitID string) {
 
 		_, _, err := ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
 		Expect(err).ShouldNot(HaveOccurred())
+	}
+
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2120
+	if doUpgrade {
+		Eventually(func() error {
+			if getApplicationRevision("sealed-secrets") == oldSealedSecretsRevision {
+				return fmt.Errorf("sealed-secrets is not updated yet")
+			}
+			return nil
+		}).Should(Succeed())
+
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "argocd", "app", "sync", "sealed-secrets", "--async", "--force")
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %w", stdout, stderr, err)
+			}
+			return nil
+		}).Should(Succeed())
+
+		Eventually(func() error {
+			if getApplicationRevision("prometheus-adapter") == oldPrometheusAdapterRevision {
+				return fmt.Errorf("prometheus-adapter is not updated yet")
+			}
+			return nil
+		}).Should(Succeed())
+
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "argocd", "app", "sync", "prometheus-adapter", "--async", "--force")
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %w", stdout, stderr, err)
+			}
+			return nil
+		}).Should(Succeed())
 	}
 
 	By("getting application list")
