@@ -53,7 +53,7 @@ We have also added one more severity of our own.
 - `info`: No problem is occurred, but just notify.
 - `warning`: Investigate to decide whether any action is required.
 - `error`: Action is required, but the situation is not so serious at this time.
-- `urgent`: Action is required at best effort because the problem might get worse. Note: `urgent` alerts are intended to be sent to pager only during daytime.
+- `urgent`: Action is required. The service is available, but no redundancy, so we need to take action as soon as possible. Note: `urgent` alerts are intended to be sent to pager only during daytime.
 - `critical`: Action is required immediately because the problem gets worse. Investigate and resolve the causes of alert as soon as possible. Note: `critical` alerts are intended to be sent to pager even at midnight.
 
 ### Critical Alerts
