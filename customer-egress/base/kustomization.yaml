@@ -6,6 +6,6 @@ resources:
   - squid.yaml
 images:
   - name: quay.io/cybozu/squid
-    newTag: 5.2.1
+    newTag: 5.2.2
   - name: quay.io/cybozu/unbound
-    newTag: 1.13.2.1
+    newTag: 1.14.0.1

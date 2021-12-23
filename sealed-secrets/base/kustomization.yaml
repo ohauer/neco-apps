@@ -9,4 +9,4 @@ patchesStrategicMerge:
 images:
   - name: quay.io/bitnami/sealed-secrets-controller
     newName: quay.io/cybozu/sealed-secrets
-    newTag: 0.16.0.2
+    newTag: 0.17.0.1

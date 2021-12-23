@@ -8,7 +8,6 @@ spec:
     spec:
       containers:
       - name: sealed-secrets-controller
-        imagePullPolicy: IfNotPresent
         command: null
         args:
         - --key-renew-period=8760h
