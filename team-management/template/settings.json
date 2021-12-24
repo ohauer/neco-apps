@@ -204,6 +204,11 @@
         "accurate.cybozu.com/type": "root",
         "development": "true"
       },
+      "dev-team-kintone": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      },
       "team-kintone": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
