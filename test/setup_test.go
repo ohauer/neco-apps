@@ -408,17 +408,6 @@ func testSetup() {
 	})
 }
 
-func getApplicationRevision(appName string) string {
-	stdout, stderr, err := ExecAt(boot0, "argocd", "app", "get", "-o", "json", appName)
-	Expect(err).ShouldNot(HaveOccurred(), "failed to argocd app get: stdout=%s, stderr=%s", stdout, stderr)
-
-	var appResource Application
-	err = json.Unmarshal(stdout, &appResource)
-	Expect(err).ShouldNot(HaveOccurred(), "failed to unmarshal json: stdout=%s", stdout)
-
-	return appResource.Status.Sync.Revision
-}
-
 func applyAndWaitForApplications(commitID string) {
 	By("creating Argo CD app")
 	Eventually(func() error {
@@ -440,22 +429,6 @@ func applyAndWaitForApplications(commitID string) {
 	// note: do not delete this comment and By.
 	By("running pre-sync special process")
 
-	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2083
-	var oldRookRevision string
-	if doUpgrade {
-		oldRookRevision = getApplicationRevision("rook")
-	}
-
-	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2120
-	var oldSealedSecretsRevision string
-	var oldPrometheusAdapterRevision string
-	if doUpgrade {
-		oldSealedSecretsRevision = getApplicationRevision("sealed-secrets")
-		oldPrometheusAdapterRevision = getApplicationRevision("prometheus-adapter")
-	}
-
 	By("syncing argocd-config")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "cd", "./neco-apps",
@@ -472,55 +445,6 @@ func applyAndWaitForApplications(commitID string) {
 	// Write special process for upgrade.
 	// note: do not delete this comment and By.
 	By("running post-sync special process")
-
-	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2083
-	if doUpgrade {
-		Eventually(func() error {
-			newRookRevision := getApplicationRevision("rook")
-			if newRookRevision == oldRookRevision {
-				return fmt.Errorf("rook is not updated yet")
-			}
-			return nil
-		}).Should(Succeed())
-
-		_, _, err := ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
-		Expect(err).ShouldNot(HaveOccurred())
-	}
-
-	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2120
-	if doUpgrade {
-		Eventually(func() error {
-			if getApplicationRevision("sealed-secrets") == oldSealedSecretsRevision {
-				return fmt.Errorf("sealed-secrets is not updated yet")
-			}
-			return nil
-		}).Should(Succeed())
-
-		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "argocd", "app", "sync", "sealed-secrets", "--async", "--force")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %w", stdout, stderr, err)
-			}
-			return nil
-		}).Should(Succeed())
-
-		Eventually(func() error {
-			if getApplicationRevision("prometheus-adapter") == oldPrometheusAdapterRevision {
-				return fmt.Errorf("prometheus-adapter is not updated yet")
-			}
-			return nil
-		}).Should(Succeed())
-
-		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "argocd", "app", "sync", "prometheus-adapter", "--async", "--force")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %w", stdout, stderr, err)
-			}
-			return nil
-		}).Should(Succeed())
-	}
 
 	By("getting application list")
 	stdout, _, err := kustomizeBuild("../argocd-config/overlays/" + overlayName)
@@ -602,22 +526,6 @@ func applyAndWaitForApplications(commitID string) {
 					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
 				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
 				// ignore error
-			}
-
-			// TODO: remove this block after release the PR below
-			// https://github.com/cybozu-go/neco-apps/pull/2112
-			if doUpgrade && app.Name == "team-management" {
-				nss := []string{"app-kintone", "app-dbre"}
-				for _, ns := range nss {
-					_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
-					if err != nil {
-						continue
-					}
-					_, _, err = ExecAt(boot0, "kubectl", "annotate", "ns", ns, "admission.cybozu.com/i-am-sure-to-delete="+ns)
-					if err != nil {
-						return err
-					}
-				}
 			}
 
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.
