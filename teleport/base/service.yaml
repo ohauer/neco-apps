@@ -7,8 +7,7 @@ metadata:
     app.kubernetes.io/name: teleport
     app.kubernetes.io/component: auth
 spec:
-  type: LoadBalancer
-  externalTrafficPolicy: Local
+  type: ClusterIP
   ports:
     - name: authssh
       port: 3025
@@ -17,7 +16,6 @@ spec:
   selector:
     app.kubernetes.io/name: teleport
     app.kubernetes.io/component: auth
-  allocateLoadBalancerNodePorts: false
 ---
 apiVersion: v1
 kind: Service
