@@ -36,7 +36,7 @@ Each YAML file contains tests for the corresponding application.
 Run the unit test with the following command:
 
 ```console
-$ cd $GOPATH/src/github.com/cybozu-go/neco-apps
+$ cd $GOPATH/src/github.com/cybozu-go/neco-apps/test
 
 # Run all tests
 $ make test-alert-rules
@@ -47,11 +47,13 @@ Severity Levels
 
 All alert rules should have the `severity` labels. This label indicates the level of the severity of the alert.
 
-The severity names and their severity order are consistent with syslog severity. We use just four levels from syslog severity, though.
+The severity names and their severity order are mostly consistent with syslog severity. We use four levels from syslog severity, though.
+We have also added one more severity of our own.
 
 - `info`: No problem is occurred, but just notify.
 - `warning`: Investigate to decide whether any action is required.
 - `error`: Action is required, but the situation is not so serious at this time.
+- `urgent`: Action is required. The service is available, but no redundancy, so we need to take action as soon as possible. Note: `urgent` alerts are intended to be sent to pager only during daytime.
 - `critical`: Action is required immediately because the problem gets worse. Investigate and resolve the causes of alert as soon as possible. Note: `critical` alerts are intended to be sent to pager even at midnight.
 
 ### Critical Alerts

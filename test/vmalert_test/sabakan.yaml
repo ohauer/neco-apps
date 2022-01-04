@@ -49,3 +49,18 @@ tests:
             exp_annotations:
               summary: Not-healthy boot server(s) exist.
               runbook: TBD
+  - interval: 1m
+    input_series:
+      - series: sabakan_machine_status{instance="1.2.3.4", address="1.2.3.4", serial="abcd", status="healthy"}
+        values: 0+0x60
+      - series: sabakan_machine_status{instance="1.2.3.4", address="1.2.3.4", serial="abcd", status="unreachable"}
+        values: 1+0x60
+    alert_rule_test:
+      - eval_time: 60m
+        alertname: NodeUnreachable
+        exp_alerts:
+          - exp_labels:
+              severity: urgent
+            exp_annotations:
+              summary: Unreachable node(s) exist.
+              runbook: "Perform the server retirement procedure."
