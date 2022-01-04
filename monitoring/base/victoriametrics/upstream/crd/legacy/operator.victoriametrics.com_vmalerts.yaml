@@ -271,12 +271,14 @@ spec:
                     type: string
                   value:
                     description: 'Variable references $(VAR_NAME) are expanded using
-                      the previous defined environment variables in the container
+                      the previously defined environment variables in the container
                       and any service environment variables. If a variable cannot
                       be resolved, the reference in the input string will be unchanged.
-                      The $(VAR_NAME) syntax can be escaped with a double $$, ie:
-                      $$(VAR_NAME). Escaped references will never be expanded, regardless
-                      of whether the variable exists or not. Defaults to "".'
+                      Double $$ are reduced to a single $, which allows for escaping
+                      the $(VAR_NAME) syntax: i.e. "$$(VAR_NAME)" will produce the
+                      string literal "$(VAR_NAME)". Escaped references will never
+                      be expanded, regardless of whether the variable exists or not.
+                      Defaults to "".'
                     type: string
                 required:
                 - name
@@ -927,9 +929,10 @@ spec:
               type: object
               x-kubernetes-preserve-unknown-fields: true
             remoteRead:
-              description: RemoteRead victoria metrics address for loading state This
-                configuration makes sense only if remoteWrite was configured before
-                and has been successfully persisted its state.
+              description: RemoteRead Optional URL to read vmalert state (persisted
+                via RemoteWrite) This configuration only makes sense if alerts state
+                has been successfully persisted (via RemoteWrite) before. see -remoteRead.url
+                docs in vmalerts for details. E.g. http://127.0.0.1:8428
               properties:
                 basicAuth:
                   description: BasicAuth allow an endpoint to authenticate over basic
@@ -1113,7 +1116,10 @@ spec:
               type: object
             remoteWrite:
               description: RemoteWrite Optional URL to remote-write compatible storage
-                where to write timeseriesbased on active alerts. E.g. http://127.0.0.1:8428
+                to persist vmalert state and rule results to. Rule results will be
+                persisted according to each rule. Alerts state will be persisted in
+                the form of time series named ALERTS and ALERTS_FOR_STATE see -remoteWrite.url
+                docs in vmalerts for details. E.g. http://127.0.0.1:8428
               properties:
                 basicAuth:
                   description: BasicAuth allow an endpoint to authenticate over basic
@@ -1378,8 +1384,9 @@ spec:
               type: object
             ruleNamespaceSelector:
               description: RuleNamespaceSelector to be selected for VMRules discovery.
-                Works in combination with Selector. If both nil - match everything.
-                NamespaceSelector nil - only objects at VMAlert namespace.
+                Works in combination with Selector. If both nil - behaviour controlled
+                by selectAllByDefault NamespaceSelector nil - only objects at VMAlert
+                namespace.
               properties:
                 matchExpressions:
                   description: matchExpressions is a list of label selector requirements.
@@ -1433,8 +1440,8 @@ spec:
             ruleSelector:
               description: RuleSelector selector to select which VMRules to mount
                 for loading alerting rules from. Works in combination with NamespaceSelector.
-                If both nil - match everything. NamespaceSelector nil - only objects
-                at VMAlert namespace.
+                If both nil - behaviour controlled by selectAllByDefault NamespaceSelector
+                nil - only objects at VMAlert namespace.
               properties:
                 matchExpressions:
                   description: matchExpressions is a list of label selector requirements.
@@ -1495,6 +1502,13 @@ spec:
                 common container settings. This defaults to the default PodSecurityContext.
               type: object
               x-kubernetes-preserve-unknown-fields: true
+            selectAllByDefault:
+              description: 'SelectAllByDefault changes default behavior for empty
+                CRD selectors, such RuleSelector. with selectAllByDefault: true and
+                empty serviceScrapeSelector and RuleNamespaceSelector Operator selects
+                all exist serviceScrapes with selectAllByDefault: false - selects
+                nothing'
+              type: boolean
             serviceAccountName:
               description: ServiceAccountName is the name of the ServiceAccount to
                 use to run the VMAlert Pods.
