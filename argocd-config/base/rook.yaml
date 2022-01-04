@@ -18,7 +18,13 @@ spec:
     server: https://kubernetes.default.svc
     namespace: ceph-hdd
   # Disable auto-sync to prevent unexpected revert after manual operations.
-  syncPolicy: {}
+  syncPolicy:
+    # In accordance with `kubectl`'s behavior, change resource prune deletion
+    # propagation policy to the background. This is because some of Rook's CRD sets
+    # ownerReference and uses cascading deletion to delete some resources.
+    # And it expects the background deletion policy.
+    syncOptions:
+      - PrunePropagationPolicy=background
   ignoreDifferences:
     # count may be changed manually
     - group: ceph.rook.io
