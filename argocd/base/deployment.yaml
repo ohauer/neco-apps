@@ -44,12 +44,10 @@ spec:
           value: http://squid.internet-egress.svc:3128
         - name: HTTPS_PROXY
           value: http://squid.internet-egress.svc:3128
-        volumeMounts:
-        - name: tmp
-          mountPath: /tmp
-      volumes:
-      - name: tmp
-        emptyDir: {}
+      initContainers:
+      - image: quay.io/cybozu/argocd
+        imagePullPolicy: IfNotPresent
+        name: copyutil
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -69,11 +67,6 @@ spec:
           value: http://squid.internet-egress.svc:3128
         - name: HTTPS_PROXY
           value: http://squid.internet-egress.svc:3128
-        volumeMounts:
-        - mountPath: /app/config/ssh
-          name: ssh-known-hosts
-        - mountPath: /app/config/tls
-          name: tls-certs
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -82,19 +75,10 @@ metadata:
 spec:
   template:
     spec:
-      initContainers:
-      - name: copyutil
-        image: quay.io/cybozu/argocd
-        imagePullPolicy: IfNotPresent
-        command: [cp, /usr/local/argocd/bin/argocd, /shared/argocd-dex]
-        volumeMounts:
-        - mountPath: /shared
-          name: static-files
       containers:
       - name: dex
         image: quay.io/cybozu/dex
         imagePullPolicy: IfNotPresent
-        command: [/shared/argocd-dex, rundex]
         env:
         - name: NO_PROXY
           value: 10.0.0.0/8
@@ -102,9 +86,7 @@ spec:
           value: http://squid.internet-egress.svc:3128
         - name: HTTPS_PROXY
           value: http://squid.internet-egress.svc:3128
-        volumeMounts:
-        - mountPath: /tmp
-          name: tmp
-      volumes:
-      - emptyDir: {}
-        name: tmp
+      initContainers:
+      - image: quay.io/cybozu/argocd
+        imagePullPolicy: IfNotPresent
+        name: copyutil
