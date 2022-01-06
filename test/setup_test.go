@@ -419,9 +419,9 @@ func applyAndWaitForApplications(commitID string) {
 			if err == nil {
 				ExecSafeAt(boot0, "kubectl", "label", "ns", ns, "app.kubernetes.io/instance-")
 				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "team-dbre")
-			}
-			if ns != "app-cybozu-com-mysql-restore" {
-				ExecSafeAt(boot0, "kubectl", "patch", "subnamespace", "-n", "team-dbre", ns, "--type", "merge", "-p", `'{"spec":{"labels":{"cybozu.com/alert-group":"dbre"}}}'`)
+				if ns != "app-cybozu-com-mysql-restore" {
+					ExecSafeAt(boot0, "kubectl", "patch", "subnamespace", "-n", "team-dbre", ns, "--type", "merge", "-p", `'{"spec":{"labels":{"cybozu.com/alert-group":"dbre"}}}'`)
+				}
 			}
 		}
 	}
