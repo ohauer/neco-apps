@@ -4,10 +4,6 @@ commonLabels:
   team: dbre
 kind: Kustomization
 resources:
-  - app-cybozu-com-mysql-replica.yaml
-  - app-cybozu-com-mysql-restore.yaml
-  - app-cybozu-com-mysql.yaml
-  - app-mysql-tenant-service.yaml
   - dev-dbre.yaml
   - project.yaml
   - team-dbre.yaml

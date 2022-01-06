@@ -7,6 +7,12 @@
     "cydec": [
       "app-gorush"
     ],
+    "dbre": [
+      "app-cybozu-com-mysql",
+      "app-cybozu-com-mysql-replica",
+      "app-cybozu-com-mysql-restore",
+      "app-mysql-tenant-service"
+    ],
     "ept": [
       "app-ept-monitoring",
       "app-ept-plantuml",
@@ -150,20 +156,6 @@
       }
     },
     "dbre": {
-      "app-cybozu-com-mysql": {
-        "cybozu.com/alert-group": "dbre",
-        "pod-security.cybozu.com/policy": "traceable"
-      },
-      "app-cybozu-com-mysql-replica": {
-        "cybozu.com/alert-group": "dbre",
-        "pod-security.cybozu.com/policy": "traceable"
-      },
-      "app-cybozu-com-mysql-restore": {
-        "pod-security.cybozu.com/policy": "traceable"
-      },
-      "app-mysql-tenant-service": {
-        "cybozu.com/alert-group": "dbre"
-      },
       "dev-dbre": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",

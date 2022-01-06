@@ -409,6 +409,23 @@ func testSetup() {
 }
 
 func applyAndWaitForApplications(commitID string) {
+	// TODO: remove this block after #2129 is released
+	By("grafting dbre namespaces")
+	if doUpgrade {
+		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "none")
+		nss := []string{"app-cybozu-com-mysql", "app-cybozu-com-mysql-replica", "app-cybozu-com-mysql-restore", "app-mysql-tenant-service"}
+		for _, ns := range nss {
+			_, _, err := ExecAt(boot0, "kubectl", "get", "ns", ns)
+			if err == nil {
+				ExecSafeAt(boot0, "kubectl", "label", "ns", ns, "app.kubernetes.io/instance-")
+				ExecSafeAt(boot0, "kubectl", "accurate", "sub", "graft", ns, "team-dbre")
+				if ns != "app-cybozu-com-mysql-restore" {
+					ExecSafeAt(boot0, "kubectl", "patch", "subnamespace", "-n", "team-dbre", ns, "--type", "merge", "-p", `'{"spec":{"labels":{"cybozu.com/alert-group":"dbre"}}}'`)
+				}
+			}
+		}
+	}
+
 	By("creating Argo CD app")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "argocd", "app", "create", "argocd-config",
@@ -564,6 +581,25 @@ func applyAndWaitForApplications(commitID string) {
 		}
 		return nil
 	}, 60*time.Minute).Should(Succeed())
+
+	// TODO: remove this block after #2129 is released
+	if doUpgrade {
+		ExecSafeAt(boot0, "argocd", "app", "set", "team-management", "--sync-policy", "automated", "--auto-prune", "--self-heal")
+
+		Eventually(func() error {
+			st := time.Now()
+			for {
+				if time.Since(st) > 15*time.Second {
+					return nil
+				}
+				err := checkAllAppsSynced()
+				if err != nil {
+					return err
+				}
+				time.Sleep(1 * time.Second)
+			}
+		}, 60*time.Minute).Should(Succeed())
+	}
 }
 
 // Sometimes synchronization fails when argocd applies network policies.
