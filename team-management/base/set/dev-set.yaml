@@ -5,6 +5,7 @@ metadata:
   labels:
     accurate.cybozu.com/template: init-template
     accurate.cybozu.com/type: root
+    development: "true"
   name: dev-set
 ---
 apiVersion: rbac.authorization.k8s.io/v1

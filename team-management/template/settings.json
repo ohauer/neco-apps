@@ -241,7 +241,8 @@
     "set": {
       "dev-set": {
         "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
       }
     },
     "set-cloud-platform": {
