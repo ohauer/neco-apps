@@ -22,6 +22,7 @@ patchesStrategicMerge:
   - nodes/neco.yaml
   - nodes/network.yaml
   - nodes/set-cloud-platform.yaml
+  - nodes/set.yaml
   - statefulset.yaml
 resources:
   - ../../base

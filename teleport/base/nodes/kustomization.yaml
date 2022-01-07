@@ -18,3 +18,4 @@ resources:
   - network.yaml
   - serviceaccount.yaml
   - set-cloud-platform.yaml
+  - set.yaml
