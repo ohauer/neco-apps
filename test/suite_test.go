@@ -29,6 +29,9 @@ var _ = BeforeSuite(func() {
 	SetDefaultEventuallyTimeout(40 * time.Minute)
 
 	prepare()
+	// If Cilium hasn't been installed, then ignore Cilium CR in testTeamManagement.
+	// This code will be removed once Cilium has been successfully installed on Neco.
+	prepareForCilium()
 
 	log.DefaultLogger().SetOutput(GinkgoWriter)
 
