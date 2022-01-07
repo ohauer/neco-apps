@@ -4,4 +4,5 @@ commonLabels:
   team: set
 kind: Kustomization
 resources:
+  - dev-set.yaml
   - project.yaml
