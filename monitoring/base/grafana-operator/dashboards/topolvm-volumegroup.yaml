@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: topolvm-volumegroup
 spec:
-  name: topolvm-volumegroup.json
   json: |
     {
         "annotations": {

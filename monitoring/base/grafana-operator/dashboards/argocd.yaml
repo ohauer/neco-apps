@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: argocd
 spec:
-  name: argocd.json
   json: |
     {
       "annotations": {

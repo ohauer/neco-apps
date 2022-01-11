@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: local-pv-provisioner
 spec:
-  name: local-pv-provisioner.json
   json: |
     {
         "annotations": {

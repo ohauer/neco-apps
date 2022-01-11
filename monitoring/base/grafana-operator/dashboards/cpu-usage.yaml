@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: cpu-usage
 spec:
-  name: cpu-usage.json
   json: |
     {
       "annotations": {

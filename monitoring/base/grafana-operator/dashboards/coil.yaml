@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: coil
 spec:
-  name: coil.json
   datasources:
     - inputName: "DS_PROMETHEUS"
       datasourceName: "vmcluster-largeset"

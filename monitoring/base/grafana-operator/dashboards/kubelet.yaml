@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: kubelet
 spec:
-  name: kubelet.json
   json: |
     {
       "annotations": {

@@ -19,6 +19,9 @@ import (
 
 // secretResources is a list of namespace resources that the Neco has explicitly provided to unprivileged teams and each team can't see the resources of the other teams.
 var secretResources = []string{
+	// Grafana Operator
+	"grafananotificationchannels.integreatly.org",
+
 	// Sealed-secrets
 	"sealedsecrets.bitnami.com",
 

@@ -9,7 +9,6 @@ kind: GrafanaDashboard
 metadata:
   name: victoriametrics-vmcluster
 spec:
-  name: victoriametrics-vmcluster.json
   json: |
     {
       "__inputs": [],

@@ -21,6 +21,7 @@ resources:
   - ingress-health/service.yaml
   - victoriametrics
 patchesStrategicMerge:
+  - patch-grafana-operator-crds.yaml
   - patch-kube-state-metrics.yaml
 images:
   - name: gcr.io/cadvisor/cadvisor
@@ -33,6 +34,6 @@ images:
     newTag: 2.2.4.1
   - name: quay.io/grafana-operator/grafana-operator
     newName: quay.io/cybozu/grafana-operator
-    newTag: 3.10.3.1
+    newTag: 4.1.1.1
   - name: quay.io/cybozu/heartbeat
     newTag: 1.0.5

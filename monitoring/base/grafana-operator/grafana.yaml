@@ -42,8 +42,6 @@ spec:
       root_url: https://grafana.monitoring.gcp0.dev-ne.co
     analytics:
       check_for_updates: true
-    grafana_net:
-      url: https://grafana.monitoring.svc
     users:
       viewers_can_edit: true
       auto_assign_org_role: Viewer

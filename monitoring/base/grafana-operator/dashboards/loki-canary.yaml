@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: loki-canary
 spec:
-  name: loki-canary.json
   json: |
     {
       "annotations": {

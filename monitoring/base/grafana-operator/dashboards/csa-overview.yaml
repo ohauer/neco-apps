@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: csa-overview
 spec:
-  name: csa-overview.json
   json: |
     {
       "annotations": {

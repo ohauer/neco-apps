@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: memory-usage
 spec:
-  name: memory-usage.json
   json: |
     {
       "annotations": {

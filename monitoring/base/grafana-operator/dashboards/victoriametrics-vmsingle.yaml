@@ -10,7 +10,6 @@ kind: GrafanaDashboard
 metadata:
   name: victoriametrics-vmsingle
 spec:
-  name: victoriametrics-vmsingle.json
   json: |
     {
       "__inputs": [],

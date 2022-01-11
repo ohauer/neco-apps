@@ -88,14 +88,14 @@ update-grafana-operator:
 	rm -rf /tmp/grafana-operator
 	cd /tmp; git clone --depth 1 -b $(call upstream-tag,$(latest_tag)) https://github.com/integr8ly/grafana-operator
 	rm -rf monitoring/base/grafana-operator/upstream/*
-	cp -r /tmp/grafana-operator/deploy/crds monitoring/base/grafana-operator/upstream
-	cp -r /tmp/grafana-operator/deploy/cluster_roles monitoring/base/grafana-operator/upstream
-	cp -r /tmp/grafana-operator/deploy/roles monitoring/base/grafana-operator/upstream
-	cp /tmp/grafana-operator/deploy/operator.yaml monitoring/base/grafana-operator/upstream
+	mkdir -p monitoring/base/grafana-operator/upstream/cluster_roles
+	mkdir -p monitoring/base/grafana-operator/upstream/manifests
+	cp -r /tmp/grafana-operator/deploy/cluster_roles/* monitoring/base/grafana-operator/upstream/cluster_roles
+	cp -r /tmp/grafana-operator/deploy/manifests/latest/* monitoring/base/grafana-operator/upstream/manifests
 	rm -rf /tmp/grafana-operator
 	sed -i -E '/newName:.*grafana-operator$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
 	$(call get-latest-tag,grafana_plugins_init)
-	sed -i -E 's/grafana-plugins-init-container-tag=.*$$/grafana-plugins-init-container-tag=$(latest_tag)/' monitoring/base/grafana-operator/operator.yaml
+	sed -i -E 's/grafana-plugins-init-container-tag=.*$$/grafana-plugins-init-container-tag=$(latest_tag)/' monitoring/base/grafana-operator/deployment.yaml
 
 .PHONY: update-grafana
 update-grafana:

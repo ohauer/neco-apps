@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: kube-apiserver
 spec:
-  name: kube-apiserver.json
   json: |
     {
         "annotations": {

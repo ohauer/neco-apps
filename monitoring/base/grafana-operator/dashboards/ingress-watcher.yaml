@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: ingress-watcher
 spec:
-  name: ingress-watcher.json
   json: |
     {
         "annotations": {

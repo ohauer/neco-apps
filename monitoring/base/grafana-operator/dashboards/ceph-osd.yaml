@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: ceph-osd
 spec:
-  name: ceph-osd.json
   # based on https://grafana.com/grafana/dashboards/5336
   json: |
     {

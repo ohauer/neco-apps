@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: kube-scheduler
 spec:
-  name: kube-scheduler.json
   json: |
     {
         "annotations": {

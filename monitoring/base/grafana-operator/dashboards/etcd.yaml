@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: etcd
 spec:
-  name: etcd.json
   datasources:
     - inputName: "DS_PROMETHEUS"
       datasourceName: "vmcluster-largeset"

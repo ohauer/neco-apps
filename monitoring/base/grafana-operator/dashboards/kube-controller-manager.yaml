@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: kube-controller-manager
 spec:
-  name: kube-controller-manager.json
   json: |
     {
         "annotations": {

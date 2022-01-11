@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: ceph-clusters
 spec:
-  name: ceph-clusters.json
   # based on https://grafana.com/grafana/dashboards/2842
   json: |
     {

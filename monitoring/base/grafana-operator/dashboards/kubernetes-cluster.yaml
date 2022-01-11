@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: kubernetes-cluster
 spec:
-  name: kubernetes-cluster.json
   datasources:
     - inputName: "DS_PROMETHEUS"
       datasourceName: "vmcluster-largeset"

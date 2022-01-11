@@ -3,7 +3,6 @@ kind: GrafanaDashboard
 metadata:
   name: neco-admission
 spec:
-  name: neco-admission.json
   json: |
     {
         "annotations": {
