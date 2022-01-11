@@ -1,0 +1,13 @@
+$patch: delete
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: node-set
+  namespace: teleport
+---
+$patch: delete
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-set
+  namespace: teleport
