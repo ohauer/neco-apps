@@ -92,6 +92,8 @@ At the moment, the list of `critical` alerts are as follows:
   - AlertmanagerDown
   - PrometheusDown
   - PushGatewayDown
+- clock skew
+  - NodeClockSkew
 - calico (network-policy)
   - CalicoNodeDown
 - rook - the following alerts are marked with `category: storage` label

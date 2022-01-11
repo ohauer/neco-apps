@@ -278,10 +278,25 @@ tests:
         exp_alerts:
           - exp_labels:
               address: "192.168.0.1"
-              severity: "warning"
+              severity: "error"
             exp_annotations:
               runbook: "Please check the node."
               summary: "The chrony metrics is missing at `192.168.0.1`."
+
+  - interval: 1m
+    input_series:
+      - series: 'chrony_monitor_tracking_system_time_seconds{address="192.168.0.1"}'
+        values: '0.04+0x30'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: NodeClockSkew
+        exp_alerts:
+          - exp_labels:
+              address: "192.168.0.1"
+              severity: "warning"
+            exp_annotations:
+              runbook: "Please check the node."
+              summary: "The system clock on `192.168.0.1` is hastened or delayed by 0.03 seconds."
 
   - interval: 1m
     input_series:
@@ -293,7 +308,7 @@ tests:
         exp_alerts:
           - exp_labels:
               address: "192.168.0.1"
-              severity: "warning"
+              severity: "critical"
             exp_annotations:
               runbook: "Please check the node."
-              summary: "The system clock on `192.168.0.1` is fastened or delayed by 0.05 seconds."
+              summary: "The system clock on `192.168.0.1` is hastened or delayed by 0.05 seconds."

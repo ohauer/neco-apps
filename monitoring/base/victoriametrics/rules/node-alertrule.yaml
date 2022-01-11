@@ -66,15 +66,23 @@ spec:
           expr: sum(sabakan_machine_status{status!="retired",role!="boot"} == 1) by (address) unless sum(chrony_monitor_tracking_system_time_seconds) by (address)
           for: 30m
           labels:
-            severity: warning
+            severity: error
           annotations:
             summary: The chrony metrics is missing at `{{ $labels.address }}`.
+            runbook: Please check the node.
+        - alert: NodeClockSkew
+          expr: abs(chrony_monitor_tracking_system_time_seconds) > 0.03
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: The system clock on `{{ $labels.address }}` is hastened or delayed by 0.03 seconds.
             runbook: Please check the node.
         - alert: NodeClockSkew
           expr: abs(chrony_monitor_tracking_system_time_seconds) > 0.05
           for: 10m
           labels:
-            severity: warning
+            severity: critical
           annotations:
-            summary: The system clock on `{{ $labels.address }}` is fastened or delayed by 0.05 seconds.
+            summary: The system clock on `{{ $labels.address }}` is hastened or delayed by 0.05 seconds.
             runbook: Please check the node.
