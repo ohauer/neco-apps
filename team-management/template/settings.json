@@ -238,6 +238,13 @@
         "development": "true"
       }
     },
+    "set": {
+      "dev-set": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      }
+    },
     "set-cloud-platform": {
       "dev-set-cloud-platform": {
         "accurate.cybozu.com/template": "init-template",

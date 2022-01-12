@@ -6,3 +6,4 @@ resources:
 patchesStrategicMerge:
   - node-neco-guests.yaml
   - node-set-cloud-platform.yaml
+  - node-set.yaml

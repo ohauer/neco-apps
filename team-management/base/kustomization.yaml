@@ -15,4 +15,5 @@ resources:
   - ./neco-readonly
   - ./network
   - ./sandbox
+  - ./set
   - ./set-cloud-platform
