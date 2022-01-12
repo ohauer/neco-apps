@@ -204,7 +204,7 @@ func init() {
 }
 
 func prepareForCilium() {
-	if isCiliumDisabled() {
+	if isCiliumAbsent() {
 		var requiredResourcesWithoutCilium, viewableResourcesWithoutCilium []string
 		for _, res := range requiredResources {
 			if strings.HasPrefix(res, "cilium") {
@@ -224,7 +224,7 @@ func prepareForCilium() {
 	}
 }
 
-func isCiliumDisabled() bool {
+func isCiliumAbsent() bool {
 	_, _, err := ExecAt(boot0, "kubectl", "-n", "kube-system", "get", "ds", "cilium")
 	return err != nil
 }
