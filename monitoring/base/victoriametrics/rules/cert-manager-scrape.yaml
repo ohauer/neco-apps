@@ -19,7 +19,3 @@ spec:
     - sourceLabels: [__meta_kubernetes_pod_container_name]
       regex: cert-manager
       action: keep
-    metricRelabelConfigs:
-    # TODO: remove here config when no use the exported_namespace label.
-    - sourceLabels: [namespace]
-      targetLabel: exported_namespace
