@@ -12,7 +12,7 @@ spec:
             - /usr/local/bin/grafana-operator
           args:
             - --grafana-image=quay.io/cybozu/grafana
-            - --grafana-image-tag=8.2.3.1
+            - --grafana-image-tag=8.3.3.2
             - --grafana-plugins-init-container-image=quay.io/cybozu/grafana_plugins_init
             - --grafana-plugins-init-container-tag=0.0.5.1
             - --scan-all

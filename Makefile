@@ -86,7 +86,7 @@ update-external-dns:
 update-grafana-operator:
 	$(call get-latest-tag,grafana-operator)
 	rm -rf /tmp/grafana-operator
-	cd /tmp; git clone --depth 1 -b $(call upstream-tag,$(latest_tag)) https://github.com/integr8ly/grafana-operator
+	cd /tmp; git clone --depth 1 -b $(call upstream-tag,$(latest_tag)) https://github.com/grafana-operator/grafana-operator
 	rm -rf monitoring/base/grafana-operator/upstream/*
 	mkdir -p monitoring/base/grafana-operator/upstream/cluster_roles
 	mkdir -p monitoring/base/grafana-operator/upstream/manifests
@@ -100,7 +100,7 @@ update-grafana-operator:
 .PHONY: update-grafana
 update-grafana:
 	$(call get-latest-tag,grafana)
-	sed -i -E 's/grafana-image-tag=.*$$/grafana-image-tag=$(latest_tag)/' monitoring/base/grafana-operator/operator.yaml
+	sed -i -E 's/grafana-image-tag=.*$$/grafana-image-tag=$(latest_tag)/' monitoring/base/grafana-operator/deployment.yaml
 	sed -i -E 's,quay.io/cybozu/grafana:.*$$,quay.io/cybozu/grafana:$(latest_tag),' sandbox/overlays/gcp/grafana/statefulset.yaml
 
 .PHONY: update-heartbeat
