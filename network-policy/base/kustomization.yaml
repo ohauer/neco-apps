@@ -18,6 +18,7 @@ resources:
   - policies/kube-system.yaml
   - policies/monitoring.yaml
   - policies/teleport.yaml
+  - policies/hubble-relay.yaml
   - global-policies/apiserver.yaml
   - global-policies/coil-nat.yaml
   - global-policies/controller-manager.yaml

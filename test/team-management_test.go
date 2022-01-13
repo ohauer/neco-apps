@@ -45,6 +45,9 @@ var requiredResources = []string{
 	"challenges.acme.cert-manager.io",
 	"orders.acme.cert-manager.io",
 
+	// Cilium
+	"ciliumnetworkpolicies.cilium.io",
+
 	// ECK
 	"agents.agent.k8s.elastic.co",
 	"apmservers.apm.k8s.elastic.co",
@@ -110,6 +113,13 @@ var viewableResources = []string{
 
 	// Contour
 	"tlscertificatedelegations.projectcontour.io",
+
+	// Cilium
+	"ciliumendpoints.cilium.io",
+	"ciliumclusterwidenetworkpolicies.cilium.io",
+	"ciliumexternalworkloads.cilium.io",
+	"ciliumidentities.cilium.io",
+	"ciliumnodes.cilium.io",
 
 	// Topolvm
 	"logicalvolumes.topolvm.cybozu.com",
@@ -191,6 +201,32 @@ func init() {
 		}
 		requiredResources = removed
 	}
+}
+
+func prepareForCilium() {
+	if isCiliumAbsent() {
+		var requiredResourcesWithoutCilium, viewableResourcesWithoutCilium []string
+		for _, res := range requiredResources {
+			if strings.HasPrefix(res, "cilium") {
+				continue
+			}
+			requiredResourcesWithoutCilium = append(requiredResourcesWithoutCilium, res)
+		}
+		requiredResources = requiredResourcesWithoutCilium
+
+		for _, res := range viewableResources {
+			if strings.HasPrefix(res, "cilium") {
+				continue
+			}
+			viewableResourcesWithoutCilium = append(viewableResourcesWithoutCilium, res)
+		}
+		viewableResources = viewableResourcesWithoutCilium
+	}
+}
+
+func isCiliumAbsent() bool {
+	_, _, err := ExecAt(boot0, "kubectl", "-n", "kube-system", "get", "ds", "cilium")
+	return err != nil
 }
 
 var (
