@@ -104,9 +104,9 @@ spec:
                 ],
                 "targets": [
                     {
-                        "expr": "sort_desc( sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~\"$Namespace\"} - time()) BY (name,exported_namespace) )",
+                        "expr": "sort_desc( sum(certmanager_certificate_expiration_timestamp_seconds{namespace=~\"$Namespace\"} - time()) BY (name,namespace) )",
                         "instant": true,
-                        "legendFormat": " {{exported_namespace}} / {{name}}",
+                        "legendFormat": " {{namespace}} / {{name}}",
                         "refId": "A"
                     }
                 ],
@@ -253,10 +253,10 @@ spec:
                 "steppedLine": false,
                 "targets": [
                     {
-                        "expr": "sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~\"$Namespace\"} - time()) BY (name,exported_namespace)",
+                        "expr": "sum(certmanager_certificate_expiration_timestamp_seconds{namespace=~\"$Namespace\"} - time()) BY (name,namespace)",
                         "instant": false,
                         "intervalFactor": 1,
-                        "legendFormat": " {{exported_namespace}} / {{name}}",
+                        "legendFormat": " {{namespace}} / {{name}}",
                         "refId": "A"
                     }
                 ],
@@ -1217,14 +1217,14 @@ spec:
                         "value": "$__all"
                     },
                     "datasource": "$Datasource",
-                    "definition": "label_values(exported_namespace)",
+                    "definition": "label_values(namespace)",
                     "hide": 0,
                     "includeAll": true,
                     "label": null,
                     "multi": false,
                     "name": "Namespace",
                     "options": [],
-                    "query": "label_values(exported_namespace)",
+                    "query": "label_values(namespace)",
                     "refresh": 1,
                     "regex": "",
                     "skipUrlSync": false,
@@ -1243,14 +1243,14 @@ spec:
                         "value": "$__all"
                     },
                     "datasource": "$Datasource",
-                    "definition": "label_values(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~\"$Namespace\"},name) ",
+                    "definition": "label_values(certmanager_certificate_expiration_timestamp_seconds{namespace=~\"$Namespace\"},name) ",
                     "hide": 0,
                     "includeAll": true,
                     "label": null,
                     "multi": false,
                     "name": "Certificate",
                     "options": [],
-                    "query": "label_values(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~\"$Namespace\"},name) ",
+                    "query": "label_values(certmanager_certificate_expiration_timestamp_seconds{namespace=~\"$Namespace\"},name) ",
                     "refresh": 2,
                     "regex": "",
                     "skipUrlSync": false,
