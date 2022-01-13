@@ -185,7 +185,10 @@ update-meows:
 	cp -r /tmp/meows/config/* meows/overlays/gcp/upstream
 	rm -rf /tmp/meows
 	sed -i -E '/name:.*meows-controller$$/!b;n;s/newTag:.*$$/newTag: $(patsubst v%,%,$(latest_gh))/' meows/overlays/gcp/kustomization.yaml
-	sed -i -E 's,(image: quay.io/cybozu/meows-runner:).*$$,\1$(patsubst v%,%,$(latest_gh)),' test/testdata/meows-runnerpool.tmpl.yaml
+	$(call get-latest-tag,meows-dctest-runner)
+	sed -i -E 's,quay.io/cybozu/meows-dctest-runner:.*$$,quay.io/cybozu/meows-dctest-runner:$(latest_tag),' meows/overlays/stage0/runnerpool.yaml
+	$(call get-latest-tag,meows-neco-runner)
+	sed -i -E 's,quay.io/cybozu/meows-neco-runner:.*$$,quay.io/cybozu/meows-neco-runner:$(latest_tag),' meows/overlays/gcp/deployment.yaml
 
 .PHONY: update-metallb
 update-metallb:

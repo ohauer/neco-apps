@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: meows-cm
+  namespace: meows
+data:
+  organization-rule: "^cybozu-private$"
+  repository-rule: "^cybozu-private/.*"

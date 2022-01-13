@@ -184,22 +184,11 @@ func testSetup() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("creating temporally file for secrets")
-		fileCreateSafeAt(boot0, "github_app_id", env["github_app_id"])
-		fileCreateSafeAt(boot0, "github_app_installation_id", env["github_app_installation_id"])
-		fileCreateSafeAt(boot0, "github_app_private_key", env["github_app_private_key"])
 		fileCreateSafeAt(boot0, "slack_api_token", env["slack_api_token"])
 		fileCreateSafeAt(boot0, "slack_bot_token", env["slack_bot_token"])
 
 		By("creating meows namespace")
 		createNamespaceIfNotExists("meows", false)
-
-		By("creating secrets for controller in meows")
-		_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "generic", "github-app-secret",
-			"-n", "meows",
-			"--from-file=app-id=github_app_id",
-			"--from-file=app-installation-id=github_app_installation_id",
-			"--from-file=app-private-key=github_app_private_key",
-		)
 
 		By("creating secret for slack-agent in meows")
 		_ = ExecSafeAt(boot0, "kubectl", "create", "secret", "generic", "slack-app-secret",
