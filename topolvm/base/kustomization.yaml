@@ -7,6 +7,6 @@ helmCharts:
   releaseName: topolvm
   repo: https://topolvm.github.io/topolvm
   valuesFile: values.yaml
-  version: 3.2.0
+  version: 4.0.0
 resources:
   - namespace.yaml
