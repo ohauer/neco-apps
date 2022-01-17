@@ -238,6 +238,29 @@ update-pvc-autoresizer:
 		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
 		pvc-autoresizer/base/kustomization.yaml
 
+.PHONY: update-rook
+update-rook:
+	sed -i -E \
+		-e 's/^(  tag:).*$$/\1 $(APP_VERSION)/' \
+		rook/base/values.yaml
+	curl -L --output rook/base/toolbox/toolbox.yaml \
+		https://raw.githubusercontent.com/rook/rook/v$$(echo $(APP_VERSION) | cut -d "." -f 1-3)/deploy/examples/toolbox.yaml
+	sed -i -E \
+		-e 's/^(    newTag:).*$$/\1 $(APP_VERSION)/' \
+		rook/base/toolbox/kustomization.yaml
+	for t in common ceph-hdd ceph-hdd-clusterrolebinding \
+		ceph-object-store ceph-object-store-clusterrolebinding \
+		ceph-poc ceph-poc-clusterrolebinding ceph-poc-2 ceph-poc-2-clusterrolebinding \
+		ceph-ssd ceph-ssd-clusterrolebinding; do \
+		sed -i -E \
+			-e 's/^(  version:).*$$/\1 v$(CHART_VERSION)/' \
+			rook/base/$$t/kustomization.yaml; \
+		cp rook/base/values.yaml rook/base/$$t/values.yaml; \
+		test/bin/kustomize build --enable-helm rook/base/$$t > rook/base/$$t.yaml; \
+	done
+	mv rook/base/ceph-poc-2*.yaml rook/overlays/stage0/ceph-poc-2/
+	mv rook/base/ceph-poc*.yaml rook/overlays/stage0/ceph-poc/
+
 .PHONY: update-s3gw
 update-s3gw:
 	$(call get-latest-tag,s3gw)

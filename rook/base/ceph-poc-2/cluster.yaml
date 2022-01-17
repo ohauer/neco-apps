@@ -1,8 +1,8 @@
 apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
-  name: ceph-hdd
-  namespace: ceph-hdd
+  name: ceph-poc-2
+  namespace: ceph-poc-2
 spec:
   dataDirHostPath: /var/lib/rook
   resources:
@@ -89,12 +89,14 @@ spec:
           failureThreshold: 60
   storage:
     storageClassDeviceSets:
-      - name: set1
+      - name: hdd
         count: 18
         tuneDeviceClass: true
         volumeClaimTemplates:
           - metadata:
               name: data
+              annotations:
+                crushDeviceClass: hdd
             spec:
               resources:
                 requests:
@@ -110,6 +112,49 @@ spec:
             - key: cke.cybozu.com/role
               operator: Equal
               value: storage
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: topology.kubernetes.io/zone
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - rook-ceph-osd
+                      - rook-ceph-osd-prepare
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - rook-ceph-osd
+                      - rook-ceph-osd-prepare
+      - name: ssd
+        count: 20
+        ## send bug report https://github.com/rook/rook/issues/6789
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "2Gi"
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+              annotations:
+                crushDeviceClass: ssd
+            spec:
+              resources:
+                requests:
+                  storage: 1Ti
+              # IMPORTANT: Change the storage class depending on your environment (e.g. local-storage, gp2)
+              storageClassName: topolvm-provisioner
+              volumeMode: Block
+              accessModes:
+                - ReadWriteOnce
+        placement:
           topologySpreadConstraints:
             - maxSkew: 1
               topologyKey: topology.kubernetes.io/zone

@@ -3,23 +3,14 @@ kind: Kustomization
 helmCharts:
 - includeCRDs: true
   name: rook-ceph
-  namespace: ceph-hdd
+  namespace: ceph-poc
   releaseName: rook-release
   repo: https://charts.rook.io/release
   valuesFile: values.yaml
-  valuesInline:
-    csi:
-      rbdGrpcMetricsPort: 19090
-      rbdLivenessMetricsPort: 19080
   version: v1.8.2
-resources:
-  - ../toolbox
-  - cluster.yaml
-  - configmap.yaml
-  - namespace.yaml
-namespace: ceph-hdd
+nameSuffix: "-poc"
 patches: # Strategic Merge Patch
-  # Delete manifests of ClusterRole, ClusterRoleBinding and CustomResourceDefinition
+  # Delete manifests without ClusterRoleBinding
 - patch: |
     $patch: delete
     kind: dummy
@@ -33,11 +24,32 @@ patches: # Strategic Merge Patch
     metadata:
       name: dummy
   target:
-    kind: ClusterRoleBinding
+    kind: CustomResourceDefinition
 - patch: |
     $patch: delete
     kind: dummy
     metadata:
       name: dummy
   target:
-    kind: CustomResourceDefinition
+    kind: Deployment
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: Role
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: RoleBinding
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: ServiceAccount

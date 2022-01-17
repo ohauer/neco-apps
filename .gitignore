@@ -23,6 +23,7 @@
 # Ignore template file to use helm charts
 /pvc-autoresizer/base/charts
 /topolvm/base/charts
+/rook/base/*/charts
 
 # Editors
 *~
