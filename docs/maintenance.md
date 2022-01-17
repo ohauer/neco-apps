@@ -9,7 +9,6 @@ How to maintain neco-apps
 - [customer-egress (Squid and unbound)](#customer-egress-squid-and-unbound)
 - [elastic (ECK)](#elastic-eck)
 - [external-dns](#external-dns)
-- [meows](#meows)
 - [kube-metrics-adapter](#kube-metrics-adapter)
 - [ingress (Contour & Envoy)](#ingress-contour--envoy)
 - [local-pv-provisioner](#local-pv-provisioner)
@@ -17,6 +16,7 @@ How to maintain neco-apps
   - [loki, loki-canary](#loki-loki-canary)
   - [promtail](#promtail)
 - [machines-endpoints](#machines-endpoints)
+- [meows](#meows)
 - [metallb](#metallb)
 - [moco](#moco)
 - [monitoring](#monitoring)
@@ -125,15 +125,6 @@ Update the manifests as follows:
 
 ```console
 $ make update-external-dns
-$ git diff
-```
-
-## meows
-
-Check [releases](https://github.com/cybozu-go/meows/releases).
-
-```console
-$ make update-meows
 $ git diff
 ```
 
@@ -269,6 +260,15 @@ Update their CronJobs as follows:
 
 ```console
 $ make update-machines-endpoints
+$ git diff
+```
+
+## meows
+
+Check [releases](https://github.com/cybozu-go/meows/releases).
+
+```console
+$ make update-meows
 $ git diff
 ```
 

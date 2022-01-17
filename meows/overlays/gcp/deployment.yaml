@@ -10,10 +10,7 @@ spec:
       containers:
       - name: controller
         args:
-        - "--organization-name=neco-test"
-        - "--app-id=$(GITHUB_APP_ID)"
-        - "--app-installation-id=$(GITHUB_APP_INSTALLATION_ID)"
-        - "--app-private-key-path=/etc/github/app.pem"
+        - --runner-image=quay.io/cybozu/meows-neco-runner:0.6.0.1
         env:
         - name: NO_PROXY
           value: 10.0.0.0/8
