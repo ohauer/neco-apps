@@ -75,6 +75,12 @@ spec:
         - p, proj:tenant-app-of-apps:network-apps, applications, get, tenant-app-of-apps/network-apps, allow
         - p, proj:tenant-app-of-apps:network-apps, applications, sync, tenant-app-of-apps/network-apps, allow
     - groups:
+        - cybozu-private:cydec
+      name: slash-apps
+      policies:
+        - p, proj:tenant-app-of-apps:slash-apps, applications, get, tenant-app-of-apps/slash-apps, allow
+        - p, proj:tenant-app-of-apps:slash-apps, applications, sync, tenant-app-of-apps/slash-apps, allow
+    - groups:
         - cybozu-private:csa
         - cybozu-private:cydec
         - cybozu-private:dbre
