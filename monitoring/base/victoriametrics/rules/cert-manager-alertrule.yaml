@@ -18,7 +18,7 @@ spec:
             severity: error
         - alert: CertificateNotReady
           expr: |
-            certmanager_certificate_ready_status{condition="False"} *on(exported_namespace) group_left(label_team) label_replace(kube_namespace_labels{label_team="neco"}, "exported_namespace", "$1", "namespace", "(^.*$)") > 0
+            certmanager_certificate_ready_status{condition="False"} * on(namespace) group_left(label_team) kube_namespace_labels{label_team="neco"} > 0
           for: 10m
           labels:
             severity: error
@@ -29,7 +29,7 @@ spec:
           expr: |
             (
               certmanager_certificate_expiration_timestamp_seconds
-                * on(exported_namespace) group_left(label_team) label_replace(kube_namespace_labels{label_team="neco"}, "exported_namespace", "$1", "namespace", "(^.*$)")
+                * on(namespace) group_left(label_team) kube_namespace_labels{label_team="neco"}
               - time()
             ) <= 14*24*60*60
           for: 120m
@@ -37,18 +37,18 @@ spec:
             severity: error
             frequency: daily
           annotations:
-            summary: Certificate {{ $labels.exported_namespace}}/{{ $labels.name }} will expire in 14 day(s).
+            summary: Certificate {{ $labels.namespace }}/{{ $labels.name }} will expire in 14 day(s).
             runbook: Please check the status of Cert Manager and Certificate resources.
         - alert: CertificateExpire
           expr: |
             (
               certmanager_certificate_expiration_timestamp_seconds
-                * on(exported_namespace) group_left(label_team) label_replace(kube_namespace_labels{label_team="neco"}, "exported_namespace", "$1", "namespace", "(^.*$)")
+                * on(namespace) group_left(label_team) kube_namespace_labels{label_team="neco"}
               - time()
             ) <= 0
           for: 120m
           labels:
             severity: critical
           annotations:
-            summary: Certificate {{ $labels.exported_namespace}}/{{ $labels.name }} has already expired.
+            summary: Certificate {{ $labels.namespace}}/{{ $labels.name }} has already expired.
             runbook: Please check the status of Cert Manager and Certificate resources.

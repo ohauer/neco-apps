@@ -17,7 +17,7 @@ tests:
               runbook: TBD
   - interval: 1m
     input_series:
-      - series: 'certmanager_certificate_ready_status{condition="False",exported_namespace="ours",name="certname"}'
+      - series: 'certmanager_certificate_ready_status{condition="False",namespace="ours",name="certname"}'
         values: 1+0x10
       - series: 'kube_namespace_labels{namespace="ours",label_team="neco"}'
         values: 1+0x10
@@ -27,7 +27,7 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: error
-              exported_namespace: ours
+              namespace: ours
               name: certname
               label_team: neco
               condition: "False"
@@ -36,7 +36,7 @@ tests:
               runbook: Please check the status of Cert Manager and Certificate resources.
   - interval: 1m
     input_series:
-      - series: 'certmanager_certificate_ready_status{condition="False",exported_namespace="others",name="certname"}'
+      - series: 'certmanager_certificate_ready_status{condition="False",namespace="others",name="certname"}'
         values: 1+0x10
       - series: 'kube_namespace_labels{namespace="ours",label_team="neco"}'
         values: 1+0x10
@@ -46,7 +46,7 @@ tests:
         exp_alerts: []
   - interval: 1m
     input_series:
-      - series: 'certmanager_certificate_expiration_timestamp_seconds{exported_namespace="ours",name="certname"}'
+      - series: 'certmanager_certificate_expiration_timestamp_seconds{namespace="ours",name="certname"}'
         values: 1209600+0x120 # 14 days
       - series: 'kube_namespace_labels{namespace="ours",label_team="neco"}'
         values: 1+0x120
@@ -57,7 +57,7 @@ tests:
           - exp_labels:
               severity: error
               frequency: daily
-              exported_namespace: ours
+              namespace: ours
               name: certname
               label_team: neco
             exp_annotations:
@@ -65,7 +65,7 @@ tests:
               runbook: Please check the status of Cert Manager and Certificate resources.
   - interval: 1m
     input_series:
-      - series: 'certmanager_certificate_expiration_timestamp_seconds{exported_namespace="ours",name="certname"}'
+      - series: 'certmanager_certificate_expiration_timestamp_seconds{namespace="ours",name="certname"}'
         values: 0+0x120
       - series: 'kube_namespace_labels{namespace="ours",label_team="neco"}'
         values: 1+0x120
@@ -76,7 +76,7 @@ tests:
           - exp_labels:
               severity: error
               frequency: daily
-              exported_namespace: ours
+              namespace: ours
               name: certname
               label_team: neco
             exp_annotations:
@@ -84,7 +84,7 @@ tests:
               runbook: Please check the status of Cert Manager and Certificate resources.
           - exp_labels:
               severity: critical
-              exported_namespace: ours
+              namespace: ours
               name: certname
               label_team: neco
             exp_annotations:
@@ -92,7 +92,7 @@ tests:
               runbook: Please check the status of Cert Manager and Certificate resources.
   - interval: 1m
     input_series:
-      - series: 'certmanager_certificate_expiration_timestamp_seconds{exported_namespace="ours",name="certname"}'
+      - series: 'certmanager_certificate_expiration_timestamp_seconds{namespace="ours",name="certname"}'
         values: 1296000+0x120 # 15 days
       - series: 'kube_namespace_labels{namespace="ours",label_team="neco"}'
         values: 1+0x120
@@ -102,7 +102,7 @@ tests:
         exp_alerts: []
   - interval: 1m
     input_series:
-      - series: 'certmanager_certificate_expiration_timestamp_seconds{exported_namespace="others",name="certname"}'
+      - series: 'certmanager_certificate_expiration_timestamp_seconds{namespace="others",name="certname"}'
         values: 0+0x120
       - series: 'kube_namespace_labels{namespace="ours",label_team="neco"}'
         values: 1+0x120
