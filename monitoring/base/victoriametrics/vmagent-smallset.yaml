@@ -5,7 +5,7 @@ metadata:
   namespace: monitoring
 spec:
   extraArgs:
-    promscrape.maxScrapeSize: "33554432"
+    promscrape.maxScrapeSize: 200MiB
   serviceScrapeNamespaceSelector:
     matchLabels:
       team: neco
