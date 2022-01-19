@@ -10,4 +10,5 @@ resources:
   - hazama-apps.yaml
   - maneki-apps.yaml
   - network-apps.yaml
+  - slash-apps.yaml
   - tenant-apps.yaml
