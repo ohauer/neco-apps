@@ -87,6 +87,7 @@ spec:
         - cybozu-private:ept
         - cybozu-private:garoon
         - cybozu-private:kintone-neco
+        - cybozu-private:landsat
         - cybozu-private:maneki
         - cybozu-private:neco-guests
         - cybozu-private:network
@@ -133,6 +134,7 @@ spec:
         - cybozu-private:ept
         - cybozu-private:garoon
         - cybozu-private:kintone-neco
+        - cybozu-private:landsat
         - cybozu-private:maneki
         - cybozu-private:neco
         - cybozu-private:neco-guests

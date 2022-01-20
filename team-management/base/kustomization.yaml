@@ -9,6 +9,7 @@ resources:
   - ./ept
   - ./garoon
   - ./kintone-neco
+  - ./landsat
   - ./maneki
   - ./neco
   - ./neco-guests

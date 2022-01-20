@@ -7,6 +7,7 @@ ArgoCDApplicationValidator:
         - ept
         - garoon
         - kintone-neco
+        - landsat
         - maneki
         - neco-guests
         - network

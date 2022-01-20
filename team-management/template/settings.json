@@ -215,6 +215,17 @@
         "accurate.cybozu.com/type": "root"
       }
     },
+    "landsat": {
+      "dev-team-landsat": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      },
+      "team-landsat": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      }
+    },
     "maneki": {
       "app-maneki": {
         "accurate.cybozu.com/template": "init-template",

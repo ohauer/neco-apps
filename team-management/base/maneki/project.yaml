@@ -72,6 +72,8 @@ spec:
       server: '*'
     - namespace: team-kintone
       server: '*'
+    - namespace: team-landsat
+      server: '*'
   namespaceResourceBlacklist:
     - group: ""
       kind: ResourceQuota

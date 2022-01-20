@@ -8,6 +8,7 @@ patchesStrategicMerge:
   - dev-garoon.yaml
   - dev-kintone.yaml
   - dev-team-kintone.yaml
+  - dev-team-landsat.yaml
   - dev-maneki.yaml
   - dev-guests.yaml
   - dev-network.yaml
