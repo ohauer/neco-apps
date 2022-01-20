@@ -432,6 +432,16 @@ func applyAndWaitForApplications(commitID string) {
 		}
 	}
 
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2173
+	if doUpgrade {
+		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "dev-set-cloud-platform")
+		if err == nil {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", "dev-set-cloud-platform", "admission.cybozu.com/i-am-sure-to-delete=dev-set-cloud-platform")
+			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
+		}
+	}
+
 	By("syncing argocd-config")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "cd", "./neco-apps",

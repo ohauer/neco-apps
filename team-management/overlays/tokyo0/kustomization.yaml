@@ -12,6 +12,5 @@ patchesStrategicMerge:
   - dev-guests.yaml
   - dev-network.yaml
   - dev-set.yaml
-  - dev-set-cloud-platform.yaml
 resources:
   - ../../base
