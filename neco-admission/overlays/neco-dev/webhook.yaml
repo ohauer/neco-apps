@@ -1,0 +1,11 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: neco-admission
+webhooks:
+  - $patch: delete
+    name: vapplication.kb.io
+    clientConfig:
+      service:
+        name: neco-admission
+        namespace: kube-system
