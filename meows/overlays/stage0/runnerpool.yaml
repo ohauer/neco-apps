@@ -4,59 +4,62 @@ metadata:
   name: dctest-runner
   namespace: meows-runner
 spec:
+  organization: cybozu-private
   replicas: 2
-  slackAgent:
-    serviceName: slack-agent.meows.svc
-    channel: "#neco"
+  notification:
+    slack:
+      enable: true
+      channel: "#neco"
+    extendDuration: "30m"
   setupCommand: ["/usr/local/bin/dctest-bootstrap"]
+  workVolume:
+    ephemeral:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: topolvm-flash1-xfs
+          accessModes: [ "ReadWriteOnce" ]
+          resources:
+            requests:
+              storage: 15Gi
   template:
     metadata:
       annotations:
         egress.coil.cybozu.com/internet-egress: nat
-    image: quay.io/cybozu/meows-dctest-runner:0.6.0.1
-    securityContext:
-      privileged: true
-    env:
-    - name: NECO_BRANCH
-      value: "release"
-    - name: NECO_APPS_BRANCH
-      value: "release"
-    - name: EXTEND_DURATION
-      value: "30m"
-    resources:
-      requests:
-        cpu: 15000m
-        memory: 100Gi
-      limits:
-        cpu: 20000m
-    workVolume:
-      ephemeral:
-        volumeClaimTemplate:
-          spec:
-            storageClassName: topolvm-flash1-xfs
-            accessModes: [ "ReadWriteOnce" ]
-            resources:
-              requests:
-                storage: 15Gi
-    volumeMounts:
-        - name: scratch
-          mountPath: /var/scratch
-        - name: bird
-          mountPath: /var/run/bird
-        - name: modules
-          mountPath: /lib/modules
-        - name: dev
-          mountPath: /dev
-          readOnly: false
-        - name: home
-          mountPath: /home/actions
-        - name: tools
-          mountPath: /opt/hostedtoolcache
-        - name: tmp
-          mountPath: /tmp
-        - name: secrets
-          mountPath: /secrets
-          readOnly: true
+    automountServiceAccountToken: false
+    runnerContainer:
+      image: quay.io/cybozu/meows-dctest-runner:0.6.0.1
+      securityContext:
+        privileged: true
+      env:
+      - name: NECO_BRANCH
+        value: "release"
+      - name: NECO_APPS_BRANCH
+        value: "release"
+      resources:
+        requests:
+          cpu: 15000m
+          memory: 100Gi
+        limits:
+          cpu: 20000m
+      volumeMounts:
+          - name: scratch
+            mountPath: /var/scratch
+          - name: bird
+            mountPath: /var/run/bird
+          - name: modules
+            mountPath: /lib/modules
+          - name: dev
+            mountPath: /dev
+            readOnly: false
+          - name: home
+            mountPath: /home/actions
+          - name: tools
+            mountPath: /opt/hostedtoolcache
+          - name: tmp
+            mountPath: /tmp
+          - name: secrets
+            mountPath: /secrets
+            readOnly: true
     volumes:
         - name: bird
           emptyDir: {}
