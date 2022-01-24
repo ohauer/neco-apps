@@ -7,7 +7,7 @@ helmCharts:
   releaseName: rook-release
   repo: https://charts.rook.io/release
   valuesFile: values.yaml
-  version: v1.8.2
+  version: v1.8.3
 nameSuffix: "-hdd"
 patches: # Strategic Merge Patch
   # Delete manifests without ClusterRoleBinding
@@ -18,6 +18,13 @@ patches: # Strategic Merge Patch
       name: dummy
   target:
     kind: ClusterRole
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: ConfigMap
 - patch: |
     $patch: delete
     kind: dummy

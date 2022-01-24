@@ -11,7 +11,7 @@ helmCharts:
     csi:
       rbdGrpcMetricsPort: 29092
       rbdLivenessMetricsPort: 29082
-  version: v1.8.2
+  version: v1.8.3
 resources:
   - ../toolbox
   - cluster.yaml

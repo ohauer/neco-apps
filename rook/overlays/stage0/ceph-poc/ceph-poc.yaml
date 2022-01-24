@@ -62,7 +62,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-cmd-reporter
@@ -75,7 +75,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-mgr
@@ -88,7 +88,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-osd
@@ -107,7 +107,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-system
@@ -363,7 +363,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-system
@@ -523,7 +523,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-system
@@ -535,6 +535,30 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: rook-ceph-system
+  namespace: ceph-poc
+---
+apiVersion: v1
+data:
+  CSI_CEPHFS_FSGROUPPOLICY: None
+  CSI_ENABLE_CEPHFS_SNAPSHOTTER: "false"
+  CSI_ENABLE_OMAP_GENERATOR: "false"
+  CSI_ENABLE_RBD_SNAPSHOTTER: "true"
+  CSI_ENABLE_VOLUME_REPLICATION: "false"
+  CSI_FORCE_CEPHFS_KERNEL_CLIENT: "true"
+  CSI_PLUGIN_ENABLE_SELINUX_HOST_MOUNT: "false"
+  CSI_PROVISIONER_REPLICAS: "2"
+  CSI_RBD_FSGROUPPOLICY: ReadWriteOnceWithFSType
+  CSI_RBD_GRPC_METRICS_PORT: "29091"
+  CSI_RBD_LIVENESS_METRICS_PORT: "29081"
+  ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS: "300"
+  ROOK_CSI_ENABLE_CEPHFS: "false"
+  ROOK_CSI_ENABLE_GRPC_METRICS: "false"
+  ROOK_CSI_ENABLE_RBD: "true"
+  ROOK_LOG_LEVEL: INFO
+  ROOK_OBC_WATCH_OPERATOR_NAMESPACE: "true"
+kind: ConfigMap
+metadata:
+  name: rook-ceph-operator-config
   namespace: ceph-poc
 ---
 apiVersion: v1
@@ -564,7 +588,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-operator
@@ -578,7 +602,7 @@ spec:
     metadata:
       labels:
         app: rook-ceph-operator
-        helm.sh/chart: rook-ceph-v1.8.2
+        helm.sh/chart: rook-ceph-v1.8.3
     spec:
       containers:
       - args:
@@ -589,50 +613,12 @@ spec:
           value: "true"
         - name: ROOK_HOSTPATH_REQUIRES_PRIVILEGED
           value: "false"
-        - name: ROOK_LOG_LEVEL
-          value: INFO
         - name: ROOK_ENABLE_SELINUX_RELABELING
           value: "true"
         - name: ROOK_DISABLE_DEVICE_HOTPLUG
           value: "false"
-        - name: ROOK_CSI_ENABLE_RBD
-          value: "true"
-        - name: ROOK_CSI_ENABLE_CEPHFS
-          value: "false"
-        - name: CSI_ENABLE_CEPHFS_SNAPSHOTTER
-          value: "false"
-        - name: CSI_ENABLE_RBD_SNAPSHOTTER
-          value: "true"
-        - name: CSI_PLUGIN_PRIORITY_CLASSNAME
-          value: ""
-        - name: CSI_PROVISIONER_PRIORITY_CLASSNAME
-          value: ""
-        - name: CSI_ENABLE_OMAP_GENERATOR
-          value: "false"
-        - name: CSI_ENABLE_VOLUME_REPLICATION
-          value: "false"
-        - name: CSI_PLUGIN_ENABLE_SELINUX_HOST_MOUNT
-          value: "false"
-        - name: CSI_RBD_FSGROUPPOLICY
-          value: ReadWriteOnceWithFSType
-        - name: CSI_CEPHFS_FSGROUPPOLICY
-          value: None
-        - name: ROOK_CSI_ENABLE_GRPC_METRICS
-          value: "false"
-        - name: CSI_RBD_GRPC_METRICS_PORT
-          value: "29091"
-        - name: CSI_RBD_LIVENESS_METRICS_PORT
-          value: "29081"
-        - name: CSI_FORCE_CEPHFS_KERNEL_CLIENT
-          value: "true"
-        - name: CSI_PROVISIONER_REPLICAS
-          value: "2"
         - name: ROOK_ENABLE_DISCOVERY_DAEMON
           value: "false"
-        - name: ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS
-          value: "300"
-        - name: ROOK_OBC_WATCH_OPERATOR_NAMESPACE
-          value: "true"
         - name: NODE_NAME
           valueFrom:
             fieldRef:
@@ -645,7 +631,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: quay.io/cybozu/rook:1.8.2.0
+        image: quay.io/cybozu/rook:1.8.3.0
         imagePullPolicy: IfNotPresent
         name: rook-ceph-operator
         resources:
@@ -709,7 +695,7 @@ spec:
             secretKeyRef:
               key: ceph-secret
               name: rook-ceph-mon
-        image: quay.io/cybozu/rook:1.8.2.0
+        image: quay.io/cybozu/rook:1.8.3.0
         imagePullPolicy: IfNotPresent
         name: rook-ceph-tools
         securityContext:
@@ -816,6 +802,7 @@ spec:
               app: rook-ceph-mon
           topologyKey: topology.kubernetes.io/zone
   priorityClassNames:
+    crashcollector: rook-node-bound-log
     osd: node-bound
   resources:
     crashcollector:

@@ -11,7 +11,7 @@ helmCharts:
     csi:
       rbdGrpcMetricsPort: 29090
       rbdLivenessMetricsPort: 29080
-  version: v1.8.2
+  version: v1.8.3
 resources:
   - ../toolbox
   - cephblockpool.yaml

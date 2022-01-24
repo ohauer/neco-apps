@@ -1,0 +1,7 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: rook-node-bound-log
+value: 1001000
+globalDefault: false
+description: "This value is for CrushCollector. CrushCollector requires larger value than node-bound (used by OSD)."

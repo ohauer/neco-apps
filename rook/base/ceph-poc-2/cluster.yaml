@@ -69,6 +69,7 @@ spec:
     ssl: true
   priorityClassNames:
     osd: node-bound
+    crashcollector: rook-node-bound-log
   # disruptionManagement:
   #   managePodBudgets: false
   #   osdMaintenanceTimeout: 60 # rebooting worker nodes takes about 60 minutes.

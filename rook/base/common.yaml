@@ -15042,7 +15042,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rbd-csi-nodeplugin
@@ -15277,7 +15277,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-cluster-mgmt
@@ -15310,7 +15310,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-global
@@ -15366,15 +15366,66 @@ rules:
 - apiGroups:
   - ceph.rook.io
   resources:
-  - '*'
+  - cephclients
+  - cephclusters
+  - cephblockpools
+  - cephfilesystems
+  - cephnfses
+  - cephobjectstores
+  - cephobjectstoreusers
+  - cephobjectrealms
+  - cephobjectzonegroups
+  - cephobjectzones
+  - cephbuckettopics
+  - cephbucketnotifications
+  - cephrbdmirrors
+  - cephfilesystemmirrors
+  - cephfilesystemsubvolumegroups
   verbs:
-  - '*'
+  - get
+  - list
+  - watch
+  - update
 - apiGroups:
-  - rook.io
+  - ceph.rook.io
   resources:
-  - '*'
+  - cephclients/status
+  - cephclusters/status
+  - cephblockpools/status
+  - cephfilesystems/status
+  - cephnfses/status
+  - cephobjectstores/status
+  - cephobjectstoreusers/status
+  - cephobjectrealms/status
+  - cephobjectzonegroups/status
+  - cephobjectzones/status
+  - cephbuckettopics/status
+  - cephbucketnotifications/status
+  - cephrbdmirrors/status
+  - cephfilesystemmirrors/status
+  - cephfilesystemsubvolumegroups/status
   verbs:
-  - '*'
+  - update
+- apiGroups:
+  - ceph.rook.io
+  resources:
+  - cephclients/finalizers
+  - cephclusters/finalizers
+  - cephblockpools/finalizers
+  - cephfilesystems/finalizers
+  - cephnfses/finalizers
+  - cephobjectstores/finalizers
+  - cephobjectstoreusers/finalizers
+  - cephobjectrealms/finalizers
+  - cephobjectzonegroups/finalizers
+  - cephobjectzones/finalizers
+  - cephbuckettopics/finalizers
+  - cephbucketnotifications/finalizers
+  - cephrbdmirrors/finalizers
+  - cephfilesystemmirrors/finalizers
+  - cephfilesystemsubvolumegroups/finalizers
+  verbs:
+  - update
 - apiGroups:
   - policy
   - apps
@@ -15384,7 +15435,13 @@ rules:
   - deployments
   - replicasets
   verbs:
-  - '*'
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+  - deletecollection
 - apiGroups:
   - healthchecking.openshift.io
   resources:
@@ -15430,7 +15487,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-mgr-cluster
@@ -15486,7 +15543,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-object-bucket
@@ -15562,7 +15619,7 @@ metadata:
     app.kubernetes.io/created-by: helm
     app.kubernetes.io/managed-by: helm
     app.kubernetes.io/part-of: rook-ceph-operator
-    helm.sh/chart: rook-ceph-v1.8.2
+    helm.sh/chart: rook-ceph-v1.8.3
     operator: rook
     storage-backend: ceph
   name: rook-ceph-system
@@ -15581,3 +15638,12 @@ rules:
   - pods/exec
   verbs:
   - create
+---
+apiVersion: scheduling.k8s.io/v1
+description: This value is for CrushCollector. CrushCollector requires larger value
+  than node-bound (used by OSD).
+globalDefault: false
+kind: PriorityClass
+metadata:
+  name: rook-node-bound-log
+value: 1001000

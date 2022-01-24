@@ -6,7 +6,9 @@ helmCharts:
   releaseName: rook-release
   repo: https://charts.rook.io/release
   valuesFile: values.yaml
-  version: v1.8.2
+  version: v1.8.3
+resources:
+  - priorityclass.yaml
 patches: # Strategic Merge Patch
 - patch: |-
     - op: replace
@@ -22,6 +24,13 @@ patches: # Strategic Merge Patch
       name: dummy
   target:
     kind: ClusterRoleBinding
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: ConfigMap
 - patch: |
     $patch: delete
     kind: dummy
