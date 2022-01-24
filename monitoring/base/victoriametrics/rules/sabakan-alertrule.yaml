@@ -37,7 +37,7 @@ spec:
             severity: error
         - alert: NodeUnreachable
           annotations:
-            summary: "Unreachable node(s) exist."
+            summary: "Unreachable node with a address of {{ $labels.address }} and a serial of {{ $labels.serial }} exist."
             runbook: "Perform the server retirement procedure."
           expr: |
             sum by(instance, address, serial) (sabakan_machine_status{status="unreachable"}) > 0

@@ -65,7 +65,7 @@ tests:
               address: "1.2.3.4"
               serial: "abcd"
             exp_annotations:
-              summary: Unreachable node(s) exist.
+              summary: "Unreachable node with a address of 1.2.3.4 and a serial of abcd exist."
               runbook: "Perform the server retirement procedure."
   - interval: 1m
     input_series:
