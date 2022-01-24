@@ -738,23 +738,6 @@ spec:
     size: 3
 ---
 apiVersion: ceph.rook.io/v1
-kind: CephBlockPool
-metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-  name: device-health-metrics
-  namespace: ceph-poc
-spec:
-  failureDomain: zone
-  mirroring: {}
-  name: device_health_metrics
-  parameters:
-    compression_mode: none
-  replicated:
-    requireSafeReplicaSize: true
-    size: 3
----
-apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: ceph-poc
