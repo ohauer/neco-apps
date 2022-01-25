@@ -22,7 +22,10 @@ spec:
       - replacement: kubernetes-apiservers
         targetLabel: job
   - port: https
-    scheme: http
+    scheme: https
+    tlsConfig:
+      caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
     relabelConfigs:
       - replacement: kube-controller-manager
         targetLabel: job
