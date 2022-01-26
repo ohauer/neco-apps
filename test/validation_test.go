@@ -119,6 +119,7 @@ func testApplicationResources(t *testing.T) {
 		"monitoring":             "6",
 		"session-log":            "6",
 		"teleport":               "6",
+		"grafana-sandbox":        "7",
 		"kube-metrics-adapter":   "7",
 		"prometheus-adapter":     "7",
 		"pvc-autoresizer":        "7",

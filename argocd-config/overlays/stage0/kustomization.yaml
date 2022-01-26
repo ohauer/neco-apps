@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - ../../base
 - argocd-config.yaml
+- grafana-sandbox.yaml
 - tenants
 patchesStrategicMerge:
 - argocd-ingress.yaml

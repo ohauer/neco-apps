@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - grafana.yaml
+  - service.yaml
+configMapGenerator:
+  - name: grafana
+    namespace: grafana-sandbox
+    files:
+      - config/grafana.ini
+  - name: grafana-datasources-provider
+    namespace: grafana-sandbox
+    files:
+      - config/providers.yaml

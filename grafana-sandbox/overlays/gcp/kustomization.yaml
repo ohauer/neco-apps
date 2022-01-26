@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../common
+  - mysql-init.yaml
+patchesStrategicMerge:
+  - grafana.yaml
+secretGenerator:
+  - name: grafana
+    namespace: grafana-sandbox
+    literals:
+    - admin-password=AUJUl1K2xgeqwMdZ3XlEFc1QhgEQItODMNzJwQme
+    - admin-user=admin
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,0 +1,16 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: grafana-sandbox
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [grafana-sandbox]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: grafana
+  podMetricsEndpoints:
+  - port: grafana
+    relabelConfigs:
+      - replacement: grafana-sandbox
+        targetLabel: job
