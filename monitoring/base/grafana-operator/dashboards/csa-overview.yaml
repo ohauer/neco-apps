@@ -370,7 +370,7 @@ spec:
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(min(topolvm_volumegroup_available_bytes) by (instance, device_class))/ sum(max(topolvm_volumegroup_size_bytes) by (instance, device_class))",
+              "expr": "1 - sum(min(topolvm_volumegroup_available_bytes) by (instance, device_class)) / sum(max(topolvm_volumegroup_size_bytes) by (instance, device_class))",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -427,7 +427,7 @@ spec:
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(min(topolvm_volumegroup_available_bytes) by (instance, device_class))",
+              "expr": "sum(max(topolvm_volumegroup_size_bytes) by (instance, device_class)) - sum(min(topolvm_volumegroup_available_bytes) by (instance, device_class))",
               "format": "time_series",
               "interval": "",
               "legendFormat": "",
@@ -546,7 +546,7 @@ spec:
           "targets": [
             {
               "exemplar": true,
-              "expr": "topk(3, topolvm_volumegroup_available_bytes/topolvm_volumegroup_size_bytes)  ",
+              "expr": "topk(3, 1 - topolvm_volumegroup_available_bytes / topolvm_volumegroup_size_bytes)",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
@@ -678,11 +678,11 @@ spec:
                   },
                   {
                     "color": "orange",
-                    "value": 30
+                    "value": 70
                   },
                   {
                     "color": "red",
-                    "value": 50
+                    "value": 90
                   }
                 ]
               },
@@ -1192,11 +1192,11 @@ spec:
                   },
                   {
                     "color": "orange",
-                    "value": 30
+                    "value": 70
                   },
                   {
                     "color": "red",
-                    "value": 50
+                    "value": 90
                   }
                 ]
               },
