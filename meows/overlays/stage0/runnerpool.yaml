@@ -27,7 +27,7 @@ spec:
         egress.coil.cybozu.com/internet-egress: nat
     automountServiceAccountToken: false
     runnerContainer:
-      image: quay.io/cybozu/meows-dctest-runner:0.6.0.1
+      image: quay.io/cybozu/meows-dctest-runner:0.6.1.1
       securityContext:
         privileged: true
       env:
