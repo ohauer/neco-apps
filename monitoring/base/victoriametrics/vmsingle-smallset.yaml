@@ -12,7 +12,7 @@ spec:
       - ReadWriteOnce
     resources:
       requests:
-        storage: 200Gi # we don't use pvc-autoresizer. see overlays/*/victoriametrics/vmsingle-smallset.yaml too.
+        storage: 400Gi # we don't use pvc-autoresizer. see overlays/*/victoriametrics/vmsingle-smallset.yaml too.
     storageClassName: topolvm-provisioner
   resources:
     requests:
