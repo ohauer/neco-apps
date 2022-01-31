@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teleport-app-hubble-ui
+  namespace: teleport
+spec:
+  template:
+    spec:
+      containers:
+      - name: teleport-app
+        args:
+        - --insecure
+        - --roles=app
+        - --app-name=hubble-ui
+        - --app-uri=http://hubble-ui.kube-system.svc:80/
+        - --labels=team=neco
+        - --diag-addr=0.0.0.0:3020

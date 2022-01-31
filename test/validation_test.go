@@ -114,6 +114,7 @@ func testApplicationResources(t *testing.T) {
 		"rook":                          "5",
 		"sandbox":                       "5",
 		"accurate":                      "6",
+		"hubble":                        "6",
 		"init-template":                 "6",
 		"kube-storage-version-migrator": "6",
 		"logging":                       "6",

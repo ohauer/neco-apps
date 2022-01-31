@@ -10,6 +10,7 @@ resources:
 - customer-egress.yaml
 - elastic.yaml
 - external-dns.yaml
+- hubble.yaml
 - ingress.yaml
 - init-template.yaml
 - kube-metrics-adapter.yaml
