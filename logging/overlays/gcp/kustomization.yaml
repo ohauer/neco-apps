@@ -29,7 +29,11 @@ patchesJSON6902:
         value:
           key: "csa/exclude_noisy_neighbor"
           operator: "Exists"
-          effect: "NoExecute"
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "neco/exclude_noisy_neighbor"
+          operator: "Exists"
   - target:
       group: apps
       version: v1
@@ -42,4 +46,8 @@ patchesJSON6902:
         value:
           key: "csa/exclude_noisy_neighbor"
           operator: "Exists"
-          effect: "NoExecute"
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "neco/exclude_noisy_neighbor"
+          operator: "Exists"

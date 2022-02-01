@@ -40,7 +40,8 @@ lvmd:
   tolerations:
     - key: "csa/exclude_noisy_neighbor"
       operator: "Exists"
-      effect: "NoExecute"
+    - key: "neco/exclude_noisy_neighbor"
+      operator: "Exists"
 
 # CSI node service
 node:
@@ -59,7 +60,8 @@ node:
   tolerations:
     - key: "csa/exclude_noisy_neighbor"
       operator: "Exists"
-      effect: "NoExecute"
+    - key: "neco/exclude_noisy_neighbor"
+      operator: "Exists"
 
 # storageClasses -- Whether to create storageclass(s)
 # ref: https://kubernetes.io/docs/concepts/storage/storage-classes/
