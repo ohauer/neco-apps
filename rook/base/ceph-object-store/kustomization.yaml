@@ -1,14 +1,45 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+helmCharts:
+- includeCRDs: true
+  name: rook-ceph
+  namespace: ceph-object-store
+  releaseName: rook-release
+  repo: https://charts.rook.io/release
+  valuesFile: values.yaml
+  valuesInline:
+    csi:
+      rbdGrpcMetricsPort: 29093
+      rbdLivenessMetricsPort: 29083
+  version: v1.8.3
 resources:
-  - ../upstream
-  - clusterrolebinding
+  - ../toolbox
   - cephobjectstore.yaml
   - cluster.yaml
   - configmap.yaml
-  - deployment.yaml
   - namespace.yaml
-  - role.yaml
-  - rolebinding.yaml
-  - serviceaccount.yaml
+  # - pool-device-health-metrics.yaml
 namespace: ceph-object-store
+patches: # Strategic Merge Patch
+  # Delete manifests of ClusterRole, ClusterRoleBinding and CustomResourceDefinition
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: ClusterRole
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: ClusterRoleBinding
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: CustomResourceDefinition

@@ -141,10 +141,13 @@ var prohibitedResources = []string{
 
 	// Rook
 	"cephblockpools.ceph.rook.io",
+	"cephbucketnotifications.ceph.rook.io",
+	"cephbuckettopics.ceph.rook.io",
 	"cephclients.ceph.rook.io",
 	"cephclusters.ceph.rook.io",
 	"cephfilesystemmirrors.ceph.rook.io",
 	"cephfilesystems.ceph.rook.io",
+	"cephfilesystemsubvolumegroups.ceph.rook.io",
 	"cephnfses.ceph.rook.io",
 	"cephobjectrealms.ceph.rook.io",
 	"cephobjectstores.ceph.rook.io",
@@ -152,8 +155,6 @@ var prohibitedResources = []string{
 	"cephobjectzonegroups.ceph.rook.io",
 	"cephobjectzones.ceph.rook.io",
 	"cephrbdmirrors.ceph.rook.io",
-	"volumereplications.replication.storage.openshift.io",
-	"volumes.rook.io",
 }
 
 // viewableClusterResources is a list of cluster resources that Neco allows for tenant users
@@ -178,9 +179,6 @@ var prohibitedClusterResources = []string{
 	"ipamhandles.crd.projectcalico.org",
 	"ippools.crd.projectcalico.org",
 	"kubecontrollersconfigurations.crd.projectcalico.org",
-
-	// Rook
-	"volumereplicationclasses.replication.storage.openshift.io",
 
 	// VictoriaMetrics operator
 	"vmauths.operator.victoriametrics.com",

@@ -446,58 +446,16 @@ First phase, update Rook solely. Second phase, update Ceph and Rook image based 
 
 Read [this document](https://github.com/rook/rook/blob/master/Documentation/ceph-upgrade.md) before. Note that you should choose the appropriate release version.
 
-Get upstream helm chart:
+Update rook/base/values.yaml and kustomization.yaml on each directory if necessary.
+
+Regenerate base resource yaml.
 
 ```console
-$ cd $GOPATH/src/github.com/rook
-$ git clone https://github.com/rook/rook
-$ cd rook
-$ ROOK_VERSION=X.Y.Z
-$ git checkout v$ROOK_VERSION
-$ ls $GOPATH/src/github.com/cybozu-go/neco-apps/rook/base/upstream/chart
-$ rm -rf $GOPATH/src/github.com/cybozu-go/neco-apps/rook/base/upstream/chart
-$ cp -a cluster/charts/rook-ceph $GOPATH/src/github.com/cybozu-go/neco-apps/rook/base/upstream/chart
-```
-
-Download Helm used in Rook. Follow `HELM_VERSION` in the upstream configuration.
-
-```console
-# Check the Helm version, in rook repo directory downloaded above
-$ cat $GOPATH/src/github.com/rook/rook/build/makelib/helm.mk | grep ^HELM_VERSION
-$ HELM_VERSION=X.Y.Z
-$ mkdir -p $GOPATH/src/github.com/cybozu-go/neco-apps/rook/bin
-$ curl -sSLf https://get.helm.sh/helm-v$HELM_VERSION-linux-amd64.tar.gz | tar -C $GOPATH/src/github.com/cybozu-go/neco-apps/rook/bin linux-amd64/helm --strip-components 1 -xzf -
-```
-
-Update rook/base/values*.yaml if necessary.
-
-Regenerate base resource yaml.  
-Note: Check the number of yaml files.
-
-```console
-$ cd $GOPATH/src/github.com/cybozu-go/neco-apps/rook/base
-$ for i in clusterrole resources; do
-    ../bin/helm template upstream/chart -f values.yaml -s templates/${i}.yaml > common/${i}.yaml
-  done
-$ for t in hdd ssd object-store; do
-    for i in deployment role rolebinding serviceaccount; do
-      ../bin/helm template upstream/chart -f values.yaml -f values-${t}.yaml -s templates/${i}.yaml --namespace ceph-${t} > ceph-${t}/${i}.yaml
-    done
-    ../bin/helm template upstream/chart -f values.yaml -f values-${t}.yaml -s templates/clusterrolebinding.yaml --namespace ceph-${t} > ceph-${t}/clusterrolebinding/clusterrolebinding.yaml
-  done
+$ rm -rf rook/base/*/charts
+$ make update-rook APP_VERSION=1.8.2.0 CHART_VERSION=1.8.2
 ```
 
 Then check the diffs by `git diff`.
-
-Update manifest for Ceph toolbox.
-Assume `rook/rook` is updated in the above procedure.
-
-```console
-$ cd $GOPATH/src/github.com/cybozu-go/neco-apps/
-$ cp $GOPATH/src/github.com/rook/rook/cluster/examples/kubernetes/ceph/toolbox.yaml rook/base/upstream/
-```
-
-Update rook/**/kustomization.yaml if necessary.
 
 ### ceph
 

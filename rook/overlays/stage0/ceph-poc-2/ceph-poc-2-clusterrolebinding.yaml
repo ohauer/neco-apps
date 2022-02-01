@@ -1,0 +1,130 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cephfs-csi-nodeplugin-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cephfs-csi-nodeplugin
+subjects:
+- kind: ServiceAccount
+  name: rook-csi-cephfs-plugin-sa
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cephfs-csi-provisioner-role-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cephfs-external-provisioner-runner
+subjects:
+- kind: ServiceAccount
+  name: rook-csi-cephfs-provisioner-sa
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rbd-csi-nodeplugin-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rbd-csi-nodeplugin
+subjects:
+- kind: ServiceAccount
+  name: rook-csi-rbd-plugin-sa
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rbd-csi-provisioner-role-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rbd-external-provisioner-runner
+subjects:
+- kind: ServiceAccount
+  name: rook-csi-rbd-provisioner-sa
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-global-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-global
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-system
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rook-ceph-mgr-cluster-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-mgr-cluster
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-mgr
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rook-ceph-object-bucket-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-object-bucket
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-system
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: rook-ceph-osd-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-osd
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-osd
+  namespace: ceph-poc-2
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-system-poc-2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-system
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-system
+  namespace: ceph-poc-2

@@ -69,6 +69,7 @@ spec:
     ssl: true
   priorityClassNames:
     osd: node-bound
+    crashcollector: rook-node-bound-log
   # disruptionManagement:
   #   managePodBudgets: false
   #   osdMaintenanceTimeout: 60 # rebooting worker nodes takes about 60 minutes.
@@ -82,11 +83,11 @@ spec:
       # However, this is not a problem since most node reboots are completed within 30 minutes.
       mon:
         timeout: "1800s"
-    livenessProbe:
-      # extend livenessProve.initialDelaySeconds for osds since an osd's initialize process is so slow.
+    startupProbe:
+      # extend startupProve.failureThreshold for osds since an osd's initialize process is so slow.
       osd:
         probe:
-          initialDelaySeconds: 600
+          failureThreshold: 60
   storage:
     storageClassDeviceSets:
       - name: set1

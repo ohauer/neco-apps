@@ -1,0 +1,790 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    pod-security.cybozu.com/policy: privileged
+    team: csa
+  name: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-cmd-reporter
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-mgr
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-osd
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rook-ceph-purge-osd
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-system
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rook-csi-cephfs-plugin-sa
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rook-csi-cephfs-provisioner-sa
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rook-csi-rbd-plugin-sa
+  namespace: ceph-hdd
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: rook-csi-rbd-provisioner-sa
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cephfs-external-provisioner-cfg
+  namespace: ceph-hdd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - watch
+  - list
+  - delete
+  - update
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - create
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - watch
+  - list
+  - delete
+  - update
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rbd-external-provisioner-cfg
+  namespace: ceph-hdd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  verbs:
+  - get
+  - watch
+  - list
+  - delete
+  - update
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - watch
+  - list
+  - delete
+  - update
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rook-ceph-cmd-reporter
+  namespace: ceph-hdd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rook-ceph-mgr
+  namespace: ceph-hdd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - pods/log
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+- apiGroups:
+  - ceph.rook.io
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - deployments/scale
+  - deployments
+  verbs:
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rook-ceph-osd
+  namespace: ceph-hdd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+- apiGroups:
+  - ceph.rook.io
+  resources:
+  - cephclusters
+  - cephclusters/finalizers
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: rook-ceph-purge-osd
+  namespace: ceph-hdd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - get
+  - delete
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - list
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - get
+  - update
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-system
+  namespace: ceph-hdd
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - configmaps
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+  - patch
+  - create
+  - update
+  - delete
+- apiGroups:
+  - apps
+  - extensions
+  resources:
+  - daemonsets
+  - statefulsets
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  verbs:
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cephfs-csi-provisioner-role-cfg
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cephfs-external-provisioner-cfg
+subjects:
+- kind: ServiceAccount
+  name: rook-csi-cephfs-provisioner-sa
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rbd-csi-provisioner-role-cfg
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rbd-external-provisioner-cfg
+subjects:
+- kind: ServiceAccount
+  name: rook-csi-rbd-provisioner-sa
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rook-ceph-cluster-mgmt
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-cluster-mgmt
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-system
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rook-ceph-cmd-reporter
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-cmd-reporter
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-cmd-reporter
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rook-ceph-mgr
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-mgr
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-mgr
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rook-ceph-mgr-system
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: rook-ceph-mgr-system
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-mgr
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rook-ceph-osd
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-osd
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-osd
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: rook-ceph-purge-osd
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-purge-osd
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-purge-osd
+  namespace: ceph-hdd
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-system
+  namespace: ceph-hdd
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: rook-ceph-system
+subjects:
+- kind: ServiceAccount
+  name: rook-ceph-system
+  namespace: ceph-hdd
+---
+apiVersion: v1
+data:
+  CSI_CEPHFS_FSGROUPPOLICY: None
+  CSI_ENABLE_CEPHFS_SNAPSHOTTER: "false"
+  CSI_ENABLE_OMAP_GENERATOR: "false"
+  CSI_ENABLE_RBD_SNAPSHOTTER: "true"
+  CSI_ENABLE_VOLUME_REPLICATION: "false"
+  CSI_FORCE_CEPHFS_KERNEL_CLIENT: "true"
+  CSI_PLUGIN_ENABLE_SELINUX_HOST_MOUNT: "false"
+  CSI_PROVISIONER_REPLICAS: "2"
+  CSI_RBD_FSGROUPPOLICY: ReadWriteOnceWithFSType
+  CSI_RBD_GRPC_METRICS_PORT: "19090"
+  CSI_RBD_LIVENESS_METRICS_PORT: "19080"
+  ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS: "300"
+  ROOK_CSI_ENABLE_CEPHFS: "false"
+  ROOK_CSI_ENABLE_GRPC_METRICS: "false"
+  ROOK_CSI_ENABLE_RBD: "true"
+  ROOK_LOG_LEVEL: INFO
+  ROOK_OBC_WATCH_OPERATOR_NAMESPACE: "true"
+kind: ConfigMap
+metadata:
+  name: rook-ceph-operator-config
+  namespace: ceph-hdd
+---
+apiVersion: v1
+data:
+  config: |
+    [mgr]
+    ; Suppress the folowing warning.
+    ;
+    ; ```
+    ; health: HEALTH_WARN
+    ;        1 pools have many more objects per pg than average
+    ; ```
+    mon_pg_warn_max_object_skew = 0
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  name: rook-config-override
+  namespace: ceph-hdd
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/created-by: helm
+    app.kubernetes.io/managed-by: helm
+    app.kubernetes.io/part-of: rook-ceph-operator
+    helm.sh/chart: rook-ceph-v1.8.3
+    operator: rook
+    storage-backend: ceph
+  name: rook-ceph-operator
+  namespace: ceph-hdd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rook-ceph-operator
+  template:
+    metadata:
+      labels:
+        app: rook-ceph-operator
+        helm.sh/chart: rook-ceph-v1.8.3
+    spec:
+      containers:
+      - args:
+        - ceph
+        - operator
+        env:
+        - name: ROOK_CURRENT_NAMESPACE_ONLY
+          value: "true"
+        - name: ROOK_HOSTPATH_REQUIRES_PRIVILEGED
+          value: "false"
+        - name: ROOK_ENABLE_SELINUX_RELABELING
+          value: "true"
+        - name: ROOK_DISABLE_DEVICE_HOTPLUG
+          value: "false"
+        - name: ROOK_ENABLE_DISCOVERY_DAEMON
+          value: "false"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: quay.io/cybozu/rook:1.8.3.0
+        imagePullPolicy: IfNotPresent
+        name: rook-ceph-operator
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        securityContext:
+          runAsGroup: 2016
+          runAsNonRoot: true
+          runAsUser: 2016
+        volumeMounts:
+        - mountPath: /var/lib/rook
+          name: rook-config
+        - mountPath: /etc/ceph
+          name: default-config-dir
+        - mountPath: /etc/webhook
+          name: webhook-cert
+      serviceAccountName: rook-ceph-system
+      volumes:
+      - emptyDir: {}
+        name: rook-config
+      - emptyDir: {}
+        name: default-config-dir
+      - emptyDir: {}
+        name: webhook-cert
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  labels:
+    app: rook-ceph-tools
+  name: rook-ceph-tools
+  namespace: ceph-hdd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rook-ceph-tools
+  template:
+    metadata:
+      labels:
+        app: rook-ceph-tools
+    spec:
+      containers:
+      - args:
+        - -m
+        - -c
+        - /usr/local/bin/toolbox.sh
+        command:
+        - /bin/bash
+        env:
+        - name: ROOK_CEPH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: ceph-username
+              name: rook-ceph-mon
+        - name: ROOK_CEPH_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: ceph-secret
+              name: rook-ceph-mon
+        image: quay.io/cybozu/rook:1.8.3.0
+        imagePullPolicy: IfNotPresent
+        name: rook-ceph-tools
+        securityContext:
+          runAsGroup: 2016
+          runAsNonRoot: true
+          runAsUser: 2016
+        tty: true
+        volumeMounts:
+        - mountPath: /etc/ceph
+          name: ceph-config
+        - mountPath: /etc/rook
+          name: mon-endpoint-volume
+      dnsPolicy: ClusterFirstWithHostNet
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 5
+      volumes:
+      - configMap:
+          items:
+          - key: data
+            path: mon-endpoints
+          name: rook-ceph-mon-endpoints
+        name: mon-endpoint-volume
+      - emptyDir: {}
+        name: ceph-config
+---
+apiVersion: ceph.rook.io/v1
+kind: CephCluster
+metadata:
+  name: ceph-hdd
+  namespace: ceph-hdd
+spec:
+  cephVersion:
+    image: quay.io/cybozu/ceph:16.2.6.0
+  dashboard:
+    ssl: true
+  dataDirHostPath: /var/lib/rook
+  healthCheck:
+    daemonHealth:
+      mon:
+        timeout: 1800s
+    startupProbe:
+      osd:
+        probe:
+          failureThreshold: 60
+  mgr:
+    count: 2
+    modules:
+    - enabled: true
+      name: pg_autoscaler
+  mon:
+    count: 3
+    volumeClaimTemplate:
+      spec:
+        resources:
+          requests:
+            storage: 10Gi
+        storageClassName: topolvm-provisioner
+  placement:
+    mgr:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app: rook-ceph-mgr
+          topologyKey: topology.kubernetes.io/zone
+    mon:
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app: rook-ceph-mon
+          topologyKey: topology.kubernetes.io/zone
+  priorityClassNames:
+    crashcollector: rook-node-bound-log
+    osd: node-bound
+  resources:
+    crashcollector:
+      requests:
+        cpu: 500m
+        memory: 60Mi
+    mgr:
+      requests:
+        cpu: 500m
+        memory: 512Mi
+    mon:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+    osd:
+      requests:
+        cpu: 500m
+        memory: 2Gi
+    prepareosd:
+      requests:
+        cpu: 500m
+        memory: 50Mi
+  storage:
+    storageClassDeviceSets:
+    - count: 18
+      name: set1
+      placement:
+        tolerations:
+        - key: cke.cybozu.com/role
+          operator: Equal
+          value: storage
+        topologySpreadConstraints:
+        - labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - rook-ceph-osd
+              - rook-ceph-osd-prepare
+          maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
+        - labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - rook-ceph-osd
+              - rook-ceph-osd-prepare
+          maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+      tuneDeviceClass: true
+      volumeClaimTemplates:
+      - metadata:
+          name: data
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: 5Gi
+          storageClassName: local-storage
+          volumeMode: Block

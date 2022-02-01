@@ -3,25 +3,14 @@ kind: Kustomization
 helmCharts:
 - includeCRDs: true
   name: rook-ceph
-  namespace: ceph-ssd
+  namespace: ceph-hdd
   releaseName: rook-release
   repo: https://charts.rook.io/release
   valuesFile: values.yaml
-  valuesInline:
-    csi:
-      rbdGrpcMetricsPort: 29090
-      rbdLivenessMetricsPort: 29080
   version: v1.8.3
-resources:
-  - ../toolbox
-  - cephblockpool.yaml
-  - cluster.yaml
-  - configmap.yaml
-  - namespace.yaml
-  # - pool-device-health-metrics.yaml
-namespace: ceph-ssd
+nameSuffix: "-hdd"
 patches: # Strategic Merge Patch
-  # Delete manifests of ClusterRole, ClusterRoleBinding and CustomResourceDefinition
+  # Delete manifests without ClusterRoleBinding
 - patch: |
     $patch: delete
     kind: dummy
@@ -35,7 +24,7 @@ patches: # Strategic Merge Patch
     metadata:
       name: dummy
   target:
-    kind: ClusterRoleBinding
+    kind: ConfigMap
 - patch: |
     $patch: delete
     kind: dummy
@@ -43,3 +32,31 @@ patches: # Strategic Merge Patch
       name: dummy
   target:
     kind: CustomResourceDefinition
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: Deployment
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: Role
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: RoleBinding
+- patch: |
+    $patch: delete
+    kind: dummy
+    metadata:
+      name: dummy
+  target:
+    kind: ServiceAccount
