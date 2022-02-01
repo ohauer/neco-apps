@@ -37,6 +37,7 @@ How to maintain neco-apps
   - [ceph](#ceph)
 - [s3gw](#s3gw)
 - [sealed-secrets](#sealed-secrets)
+- [tenet](#tenet)
 - [teleport](#teleport)
 - [topolvm](#topolvm)
 
@@ -507,6 +508,17 @@ Update the image tag as follows.
 
 ```console
 $ make update-sealed-secrets
+$ git diff
+```
+
+## tenet
+
+Check [releases](https://github.com/cybozu-go/tenet/releases) for changes.
+
+Update the manifest as follows:
+
+```console
+$ make update-tenet
 $ git diff
 ```
 

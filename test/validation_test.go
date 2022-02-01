@@ -126,6 +126,7 @@ func testApplicationResources(t *testing.T) {
 		"meows":                  "7",
 		"team-management":        "7",
 		"network-policy":         "8",
+		"tenet":                  "9",
 	}
 	tenantSyncWave := "9"
 

@@ -77,6 +77,8 @@ resources:
   - rules/session-log-scrape.yaml
   - rules/teleport-alertrule.yaml
   - rules/teleport-scrape.yaml
+  - rules/tenet-alertrule.yaml
+  - rules/tenet-scrape.yaml
   - rules/topolvm-scrape.yaml
   - rules/vault-alertrule.yaml
   - rules/vault-scrape.yaml

@@ -1,0 +1,16 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: tenet
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [tenet-system]
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: controller
+  podMetricsEndpoints:
+  - port: metrics
+    relabelConfigs:
+      - replacement: tenet
+        targetLabel: job

@@ -92,6 +92,7 @@ func prepareTest() {
 	Context("preparing pod-security-admission", preparePodSecurityAdmission)
 	Context("preparing accurate", prepareAccurate)
 	Context("preparing meows", prepareMeows)
+	Context("preparing tenet", prepareTenet)
 	Context("preparing network-policy", prepareNetworkPolicy) // this must be the last preparation.
 }
 
@@ -127,4 +128,5 @@ func runTest() {
 	Context("meows", testMeows)
 	Context("session-log", testSessionLog)
 	Context("accurate", testAccurate)
+	Context("tenet", testTenet)
 }

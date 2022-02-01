@@ -55,7 +55,8 @@ spec:
             # controller.config.annotationKeys -- Annotations to be propagated to sub-namespaces.
             # It is also possible to specify a glob pattern that can be interpreted by Go's "path.Match" func.
             ## https://pkg.go.dev/path#Match
-            annotationKeys: []
+            annotationKeys:
+            - tenet.cybozu.io/network-policy-template
             # An example to propagate an annotation for MetalLB
             # https://metallb.universe.tf/usage/#requesting-specific-ips
             # - metallb.universe.tf/address-pool

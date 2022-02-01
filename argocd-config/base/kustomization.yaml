@@ -31,5 +31,6 @@ resources:
 - secrets.yaml
 - session-log.yaml
 - team-management.yaml
+- tenet.yaml
 - teleport.yaml
 - topolvm.yaml

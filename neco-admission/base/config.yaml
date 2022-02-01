@@ -32,6 +32,9 @@ ArgoCDApplicationValidator:
       repository: https://cybozu-go.github.io/moco
     - projects:
         - default
+      repository: https://cybozu-go.github.io/tenet
+    - projects:
+        - default
       repository: https://github.com/cybozu-go/neco-apps.git
     - projects:
         - csa

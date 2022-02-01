@@ -164,6 +164,10 @@ var viewableClusterResources = []string{
 	"addressblocks.coil.cybozu.com",
 	"addresspools.coil.cybozu.com",
 
+	// Tenet
+	"networkpolicyadmissionrules.tenet.cybozu.io",
+	"networkpolicytemplates.tenet.cybozu.io",
+
 	// Other
 	"objectbuckets.objectbucket.io",
 }
