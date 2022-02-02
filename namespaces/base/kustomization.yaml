@@ -8,6 +8,7 @@ resources:
 - domestic-egress.yaml
 - elastic.yaml
 - external-dns.yaml
+- grafana-sandbox.yaml
 - ingress.yaml
 - internet-egress.yaml
 - kube-system.yaml

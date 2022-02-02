@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # This Job must be in monitoring NS in order to read password Secret
+  namespace: monitoring
+  name: grafana-sandbox-mysql-init
+spec:
+  backoffLimit: 100
+  completions: 1
+  template:
+    metadata:
+      labels:
+        app: grafana-sandbox-mysql-init
+    spec:
+      containers:
+      - name: initializer
+        image: quay.io/cybozu/mysql:8.0.27
+        command:
+        - /usr/bin/bash
+        - "-c"
+        - |
+          NAME=sandbox
+          mysql -h moco-grafana-mysql-primary -u moco-writable -p"${WRITABLE_PASSWORD}" -e "CREATE USER IF NOT EXISTS '${NAME}'@'%' IDENTIFIED BY '${NAME}'" &&
+          mysql -h moco-grafana-mysql-primary -u moco-writable -p"${WRITABLE_PASSWORD}" -e "CREATE DATABASE IF NOT EXISTS ${NAME}" &&
+          mysql -h moco-grafana-mysql-primary -u moco-writable -p"${WRITABLE_PASSWORD}" -e "GRANT ALL ON ${NAME}.* TO '${NAME}'@'%'"
+        env:
+        - name: WRITABLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moco-grafana-mysql
+              key: WRITABLE_PASSWORD
+      securityContext:
+        runAsUser: 10000
+      restartPolicy: OnFailure
