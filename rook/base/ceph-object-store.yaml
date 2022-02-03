@@ -594,7 +594,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: quay.io/cybozu/rook:1.8.3.0
+        image: quay.io/cybozu/rook:1.8.3.1
         imagePullPolicy: IfNotPresent
         name: rook-ceph-operator
         resources:
@@ -658,7 +658,7 @@ spec:
             secretKeyRef:
               key: ceph-secret
               name: rook-ceph-mon
-        image: quay.io/cybozu/rook:1.8.3.0
+        image: quay.io/cybozu/rook:1.8.3.1
         imagePullPolicy: IfNotPresent
         name: rook-ceph-tools
         securityContext:
@@ -688,13 +688,30 @@ spec:
         name: ceph-config
 ---
 apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+  name: device-health-metrics
+  namespace: ceph-object-store
+spec:
+  failureDomain: zone
+  mirroring: {}
+  name: device_health_metrics
+  parameters:
+    compression_mode: none
+  replicated:
+    requireSafeReplicaSize: true
+    size: 3
+---
+apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: ceph-object-store
   namespace: ceph-object-store
 spec:
   cephVersion:
-    image: quay.io/cybozu/ceph:16.2.6.0
+    image: quay.io/cybozu/ceph:16.2.7.0
   dashboard:
     ssl: true
   dataDirHostPath: /var/lib/rook
