@@ -5,6 +5,10 @@ metadata:
   name: cadvisor
   namespace: cadvisor
 spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
   template:
     spec:
       containers:
