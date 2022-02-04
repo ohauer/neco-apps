@@ -18,7 +18,7 @@ resources:
   - cluster.yaml
   - configmap.yaml
   - namespace.yaml
-  # - pool-device-health-metrics.yaml
+  - pool-device-health-metrics.yaml
 namespace: ceph-object-store
 patches: # Strategic Merge Patch
   # Delete manifests of ClusterRole, ClusterRoleBinding and CustomResourceDefinition
