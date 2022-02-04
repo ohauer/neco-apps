@@ -26,6 +26,8 @@ spec:
           - hubble-relay.kube-system.svc:443
           - --tls
           - --tls-allow-insecure
+          - -o
+          - jsonpb
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
