@@ -1,3 +1,5 @@
+# The original values.yaml file is located at rook/base/.
+# Please edit it and do not edit others.
 currentNamespaceOnly: true
 pspEnable: false
 csi:
