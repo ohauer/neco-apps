@@ -77,6 +77,13 @@ data:
         return hs
   resource.compareoptions: |
     ignoreAggregatedRoles: true
+  resource.exclusions: |
+    - apiGroups:
+      - cilium.io
+      kinds:
+      - CiliumIdentity
+      clusters:
+      - "*"
 ---
 apiVersion: v1
 kind: ConfigMap
