@@ -5,7 +5,7 @@ resources:
   - rbac.yaml
   - service.yaml
 configMapGenerator:
-  - name: grafana
+  - name: grafana-config
     namespace: grafana-sandbox
     files:
       - config/grafana.ini

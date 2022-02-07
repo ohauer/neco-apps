@@ -62,7 +62,7 @@ spec:
         - name: config
           configMap:
             defaultMode: 420
-            name: grafana
+            name: grafana-config
         - name: datasources-provider
           configMap:
             name: grafana-datasources-provider
