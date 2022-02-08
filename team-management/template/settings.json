@@ -109,6 +109,11 @@
       "repo": "https://github.com/cybozu-private/kintone-apps.git",
       "team": "kintone-neco"
     },
+    "landsat-apps": {
+      "destinations": {},
+      "repo": "https://github.com/cybozu-private/landsat-apps",
+      "team": "landsat"
+    },
     "maneki-apps": {
       "destinations": {
         "osaka0": "release",
