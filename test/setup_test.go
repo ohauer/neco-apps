@@ -418,6 +418,16 @@ func applyAndWaitForApplications(commitID string) {
 	// note: do not delete this comment and By.
 	By("running pre-sync special process")
 
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2248
+	if doUpgrade {
+		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "dev-kintone")
+		if err == nil {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", "dev-kintone", "admission.cybozu.com/i-am-sure-to-delete=dev-kintone")
+			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
+		}
+	}
+
 	By("syncing argocd-config")
 	Eventually(func() error {
 		stdout, stderr, err := ExecAt(boot0, "cd", "./neco-apps",
