@@ -10,6 +10,7 @@ resources:
   - garoon-apps.yaml
   - hazama-apps.yaml
   - kintone-apps.yaml
+  - landsat-apps.yaml
   - maneki-apps.yaml
   - network-apps.yaml
   - slash-apps.yaml

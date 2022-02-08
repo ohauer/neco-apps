@@ -8,6 +8,7 @@ resources:
   - elasticsearch-apps.yaml
   - garoon-apps.yaml
   - hazama-apps.yaml
+  - landsat-apps.yaml
   - maneki-apps.yaml
   - network-apps.yaml
   - slash-apps.yaml
