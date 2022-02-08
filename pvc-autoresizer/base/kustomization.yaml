@@ -7,6 +7,6 @@ helmCharts:
   releaseName: pvc-autoresizer
   repo: https://topolvm.github.io/pvc-autoresizer
   valuesFile: values.yaml
-  version: 0.3.3
+  version: 0.3.4
 resources:
   - namespace.yaml
