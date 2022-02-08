@@ -110,7 +110,11 @@
       "team": "kintone-neco"
     },
     "landsat-apps": {
-      "destinations": {},
+      "destinations": {
+        "osaka0": "release",
+        "stage0": "main",
+        "tokyo0": "release"
+      },
       "repo": "https://github.com/cybozu-private/landsat-apps",
       "team": "landsat"
     },
