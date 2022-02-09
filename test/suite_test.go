@@ -56,6 +56,8 @@ var _ = Describe("Test applications", func() {
 		prepareTest()
 	case "run":
 		runTest()
+	case "alertcheck":
+		alertcheckTest()
 	}
 })
 
@@ -127,4 +129,8 @@ func runTest() {
 	Context("meows", testMeows)
 	Context("session-log", testSessionLog)
 	Context("accurate", testAccurate)
+}
+
+func alertcheckTest() {
+	Context("alertcheck", checkAlerts)
 }

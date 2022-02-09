@@ -768,3 +768,62 @@ func findTargets(job string, targets []promv1.ActiveTarget) []*promv1.ActiveTarg
 	}
 	return ret
 }
+
+func checkAlerts() {
+	It("check alerts", func() {
+		Eventually(func() error {
+			stdout := ExecSafeAt(boot0, "kubectl", "exec", "-n", "monitoring",
+				"deployment/vmalert-vmalert-largeset", "-c", "vmalert", "--",
+				"curl", "-s", "http://localhost:8080/api/v1/alerts")
+
+			type Alert struct {
+				Id          string            `json:"id"`
+				Name        string            `json:"name"`
+				Labels      map[string]string `json:"labels"`
+				Annotations map[string]string `json:"annotations"`
+			}
+			var result struct {
+				Data struct {
+					Alerts []Alert `json:"alerts"`
+				} `json:"data"`
+				Status string `json:"status"`
+			}
+			err := json.Unmarshal(stdout, &result)
+			if err != nil {
+				return err
+			}
+			if result.Status != "success" {
+				return fmt.Errorf("status not success")
+			}
+
+			alerts := []Alert{}
+			for _, a := range result.Data.Alerts {
+				switch a.Labels["alertname"] {
+				// CKE etcd is not backed up on gcp/placemat environment.
+				// (see cybozu-go/neco/debian/lib/systemd/system/backup-cke-etcd.service)
+				case "CKEEtcdBackupNotSucceeded":
+					continue
+				case "CKEEtcdBackupNotExecuted":
+					continue
+
+				// kube-storage-version-migrator migrates all resources on its first deployment.
+				// This migration takes much time and it is not a problem in itself.
+				case "KubeStorageVersionMigratorRunning":
+					continue
+				}
+
+				alerts = append(alerts, a)
+			}
+
+			if len(alerts) != 0 {
+				out, err := json.MarshalIndent(alerts, "", "  ")
+				if err != nil {
+					return err
+				}
+				return fmt.Errorf("alerts still exist: \n%s", string(out))
+			}
+
+			return nil
+		}, time.Minute*20 /* shorter timeout than normal */).Should(Succeed())
+	})
+}

@@ -83,11 +83,7 @@ dctest-upgrade: install.yaml
 		cp ghcr_dockerconfig.json /tmp/neco-apps/test || true && \
 		cp quay_dockerconfig.json /tmp/neco-apps/test || true && \
 		cp cybozu_private_repo_read_pat /tmp/neco-apps/test || true && \
-		if grep -q BOOTSTRAP /tmp/neco-apps/test/env.go; then \
-			$(MAKE) -C /tmp/neco-apps/test setup dctest BOOTSTRAP=1 COMMIT_ID=$(BASE_BRANCH); \
-		else \
-			$(MAKE) -C /tmp/neco-apps/test setup dctest SUITE=bootstrap COMMIT_ID=$(BASE_BRANCH); \
-		fi && \
+		$(MAKE) -C /tmp/neco-apps/test setup dctest SUITE=bootstrap COMMIT_ID=$(BASE_BRANCH); \
 		cp /tmp/neco-apps/test/argocd-password.txt ./; \
 	fi
 	PATH=$(BINDIR):$$PATH OVERLAY=$(OVERLAY) UPGRADE=1 SUITE=$(SUITE) ./test.sh
