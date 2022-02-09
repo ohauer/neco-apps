@@ -1,0 +1,8 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-storage-version-migrator
+  namespace: argocd
+spec:
+  source:
+    targetRevision: stage

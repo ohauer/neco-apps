@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: initializer
+  namespace: kube-storage-version-migrator
+spec:
+  template:
+    spec:
+      containers:
+      - name: initializer
+        image: quay.io/cybozu/storage-version-migration-initializer:0.0.5.1
+      restartPolicy: Never
+  backoffLimit: 4
