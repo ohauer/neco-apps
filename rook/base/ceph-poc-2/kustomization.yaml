@@ -13,8 +13,6 @@ helmCharts:
       rbdLivenessMetricsPort: 29082
   version: v1.8.3
 resources:
-  - ../toolbox
-  - cluster.yaml
   - configmap.yaml
   - namespace.yaml
 namespace: ceph-poc-2
