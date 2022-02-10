@@ -91,7 +91,7 @@ spec:
   storage:
     storageClassDeviceSets:
       - name: hdd
-        count: 18
+        count: 90
         tuneDeviceClass: true
         volumeClaimTemplates:
           - metadata:
