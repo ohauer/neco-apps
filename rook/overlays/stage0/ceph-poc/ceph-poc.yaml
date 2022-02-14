@@ -827,7 +827,7 @@ spec:
         memory: 50Mi
   storage:
     storageClassDeviceSets:
-    - count: 18
+    - count: 90
       name: hdd
       placement:
         tolerations:
