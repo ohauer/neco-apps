@@ -19,5 +19,6 @@ resources:
 - prometheus-adapter.yaml
 - registry.yaml
 - teleport.yaml
+- tenet.yaml
 commonLabels:
   team: neco

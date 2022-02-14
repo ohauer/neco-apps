@@ -79,6 +79,12 @@ function(settings) [{
             'default',
           ],
         },
+        {
+          repository: 'https://cybozu-go.github.io/tenet',
+          projects: [
+            'default',
+          ],
+        },
       ],
       function(x) if std.objectHas(x, 'repositoryPrefix') then 'A' + x.repositoryPrefix else 'B' + x.repository
     ),

@@ -1,0 +1,5 @@
+apiVersion: accurate.cybozu.com/v1
+kind: SubNamespace
+metadata:
+  namespace: dev-tenet-tenant-root
+  name: dev-tenet-tenant-child

@@ -1,0 +1,30 @@
+apiVersion: tenet.cybozu.io/v1beta1
+kind: NetworkPolicyTemplate
+metadata:
+    name: allow-intra-namespace-egress
+spec:
+    policyTemplate: |
+      apiVersion: cilium.io/v2
+      kind: CiliumNetworkPolicy
+      spec:
+        endpointSelector: {}
+        egress:
+        - toEndpoints:
+          - matchLabels:
+              "k8s:io.kubernetes.pod.namespace": {{.Name}}
+---
+apiVersion: tenet.cybozu.io/v1beta1
+kind: NetworkPolicyAdmissionRule
+metadata:
+    name: bmc-deny
+spec:
+    namespaceSelector:
+      excludeLabels:
+        team: neco
+    forbiddenIPRanges:
+      - cidr: 10.72.16.0/20
+        type: egress
+      - cidr: 10.76.16.0/20
+        type: egress
+      - cidr: 10.78.16.0/20
+        type: egress

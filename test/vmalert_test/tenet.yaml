@@ -1,0 +1,17 @@
+rule_files:
+  - ../../monitoring/base/victoriametrics/rules/converted/tenet-alertrule.yaml
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'up{job="tenet"}'
+        values: '0+0x15'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: TenetDown
+        exp_alerts:
+          - exp_labels:
+              severity: error
+            exp_annotations:
+              runbook: TBD
+              summary: tenet controller is down.

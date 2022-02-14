@@ -274,6 +274,11 @@ update-sealed-secrets:
 		https://github.com/bitnami-labs/sealed-secrets/releases/download/$(call upstream-tag,$(latest_tag))/controller.yaml
 	sed -i -E 's/newTag:.*$$/newTag: $(latest_tag)/' sealed-secrets/base/kustomization.yaml
 
+.PHONY: update-tenet
+update-tenet:
+	$(call get-latest-helm,tenet,https://cybozu-go.github.io/tenet)
+	yq eval -i '.spec.source.targetRevision = "$(latest_helm)"' argocd-config/base/tenet.yaml
+
 .PHONY: update-topolvm
 update-topolvm:
 	sed -i -E \
