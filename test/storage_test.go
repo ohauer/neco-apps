@@ -18,7 +18,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-var nss = []string{"ceph-hdd", "ceph-ssd", "ceph-object-store"}
+var nss = []string{"ceph-ssd", "ceph-object-store"}
 
 //go:embed testdata/storage-load.yaml
 var storageLoadYAML []byte

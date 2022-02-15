@@ -113,7 +113,7 @@ func testAdmission() {
 		Expect(err).Should(HaveOccurred())
 
 		By("trying to delete a CephCluster")
-		_, _, err = ExecAt(boot0, "kubectl", "delete", "-n", "ceph-hdd", "cephclusters.ceph.rook.io", "ceph-hdd")
+		_, _, err = ExecAt(boot0, "kubectl", "delete", "-n", "ceph-object-store", "cephclusters.ceph.rook.io", "ceph-object-store")
 		Expect(err).Should(HaveOccurred())
 	})
 
