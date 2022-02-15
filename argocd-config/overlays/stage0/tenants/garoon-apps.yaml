@@ -15,7 +15,7 @@ spec:
   project: tenant-app-of-apps
   source:
     path: argocd-config/overlays/stage0
-    repoURL: https://github.com/garoon-private/garoon-apps.git
+    repoURL: https://github.com/cybozu-private/garoon-apps.git
     targetRevision: main
   syncPolicy:
     automated:
