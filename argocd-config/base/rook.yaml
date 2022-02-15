@@ -16,7 +16,7 @@ spec:
     path: rook/base
   destination:
     server: https://kubernetes.default.svc
-    namespace: ceph-hdd
+    namespace: ceph-object-store
   # Disable auto-sync to prevent unexpected revert after manual operations.
   syncPolicy:
     # In accordance with `kubectl`'s behavior, change resource prune deletion

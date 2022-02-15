@@ -429,11 +429,11 @@ func applyAndWaitForApplications(commitID string) {
 	}
 
 	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2255
+	// https://github.com/cybozu-go/neco-apps/pull/2267
 	if doUpgrade {
-		_, _, err := ExecAt(boot0, "kubectl", "get", "cephclusters", "-n", "ceph-hdd", "ceph-hdd")
+		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "ceph-hdd")
 		if err == nil {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "cephclusters", "-n", "ceph-hdd", "ceph-hdd", "admission.cybozu.com/i-am-sure-to-delete=ceph-hdd")
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", "ceph-hdd", "admission.cybozu.com/i-am-sure-to-delete=ceph-hdd")
 			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
 		}
 	}

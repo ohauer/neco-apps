@@ -1269,8 +1269,8 @@ spec:
                     "allValue": null,
                     "current": {
                         "selected": false,
-                        "text": "ceph-hdd",
-                        "value": "ceph-hdd"
+                        "text": "ceph-object-store",
+                        "value": "ceph-object-store"
                     },
                     "datasource": null,
                     "definition": "label_values(ceph_osd_up, namespace)",
