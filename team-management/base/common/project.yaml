@@ -81,6 +81,12 @@ spec:
         - p, proj:tenant-app-of-apps:network-apps, applications, get, tenant-app-of-apps/network-apps, allow
         - p, proj:tenant-app-of-apps:network-apps, applications, sync, tenant-app-of-apps/network-apps, allow
     - groups:
+        - cybozu-private:maneki
+      name: sgre-apps
+      policies:
+        - p, proj:tenant-app-of-apps:sgre-apps, applications, get, tenant-app-of-apps/sgre-apps, allow
+        - p, proj:tenant-app-of-apps:sgre-apps, applications, sync, tenant-app-of-apps/sgre-apps, allow
+    - groups:
         - cybozu-private:cydec
       name: slash-apps
       policies:
