@@ -9,6 +9,10 @@ spec:
       operator: NotIn
       values:
       - network-nat
+    - key: k8s.io.cilium.k8s.namespace.labels.team
+      operator: In
+      values:
+      - neco
   ingress:
   - fromEntities:
     - cluster
