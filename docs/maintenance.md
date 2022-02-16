@@ -145,6 +145,7 @@ $ git diff kube-metrics-adapter
 ## kube-storage-version-migrator
 
 1. Check the [release page](https://github.com/kubernetes-sigs/kube-storage-version-migrator/releases) for changes.
+   - Note that kube-storage-version-migrator might not be GA. We are using pre-release version.
 2. Run the following commands to update the manifests and to check the diff.
    ```console
    $ make update-kube-storage-version-migrator
