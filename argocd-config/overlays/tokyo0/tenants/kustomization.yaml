@@ -11,5 +11,6 @@ resources:
   - landsat-apps.yaml
   - maneki-apps.yaml
   - network-apps.yaml
+  - sgre-apps.yaml
   - slash-apps.yaml
   - tenant-apps.yaml
