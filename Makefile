@@ -109,6 +109,12 @@ update-heartbeat:
 	$(call get-latest-tag,heartbeat)
 	sed -i -E '/name:.*heartbeat$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
 
+.PHONY: update-hubble
+update-hubble:
+	sed -i -E \
+		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
+		hubble/base/kustomization.yaml
+
 .PHONY: update-kube-metrics-adapter
 update-kube-metrics-adapter:
 	$(call get-latest-tag,kube-metrics-adapter)

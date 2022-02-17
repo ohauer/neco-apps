@@ -9,6 +9,7 @@ How to maintain neco-apps
 - [customer-egress (Squid and unbound)](#customer-egress-squid-and-unbound)
 - [elastic (ECK)](#elastic-eck)
 - [external-dns](#external-dns)
+- [hubble](#hubble)
 - [kube-metrics-adapter](#kube-metrics-adapter)
 - [kube-storage-version-migrator](#kube-storage-version-migrator)
 - [ingress (Contour & Envoy)](#ingress-contour--envoy)
@@ -127,6 +128,17 @@ Update the manifests as follows:
 
 ```console
 $ make update-external-dns
+$ git diff
+```
+
+## hubble
+
+Check [releases](https://github.com/cilium/cilium/releases).
+
+Update the manifest as follows:
+
+```console
+$ make update-hubble CHART_VERSION=1.11.0
 $ git diff
 ```
 
