@@ -3,4 +3,3 @@ kind: Kustomization
 namespace: sandbox
 resources:
   - ../gcp
-  - grafana/httpproxy.yaml
