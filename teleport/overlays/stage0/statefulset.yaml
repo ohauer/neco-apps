@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: teleport-auth
+  namespace: teleport
+spec:
+  template:
+    spec:
+      containers:
+      - name: teleport-auth
+        volumeMounts:
+        - mountPath: /var/lib/teleport
+          name: teleport-data
+  volumeClaimTemplates:
+  - metadata:
+      name: teleport-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: ceph-ssd-block
