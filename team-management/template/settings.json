@@ -218,6 +218,17 @@
         "development": "true"
       }
     },
+    "izumo": {
+      "dev-team-izumo": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "development": "true"
+      },
+      "team-izumo": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root"
+      }
+    },
     "kintone-neco": {
       "dev-team-kintone": {
         "accurate.cybozu.com/template": "init-template",

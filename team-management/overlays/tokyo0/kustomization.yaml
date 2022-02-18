@@ -6,6 +6,7 @@ patchesStrategicMerge:
   - dev-dbre.yaml
   - dev-ept.yaml
   - dev-garoon.yaml
+  - dev-team-izumo.yaml
   - dev-team-kintone.yaml
   - dev-team-landsat.yaml
   - dev-maneki.yaml

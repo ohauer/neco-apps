@@ -98,6 +98,7 @@ spec:
         - cybozu-private:dbre
         - cybozu-private:ept
         - cybozu-private:garoon
+        - cybozu-private:izumo
         - cybozu-private:kintone-neco
         - cybozu-private:landsat
         - cybozu-private:maneki
@@ -145,6 +146,7 @@ spec:
         - cybozu-private:dbre
         - cybozu-private:ept
         - cybozu-private:garoon
+        - cybozu-private:izumo
         - cybozu-private:kintone-neco
         - cybozu-private:landsat
         - cybozu-private:maneki

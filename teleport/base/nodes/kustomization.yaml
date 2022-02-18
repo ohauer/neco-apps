@@ -11,6 +11,7 @@ resources:
   - dbre.yaml
   - ept.yaml
   - garoon.yaml
+  - izumo.yaml
   - kintone-neco.yaml
   - landsat.yaml
   - maneki.yaml
