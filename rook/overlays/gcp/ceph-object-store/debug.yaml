@@ -14,5 +14,6 @@ data:
     ; ```
     mon_pg_warn_max_object_skew = 0
     [client]
+    rgw_dynamic_resharding = false
     rgw enable ops log = true
     debug rgw = 20/20
