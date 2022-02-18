@@ -133,6 +133,16 @@ update-kube-state-metrics:
 	rm -rf /tmp/kube-state-metrics
 	sed -i -E '/newName:.*kube-state-metrics$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
 
+.PHONY: update-kube-storage-version-migrator
+update-kube-storage-version-migrator:
+	$(call get-latest-tag,storage-version-migration-migrator)
+	rm -rf /tmp/kube-storage-version-migrator
+	cd /tmp; git clone --depth 1 -b $(call upstream-tag,$(latest_tag)) https://github.com/kubernetes-sigs/kube-storage-version-migrator
+	$(MAKE) -C /tmp/kube-storage-version-migrator local-manifests REGISTRY=quay.io/cybozu NAMESPACE=kube-storage-version-migrator VERSION=$(latest_tag)
+	rm -f kube-storage-version-migrator/base/upstream/*
+	cp /tmp/kube-storage-version-migrator/manifests.local/*.yaml kube-storage-version-migrator/base/upstream/
+	rm -rf /tmp/kube-storage-version-migrator
+
 .PHONY: update-local-pv-provisioner
 update-local-pv-provisioner:
 	$(call get-latest-tag,local-pv-provisioner)

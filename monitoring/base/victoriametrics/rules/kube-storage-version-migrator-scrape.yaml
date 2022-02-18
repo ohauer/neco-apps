@@ -1,0 +1,27 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: kube-storage-version-migrator-migrator
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [kube-storage-version-migrator]
+  selector:
+    matchLabels:
+      app: migrator
+  podMetricsEndpoints:
+  - relabelConfigs:
+      - replacement: kube-storage-version-migrator-migrator
+        targetLabel: job
+      - sourceLabels: [__meta_kubernetes_pod_container_name]
+        regex: migrator
+        action: keep
+      - sourceLabels: [__address__]
+        action: replace
+        regex: ([^:]+)(?::\d+)?
+        replacement: ${1}:2112
+        targetLabel: __address__
+      - sourceLabels: [__address__]
+        targetLabel: instance
+---
+# trigger Pod does not expose its metrics.

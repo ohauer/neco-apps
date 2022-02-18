@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-storage-version-migrator
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/manifest-generate-paths: ..
+    argocd.argoproj.io/sync-wave: "6"
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/cybozu-go/neco-apps.git
+    targetRevision: release
+    path: kube-storage-version-migrator/base
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-storage-version-migrator
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -184,6 +184,10 @@ var prohibitedClusterResources = []string{
 	"ippools.crd.projectcalico.org",
 	"kubecontrollersconfigurations.crd.projectcalico.org",
 
+	// kube-storage-version-migrator
+	"storagestates.migration.k8s.io",
+	"storageversionmigrations.migration.k8s.io",
+
 	// VictoriaMetrics operator
 	"vmauths.operator.victoriametrics.com",
 	"vmclusters.operator.victoriametrics.com",

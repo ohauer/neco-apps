@@ -10,6 +10,7 @@ How to maintain neco-apps
 - [elastic (ECK)](#elastic-eck)
 - [external-dns](#external-dns)
 - [kube-metrics-adapter](#kube-metrics-adapter)
+- [kube-storage-version-migrator](#kube-storage-version-migrator)
 - [ingress (Contour & Envoy)](#ingress-contour--envoy)
 - [local-pv-provisioner](#local-pv-provisioner)
 - [logging](#logging)
@@ -140,6 +141,16 @@ $ make setup   # install/updaet Helm; if a newer Helm is required, update HELM_V
 $ make update-kube-metrics-adapter
 $ git diff kube-metrics-adapter
 ```
+
+## kube-storage-version-migrator
+
+1. Check the [release page](https://github.com/kubernetes-sigs/kube-storage-version-migrator/releases) for changes.
+   - Note that kube-storage-version-migrator might not be GA. We are using pre-release version.
+2. Run the following commands to update the manifests and to check the diff.
+   ```console
+   $ make update-kube-storage-version-migrator
+   $ git diff
+   ```
 
 ## ingress (Contour & Envoy)
 

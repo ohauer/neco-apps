@@ -51,6 +51,8 @@ resources:
   - rules/ingress-watcher-alertrule.yaml
   - rules/kube-state-metrics-scrape.yaml
   - rules/kube-state-metrics-alertrule.yaml
+  - rules/kube-storage-version-migrator-alertrule.yaml
+  - rules/kube-storage-version-migrator-scrape.yaml
   - rules/kubernetes-scrape.yaml
   - rules/kubernetes-alertrule.yaml
   - rules/local-pv-provisioner-scrape.yaml
