@@ -471,13 +471,24 @@ First phase, update Rook solely. Second phase, update Ceph and Rook image based 
 
 Read [this document](https://github.com/rook/rook/blob/master/Documentation/ceph-upgrade.md) before. Note that you should choose the appropriate release version.
 
-Update rook/base/values.yaml and kustomization.yaml on each directory if necessary.
+Check the chart version like the following commands.
 
-Regenerate base resource yaml.
+```console
+## Add rook repository to helm necessary.
+$ helm repo add rook-release https://charts.rook.io/release
+## Or update repository data.
+$ helm repo update
+## List up `CHAET VERSION`s and pick one much for the target rook `APP VERSION`.
+$ helm search repo rook-release/rook-ceph --versions
+```
+
+Update `rook/base/VERSIONS`, `rook/base/values.yaml` and `kustomization.yaml` on each directory if necessary.
+
+Regenerate base resource yaml files.
 
 ```console
 $ rm -rf rook/base/*/charts
-$ make update-rook APP_VERSION=1.8.2.0 CHART_VERSION=1.8.2
+$ make update-rook
 ```
 
 Then check the diffs by `git diff`.

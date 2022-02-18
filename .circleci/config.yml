@@ -178,6 +178,11 @@ jobs:
       - run: |
           cd team-management/template
           make validation
+      - run:
+          name: Check diff
+          command: |
+            make test-generate
+            git diff --exit-code
       - run: |
           cd test
           make test
