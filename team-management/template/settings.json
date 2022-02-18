@@ -91,7 +91,7 @@
         "stage0": "main",
         "tokyo0": "stable"
       },
-      "repo": "https://github.com/garoon-private/garoon-apps.git",
+      "repo": "https://github.com/cybozu-private/garoon-apps.git",
       "team": "garoon"
     },
     "hazama-apps": {
