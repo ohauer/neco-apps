@@ -9,6 +9,7 @@ configMapGenerator:
       - conf/dbre-role.yaml
       - conf/ept-role.yaml
       - conf/garoon-role.yaml
+      - conf/izumo-role.yaml
       - conf/kintone-neco-role.yaml
       - conf/landsat-role.yaml
       - conf/maneki-role.yaml

@@ -8,6 +8,7 @@ resources:
   - ./dbre
   - ./ept
   - ./garoon
+  - ./izumo
   - ./kintone-neco
   - ./landsat
   - ./maneki

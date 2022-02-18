@@ -16,6 +16,7 @@ patchesStrategicMerge:
   - nodes/dbre.yaml
   - nodes/ept.yaml
   - nodes/garoon.yaml
+  - nodes/izumo.yaml
   - nodes/kintone-neco.yaml
   - nodes/landsat.yaml
   - nodes/maneki.yaml
