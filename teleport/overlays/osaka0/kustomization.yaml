@@ -4,5 +4,6 @@ resources:
   - ../../base
   - certificate.yaml
 patchesStrategicMerge:
+  - node-ept.yaml
   - node-neco-guests.yaml
   - node-set.yaml
