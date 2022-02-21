@@ -16,6 +16,5 @@ data:
     ;        1 pools have many more objects per pg than average
     ; ```
     mon_pg_warn_max_object_skew = 0
-
-    [rgw]
+    [client]
     rgw_dynamic_resharding = false
