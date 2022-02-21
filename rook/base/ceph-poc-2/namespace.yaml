@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ceph-poc-2
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
-  labels:
-    pod-security.cybozu.com/policy: privileged
-    team: csa

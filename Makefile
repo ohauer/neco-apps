@@ -259,9 +259,8 @@ update-rook:
 	sed -i -E \
 		-e 's/^(    newTag:).*$$/\1 $(APP_VERSION)/' \
 		rook/base/toolbox/kustomization.yaml
-	for t in common ceph-hdd ceph-hdd-clusterrolebinding \
-		ceph-object-store ceph-object-store-clusterrolebinding \
-		ceph-poc ceph-poc-clusterrolebinding ceph-poc-2 ceph-poc-2-clusterrolebinding \
+	for t in common	ceph-object-store ceph-object-store-clusterrolebinding \
+		ceph-poc ceph-poc-clusterrolebinding \
 		ceph-ssd ceph-ssd-clusterrolebinding; do \
 		sed -i -E \
 			-e 's/^(  version:).*$$/\1 v$(CHART_VERSION)/' \
@@ -269,7 +268,6 @@ update-rook:
 		cp rook/base/values.yaml rook/base/$$t/values.yaml; \
 		test/bin/kustomize build --enable-helm rook/base/$$t > rook/base/$$t.yaml; \
 	done
-	mv rook/base/ceph-poc-2*.yaml rook/overlays/stage0/ceph-poc-2/
 	mv rook/base/ceph-poc*.yaml rook/overlays/stage0/ceph-poc/
 
 .PHONY: update-s3gw

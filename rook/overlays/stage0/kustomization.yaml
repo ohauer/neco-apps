@@ -3,6 +3,4 @@ kind: Kustomization
 resources:
   - ../../base
   - ceph-poc
-  - ceph-poc-2
-  - ceph-hdd/httpproxy.yaml
   - ceph-object-store/httpproxy.yaml

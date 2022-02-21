@@ -477,9 +477,9 @@ Read [this document](https://github.com/rook/rook/blob/master/Documentation/ceph
 
 Update `spec.cephVersion.image` field in CephCluster CR.
 
-- rook/base/ceph-hdd/cluster.yaml
 - rook/base/ceph-ssd/cluster.yaml
 - rook/base/ceph-object-store/cluster.yaml
+- rook/base/ceph-poc/cluster.yaml
 
 ## s3gw
 

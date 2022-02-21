@@ -3,28 +3,8 @@ kind: Kustomization
 resources:
   - ../../base
 patches:
-  - ./ceph-hdd/debug.yaml
   - ./ceph-object-store/debug.yaml
 patchesJson6902:
-- target:
-    group: ceph.rook.io
-    version: v1
-    kind: CephCluster
-    name: ceph-hdd
-    namespace: ceph-hdd
-  patch: |-
-    - op: replace
-      path: /spec/resources/osd/requests/cpu
-      value: 300m
-    - op: replace
-      path: /spec/resources/crashcollector/requests/cpu
-      value: 300m
-    - op: replace
-      path: /spec/mon/volumeClaimTemplate/spec/resources/requests/storage
-      value: 3Gi
-    - op: replace
-      path: /spec/storage/storageClassDeviceSets/0/count
-      value: 3
 - target:
     group: ceph.rook.io
     version: v1
@@ -72,16 +52,6 @@ patchesJson6902:
     - op: replace
       path: /spec/storage/storageClassDeviceSets/1/volumeClaimTemplates/0/spec/resources/requests/storage
       value: 5Gi
-- target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: rook-ceph-operator
-    namespace: ceph-hdd
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/env/2/value
-      value: DEBUG
 - target:
     group: apps
     version: v1
