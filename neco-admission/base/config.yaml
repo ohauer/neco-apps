@@ -48,9 +48,6 @@ ArgoCDApplicationValidator:
       repository: https://github.com/cybozu-private/neco-tenant-apps.git
     - projects:
         - default
-      repository: https://helm.cilium.io
-    - projects:
-        - default
       repository: https://prometheus-community.github.io/helm-charts
     - projects:
         - default
