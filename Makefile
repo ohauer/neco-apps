@@ -111,9 +111,12 @@ update-heartbeat:
 
 .PHONY: update-hubble
 update-hubble:
-	sed -i -E \
-		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
-		hubble/base/kustomization.yaml
+	helm repo add cilium https://helm.cilium.io/ >/dev/null
+	helm repo update >/dev/null
+	helm template cilium cilium/cilium \
+		--version $(shell curl -sSf https://raw.githubusercontent.com/cybozu-go/neco/release/artifacts.go | awk '/"cilium"/ {match($$6, /[0-9.]+/); print substr($$6,RSTART,RLENGTH)}' | cut -d \. -f 1,2,3) \
+		--namespace=kube-system \
+		--values hubble/base/values.yaml > hubble/base/upstream/hubble.yaml
 
 .PHONY: update-kube-metrics-adapter
 update-kube-metrics-adapter:

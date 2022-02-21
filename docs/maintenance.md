@@ -138,22 +138,9 @@ Check [releases](https://github.com/cilium/cilium/releases).
 Update the manifest as follows:
 
 ```console
-HUBBLE_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/hubble
-helm repo add cilium https://helm.cilium.io/
-helm repo update
-helm search repo -l cilium
-# Example output with a header line:
-#   NAME            CHART VERSION   APP VERSION     DESCRIPTION
-#   cilium/cilium   1.11.1          1.11.1          eBPF-based Networking, Security, and Observability
-#   cilium/cilium   1.11.0          1.11.0          eBPF-based Networking, Security, and Observability
-#   cilium/cilium   1.10.7          1.10.7          eBPF-based Networking, Security, and Observability
-#   cilium/cilium   1.10.6          1.10.6          eBPF-based Networking, Security, and Observability
-
-# Choose the same `CHART VERSION` as the version [neco applies]() and set the value like below.
-CILIUM_CHART_VERSION=X.Y.Z
-helm template cilium cilium/cilium --version ${CILIUM_CHART_VERSION} --namespace=kube-system --values ${HUBBLE_DIR}/base/values.yaml > ${HUBBLE_DIR}/base/upstream/hubble.yaml
-cd ${HUBBLE_DIR}
-git diff
+$ make setup   # install/update Helm; if a newer Helm is required, update HELM_VERSION in Makefile first
+$ make update-hubble
+$ git diff hubble
 ```
 
 ## kube-metrics-adapter
