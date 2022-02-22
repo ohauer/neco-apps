@@ -16,11 +16,3 @@ spec:
         for: 60m
         labels:
           severity: error
-      - alert: KubeStorageVersionMigratorRunning
-        annotations:
-          summary: migrating {{ $labels.resource }}
-        expr: |
-          rate(storage_migrator_core_migrator_migrated_objects[5m]) > 0
-        for: 1m
-        labels:
-          severity: info
