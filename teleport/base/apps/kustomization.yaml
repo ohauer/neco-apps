@@ -6,3 +6,4 @@ resources:
   - vmalertmanager-app-csa-monitoring.yaml
   - vmalertmanager-app-cybozu-com-mysql.yaml
   - vmalertmanager-app-monitoring.yaml
+  - hubble-ui.yaml

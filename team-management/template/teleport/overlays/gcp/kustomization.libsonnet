@@ -8,6 +8,7 @@ function(teams) [{
   patchesStrategicMerge: std.set([
     'deployment.yaml',
     'statefulset.yaml',
+    'apps/hubble-ui.yaml',
     'apps/vmalertmanager-largeset.yaml',
     'apps/vmalertmanager-smallset.yaml',
     'apps/vmalertmanager-app-csa-monitoring.yaml',

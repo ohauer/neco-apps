@@ -15,6 +15,7 @@ patchesStrategicMerge:
 - elastic.yaml
 - external-dns.yaml
 - meows.yaml
+- hubble.yaml
 - ingress.yaml
 - init-template.yaml
 - kube-metrics-adapter.yaml

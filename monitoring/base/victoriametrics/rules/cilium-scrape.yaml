@@ -1,0 +1,52 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: cilium
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [kube-system]
+  selector:
+    matchLabels:
+      k8s-app: cilium
+  podMetricsEndpoints:
+  - port: prometheus
+    relabelConfigs:
+      - replacement: cilium
+        targetLabel: job
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: cilium-operator
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [kube-system]
+  selector:
+    matchLabels:
+      io.cilium/app: operator
+      name: cilium-operator
+  podMetricsEndpoints:
+  - port: prometheus
+    relabelConfigs:
+      - replacement: cilium-operator
+        targetLabel: job
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: hubble
+  namespace: monitoring
+spec:
+  discoveryRole: endpoints
+  namespaceSelector:
+    matchNames: [kube-system]
+  selector:
+    matchLabels:
+      k8s-app: hubble
+  endpoints:
+  - port: hubble-metrics
+    relabelConfigs:
+      - replacement: hubble
+        targetLabel: job

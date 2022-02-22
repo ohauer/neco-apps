@@ -131,6 +131,7 @@ func runTest() {
 	Context("session-log", testSessionLog)
 	Context("accurate", testAccurate)
 	Context("tenet", testTenet)
+	Context("hubble", testHubble)
 }
 
 func alertcheckTest() {

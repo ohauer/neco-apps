@@ -37,6 +37,7 @@ resources:
   - rules/argocd-scrape.yaml
   - rules/cert-manager-alertrule.yaml
   - rules/cert-manager-scrape.yaml
+  - rules/cilium-scrape.yaml
   - rules/cke-alertrule.yaml
   - rules/cke-scrape.yaml
   - rules/coil-scrape.yaml

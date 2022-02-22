@@ -109,6 +109,15 @@ update-heartbeat:
 	$(call get-latest-tag,heartbeat)
 	sed -i -E '/name:.*heartbeat$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
 
+.PHONY: update-hubble
+update-hubble:
+	helm repo add cilium https://helm.cilium.io/ >/dev/null
+	helm repo update >/dev/null
+	helm template cilium cilium/cilium \
+		--version $(shell curl -sSf https://raw.githubusercontent.com/cybozu-go/neco/release/artifacts.go | awk '/"cilium"/ {match($$6, /[0-9.]+/); print substr($$6,RSTART,RLENGTH)}' | cut -d \. -f 1,2,3) \
+		--namespace=kube-system \
+		--values hubble/base/values.yaml > hubble/base/upstream/hubble.yaml
+
 .PHONY: update-kube-metrics-adapter
 update-kube-metrics-adapter:
 	$(call get-latest-tag,kube-metrics-adapter)

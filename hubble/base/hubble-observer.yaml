@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hubble-observer
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hubble-observer
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hubble-observer
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: hubble
+          image: quay.io/cybozu/hubble:0.9.0.1
+          args:
+          - observe
+          - --follow
+          - --verdict
+          - AUDIT
+          - --server
+          - hubble-relay.kube-system.svc:443
+          - --tls
+          - --tls-allow-insecure
+          - -o
+          - jsonpb
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+              - all
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true

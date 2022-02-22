@@ -1,0 +1,58 @@
+agent: false
+operator:
+  enabled: false
+cni:
+  install: false
+hubble:
+  enabled: false
+  relay:
+    enabled: false
+    tls:
+      server:
+        enabled: true
+  ui:
+    enabled: true
+    rollOutPods: true
+    frontend:
+      image:
+        repository: quay.io/cybozu/hubble-ui-frontend
+        tag: 0.8.5.1
+        useDigest: false
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+    backend:
+      image:
+        repository: quay.io/cybozu/hubble-ui-backend
+        tag: 0.8.5.1
+        useDigest: false
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+    proxy:
+      image:
+        repository: quay.io/cybozu/envoy
+        tag: 1.19.1.2
+        useDigest: false
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+    standalone:
+      enabled: true
+      tls:
+        certsVolume:
+          projected:
+            defaultMode: 420
+            sources:
+              - secret:
+                  name: hubble-relay-client-certs
+                  items:
+                    - key: tls.crt
+                      path: client.crt
+                    - key: tls.key
+                      path: client.key
+                    - key: ca.crt
+                      path: hubble-relay-ca.crt
