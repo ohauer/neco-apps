@@ -80,6 +80,26 @@ data:
         hs.status = "Progressing"
         hs.message = "Waiting for namespace creation"
         return hs
+    moco.cybozu.com/MySQLCluster:
+      health.lua: |
+        hs = {}
+        if obj.status ~= nil and obj.status.conditions ~= nil then
+          for idx, cond in pairs(obj.status.conditions) do
+            if cond.type == "Healthy" then
+              if cond.status == "True" then
+                hs.status = "Healthy"
+              else
+                hs.status = "Progressing"
+              end
+              hs.message = cond.message
+              return hs
+            end
+          end
+        end
+
+        hs.status = "Progressing"
+        hs.message = "Waiting for MySQLCluster to become healthy"
+        return hs
   resource.compareoptions: |
     ignoreAggregatedRoles: true
   resource.exclusions: |
