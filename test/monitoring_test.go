@@ -759,11 +759,11 @@ func testVMLargesetClusterComponents() {
 	})
 }
 
-func findTargets(job string, targets []promv1.ActiveTarget) []*promv1.ActiveTarget {
-	ret := []*promv1.ActiveTarget{}
+func findTargets(job string, targets []promv1.ActiveTarget) []promv1.ActiveTarget {
+	ret := []promv1.ActiveTarget{}
 	for _, t := range targets {
 		if string(t.Labels["job"]) == job {
-			ret = append(ret, &t)
+			ret = append(ret, t)
 		}
 	}
 	return ret

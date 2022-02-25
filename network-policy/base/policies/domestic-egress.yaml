@@ -32,6 +32,14 @@ spec:
       destination:
         ports:
           - 5555
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: team == 'neco'
+        selector: app.kubernetes.io/name == 'vmagent'
+      destination:
+        ports:
+        - metrics
     - action: Deny
   egress:
     - action: Allow
