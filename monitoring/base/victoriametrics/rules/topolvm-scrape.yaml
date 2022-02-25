@@ -12,7 +12,8 @@ spec:
     matchLabels:
       app.kubernetes.io/name: topolvm-node
   podMetricsEndpoints:
-  - relabelConfigs:
+  - port: metrics
+    relabelConfigs:
       - replacement: topolvm
         targetLabel: job
       - sourceLabels: [__meta_kubernetes_pod_container_name]
