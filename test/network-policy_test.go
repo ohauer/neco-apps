@@ -14,7 +14,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/sync/errgroup"
 	corev1 "k8s.io/api/core/v1"
 )
 
@@ -208,7 +207,6 @@ func testNetworkPolicy() {
 		err = json.Unmarshal(stdout, &machines)
 		Expect(err).ShouldNot(HaveOccurred())
 
-		eg := errgroup.Group{}
 		ping := func(addr string) error {
 			_, _, err := ExecAt(boot0, "kubectl", "exec", "ubuntu", "--", "ping", "-c", "1", "-W", "3", addr)
 			if err != nil {
@@ -222,19 +220,13 @@ func testNetworkPolicy() {
 		for _, m := range machines {
 			bmcAddr := m.Spec.BMC.IPv4
 			node0Addr := m.Spec.IPv4[0]
-			eg.Go(func() error {
-				return ping(bmcAddr)
-			})
-			eg.Go(func() error {
-				return ping(node0Addr)
-			})
+			Expect(ping(bmcAddr)).To(HaveOccurred())
+			Expect(ping(node0Addr)).To(HaveOccurred())
 		}
 		// Bastion
-		eg.Go(func() error {
-			return ping(boot0)
-		})
-		Expect(eg.Wait()).Should(HaveOccurred())
-		// switch -- not tested for now because address range for switches is 10.0.1.0/24 in placemat env, not 10.72.0.0/20.
+		Expect(ping(boot0)).To(HaveOccurred())
+		// Switch
+		Expect(ping("10.72.2.0")).To(HaveOccurred())
 	})
 }
 
