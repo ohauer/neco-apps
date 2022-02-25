@@ -1,0 +1,33 @@
+rule_files:
+  - ../../monitoring/base/victoriametrics/rules/converted/cilium-alertrule.yaml
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'up{job="cilium",instance="10.0.0.1:9090",node="10.0.0.1"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: CiliumAgentDown
+        exp_alerts:
+          - exp_labels:
+              job: cilium
+              severity: critical
+              node: 10.0.0.1
+              instance: 10.0.0.1:9090
+            exp_annotations:
+              runbook: Please consider to find root causes, and solve the problems.
+              summary: CiliumAgent has disappeared from Prometheus target discovery.
+  - interval: 1m
+    input_series:
+      - series: 'up{job="cilium-operator"}'
+        values: '0+0x15'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: CiliumOperatorDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              runbook: TBD
+              summary: cilium operator is down.

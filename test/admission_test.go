@@ -18,9 +18,6 @@ var admissionPodBadImageYAML []byte
 //go:embed testdata/admission-pod-ephemeral-storage.yaml
 var admissionPodEphemeralStorageLimitYAML []byte
 
-//go:embed testdata/admission-networkpolicy.yaml
-var admissionNetworkPolicyYAML []byte
-
 //go:embed testdata/admission-httpproxy-bad.yaml
 var admissionHTTPProxyBadYAML []byte
 
@@ -34,12 +31,6 @@ var admissionHTTPProxyAnnotatedYAML []byte
 var admissionApplicationYAML string
 
 func testAdmission() {
-	It("should validate Calico NetworkPolicy", func() {
-		_, stderr, err := ExecAtWithInput(boot0, admissionNetworkPolicyYAML, "kubectl", "apply", "-f", "-")
-		Expect(err).To(HaveOccurred())
-		Expect(string(stderr)).Should(ContainSubstring(`admission webhook "vnetworkpolicy.kb.io" denied the request`))
-	})
-
 	It("should default/validate Contour HTTPProxy", func() {
 		By("creating HTTPProxy with annotations")
 		stdout, stderr, err := ExecAtWithInput(boot0, admissionHTTPProxyAnnotatedYAML, "kubectl", "apply", "-f", "-")

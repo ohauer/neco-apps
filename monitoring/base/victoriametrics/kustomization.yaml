@@ -39,6 +39,7 @@ resources:
   - rules/cattage-scrape.yaml
   - rules/cert-manager-alertrule.yaml
   - rules/cert-manager-scrape.yaml
+  - rules/cilium-alertrule.yaml
   - rules/cilium-scrape.yaml
   - rules/cke-alertrule.yaml
   - rules/cke-scrape.yaml
@@ -70,8 +71,6 @@ resources:
   - rules/monitoring-alertrule.yaml
   - rules/neco-admission-alertrule.yaml
   - rules/neco-admission-scrape.yaml
-  - rules/network-policy-alertrule.yaml
-  - rules/network-policy-scrape.yaml
   - rules/node-alertrule.yaml
   - rules/node-scrape.yaml
   - rules/pvc-autoresizer-scrape.yaml

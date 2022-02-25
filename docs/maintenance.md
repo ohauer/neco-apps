@@ -32,7 +32,6 @@ How to maintain neco-apps
   - [victoriametrics-operator](#victoriametrics-operator)
   - [VictoriaMetrics, Alertmanager](#victoriametrics-alertmanager)
 - [neco-admission](#neco-admission)
-- [network-policy (Calico)](#network-policy-calico)
 - [pod-security-admission](#pod-security-admission)
 - [prometheus-adapter](#prometheus-adapter)
 - [pvc-autoresizer](#pvc-autoresizer)
@@ -429,17 +428,6 @@ Update the manifest as follows:
 
 ```console
 $ make update-neco-admission
-$ git diff
-```
-
-## network-policy (Calico)
-
-Check [the release notes](https://docs.projectcalico.org/release-notes/).
-
-Update the manifest as follows:
-
-```console
-$ make update-calico
 $ git diff
 ```
 

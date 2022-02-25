@@ -89,9 +89,9 @@ tests:
               summary: KubernetesNodes has disappeared from Prometheus target discovery.
   - interval: 1m
     input_series:
-      - series: 'kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace="kube-system", pod="calico-node", container="unbound", uid="0000"}'
+      - series: 'kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", container="unbound", uid="0000"}'
         values: '1+1x10 stale'
-      - series: 'kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace="kube-system", pod="calico-node", container="unbound", uid="1111"}'
+      - series: 'kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", container="unbound", uid="1111"}'
         values: '_x10 1+1x10'
       - series: 'kube_pod_container_status_restarts_total{job="kube-state-metrics", namespace="app-tenant", pod="tenant", container="tenant", uid="2222"}'
         values: '1+1x20'
@@ -106,24 +106,24 @@ tests:
           - exp_labels:
               severity: error
               namespace: kube-system
-              pod: calico-node
+              pod: cilium-agent
               container: unbound
             exp_annotations:
               runbook: TBD
-              summary: Pod kube-system/calico-node (unbound) is restarting 5.00 times / 5 minutes.
+              summary: Pod kube-system/cilium-agent (unbound) is restarting 5.00 times / 5 minutes.
   - interval: 1m
     input_series:
-      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="calico-node", uid="0000"}'
+      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", uid="0000"}'
         values: '1+0x15 stale'
-      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="calico-node", uid="1111"}'
+      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", uid="1111"}'
         values: '_x15 1+0x15'
       - series: 'kube_pod_owner{owner_kind="Job", job="kube-state-metrics", namespace="monitoring", pod="machines-endpoints", uid="2222"}'
         values: '1+0x30'
       - series: 'kube_pod_owner{owner_kind="Deployment", job="kube-state-metrics", namespace="app-tenant", pod="tenant", uid="3333"}'
         values: '1+0x30'
-      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="calico-node", container="unbound", uid="0000"}'
+      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="cilium-agent", container="unbound", uid="0000"}'
         values: '1+0x15 stale'
-      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="calico-node", container="unbound", uid="1111"}'
+      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="cilium-agent", container="unbound", uid="1111"}'
         values: '_x15 1+0x15'
       - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="monitoring", pod="machines-endpoints", container="machines-endpoints", uid="2222"}'
         values: '1+0x30'
@@ -142,31 +142,31 @@ tests:
           - exp_labels:
               severity: error
               namespace: kube-system
-              pod: calico-node
+              pod: cilium-agent
             exp_annotations:
               runbook: TBD
-              summary: Pod kube-system/calico-node has been in a non-ready state for longer than 30 minutes.
+              summary: Pod kube-system/cilium-agent has been in a non-ready state for longer than 30 minutes.
   - interval: 1m
     input_series:
-      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="calico-node", uid="0000"}'
+      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", uid="0000"}'
         values: '1+0x8 stale'
-      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="calico-node", uid="1111"}'
+      - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", uid="1111"}'
         values: '_x8 1+0x7'
       - series: 'kube_pod_owner{owner_kind="Job", job="kube-state-metrics", namespace="monitoring", pod="machines-endpoints", uid="2222"}'
         values: '1+0x15'
       - series: 'kube_pod_owner{owner_kind="Deployment", job="kube-state-metrics", namespace="app-tenant", pod="tenant", uid="3333"}'
         values: '1+0x15'
-      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="calico-node", container="unbound", uid="0000"}'
+      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="cilium-agent", container="unbound", uid="0000"}'
         values: '1+0x8 stale'
-      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="calico-node", container="unbound", uid="1111"}'
+      - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="kube-system", pod="cilium-agent", container="unbound", uid="1111"}'
         values: '_x8 1+0x7'
       - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="monitoring", pod="machines-endpoints", container="machines-endpoints", uid="2222"}'
         values: '1+0x15'
       - series: 'kube_pod_status_phase{job="kube-state-metrics", phase="Failed", namespace="app-tenant", pod="tenant", container="tenant", uid="3333"}'
         values: '1+0x15'
-      - series: 'kube_pod_info{job="kube-state-metrics", namespace="kube-system", pod="calico-node", node="1.2.3.4", uid="0000"}'
+      - series: 'kube_pod_info{job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", node="1.2.3.4", uid="0000"}'
         values: '1+0x8 stale'
-      - series: 'kube_pod_info{job="kube-state-metrics", namespace="kube-system", pod="calico-node", node="1.2.3.4", uid="1111"}'
+      - series: 'kube_pod_info{job="kube-state-metrics", namespace="kube-system", pod="cilium-agent", node="1.2.3.4", uid="1111"}'
         values: '_x8 1+0x7'
       - series: 'kube_pod_info{job="kube-state-metrics", namespace="monitoring", pod="machines-endpoints", node="1.2.3.4", uid="2222"}'
         values: '1+0x15'
@@ -185,10 +185,10 @@ tests:
           - exp_labels:
               severity: error
               namespace: kube-system
-              pod: calico-node
+              pod: cilium-agent
             exp_annotations:
               runbook: TBD
-              summary: Pod kube-system/calico-node has been in a non-ready state though scheduled for longer than 15 minutes.
+              summary: Pod kube-system/cilium-agent has been in a non-ready state though scheduled for longer than 15 minutes.
   - interval: 1m
     input_series:
       - series: 'kube_pod_owner{owner_kind="DaemonSet", job="kube-state-metrics", namespace="kube-system", pod="topolvm-scheduler", uid="0000"}'
@@ -411,11 +411,11 @@ tests:
               summary: StatefulSet monitoring/prometheus update has not been rolled out.
   - interval: 1m
     input_series:
-      - series: 'kube_daemonset_status_number_ready{job="kube-state-metrics", namespace="kube-system", daemonset="calico-node"}'
+      - series: 'kube_daemonset_status_number_ready{job="kube-state-metrics", namespace="kube-system", daemonset="cilium-agent"}'
         values: '8+0x60'
       - series: 'kube_daemonset_status_number_ready{job="kube-state-metrics", namespace="app-node", daemonset="app-node"}'
         values: '8+0x60'
-      - series: 'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace="kube-system", daemonset="calico-node"}'
+      - series: 'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace="kube-system", daemonset="cilium-agent"}'
         values: '10+0x60'
       - series: 'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace="app-node", daemonset="app-node"}'
         values: '10+0x60'
@@ -431,17 +431,17 @@ tests:
               severity: error
               job: kube-state-metrics
               namespace: kube-system
-              daemonset: calico-node
+              daemonset: cilium-agent
             exp_annotations:
               runbook: TBD
-              summary: Only 80% of the desired Pods of DaemonSet kube-system/calico-node are scheduled and ready.
+              summary: Only 80% of the desired Pods of DaemonSet kube-system/cilium-agent are scheduled and ready.
   - interval: 1m
     input_series:
-      - series: 'kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace="kube-system", daemonset="calico-node"}'
+      - series: 'kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace="kube-system", daemonset="cilium-agent"}'
         values: '9+0x60'
       - series: 'kube_daemonset_status_current_number_scheduled{job="kube-state-metrics", namespace="app-node", daemonset="app-node"}'
         values: '9+0x60'
-      - series: 'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace="kube-system", daemonset="calico-node"}'
+      - series: 'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace="kube-system", daemonset="cilium-agent"}'
         values: '10+0x60'
       - series: 'kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics", namespace="app-node", daemonset="app-node"}'
         values: '10+0x60'
@@ -457,10 +457,10 @@ tests:
               severity: error
               job: kube-state-metrics
               namespace: kube-system
-              daemonset: calico-node
+              daemonset: cilium-agent
             exp_annotations:
               runbook: TBD
-              summary: 1 Pods of DaemonSet kube-system/calico-node are not scheduled.
+              summary: 1 Pods of DaemonSet kube-system/cilium-agent are not scheduled.
   - interval: 1m
     input_series:
       - series: 'kube_daemonset_status_number_unavailable{job="kube-state-metrics", namespace="topolvm-system", daemonset="node1"}'

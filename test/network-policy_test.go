@@ -52,6 +52,27 @@ func prepareNetworkPolicy() {
 			return checkDeploymentReplicas("vmagent-vmagent-largeset", "monitoring", vmagentLargesetCount)
 		}).Should(Succeed())
 	})
+
+	It("should config cilium PolicyAuditMode=false", func() {
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "kube-system", "get", "pods", "-l", "k8s-app=cilium", "-o", "json")
+			if err != nil {
+				return fmt.Errorf("stderr: %s: %w", string(stderr), err)
+			}
+			podList := &corev1.PodList{}
+			if err := json.Unmarshal(stdout, podList); err != nil {
+				return err
+			}
+
+			for _, item := range podList.Items {
+				stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "kube-system", "exec", item.Name, "--", "cilium", "config", "PolicyAuditMode=false")
+				if err != nil {
+					return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+				}
+			}
+			return nil
+		}).Should(Succeed())
+	})
 }
 
 func testNetworkPolicy() {
