@@ -39,7 +39,7 @@ func checkDeploymentReplicas(name, namespace string, desiredReplicas int) error 
 	return nil
 }
 
-// checkStatefulSetReplicas checks the number of ready replicas and updated replicas for a StatefulSet.
+// checkStatefulSetReplicas checks the number of available replicas and updated replicas for a StatefulSet.
 // If desiredReplicas is less than zero, `.spec.replicas` is used instead.
 func checkStatefulSetReplicas(name, namespace string, desiredReplicas int) error {
 	stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "statefulset", "-n", namespace, name, "-o", "json")
@@ -61,9 +61,8 @@ func checkStatefulSetReplicas(name, namespace string, desiredReplicas int) error
 		}
 	}
 
-	// TODO: this should be AvailableReplicas in k8s 1.22
-	if int(sts.Status.ReadyReplicas) != desiredReplicas {
-		return fmt.Errorf("ReadyReplicas of StatefulSet %s/%s is not %d: %d", namespace, name, desiredReplicas, sts.Status.ReadyReplicas)
+	if int(sts.Status.AvailableReplicas) != desiredReplicas {
+		return fmt.Errorf("AvailableReplicas of StatefulSet %s/%s is not %d: %d", namespace, name, desiredReplicas, sts.Status.AvailableReplicas)
 	}
 	if int(sts.Status.UpdatedReplicas) != desiredReplicas {
 		return fmt.Errorf("UpdatedReplicas of StatefulSet %s/%s is not %d: %d", namespace, name, desiredReplicas, sts.Status.UpdatedReplicas)
