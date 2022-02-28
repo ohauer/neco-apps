@@ -9,6 +9,10 @@ YQ_VERSION = 4.11.2
 all:
 	@echo Read docs/maintenance.md for the usage
 
+.PHONY: test-generate
+test-generate:
+	$(MAKE) update-rook
+
 .PHONY: update-accurate
 update-accurate:
 	$(call get-latest-helm,accurate,https://cybozu-go.github.io/accurate)
@@ -258,21 +262,23 @@ update-pvc-autoresizer:
 		-e 's/^(  version:).*$$/\1 $(CHART_VERSION)/' \
 		pvc-autoresizer/base/kustomization.yaml
 
+ROOK_IMAGE_VERSION := $(shell awk '/ROOK_IMAGE:/ {print $$2}' rook/base/VERSIONS)
+ROOK_CHAET_VERSION := $(shell awk '/ROOK_CHART:/ {print $$2}' rook/base/VERSIONS)
 .PHONY: update-rook
 update-rook:
 	sed -i -E \
-		-e 's/^(  tag:).*$$/\1 $(APP_VERSION)/' \
+		-e 's/^(  tag:).*$$/\1 $(ROOK_IMAGE_VERSION)/' \
 		rook/base/values.yaml
 	curl -L --output rook/base/toolbox/toolbox.yaml \
-		https://raw.githubusercontent.com/rook/rook/v$$(echo $(APP_VERSION) | cut -d "." -f 1-3)/deploy/examples/toolbox.yaml
+		https://raw.githubusercontent.com/rook/rook/v$$(echo $(ROOK_IMAGE_VERSION) | cut -d "." -f 1-3)/deploy/examples/toolbox.yaml
 	sed -i -E \
-		-e 's/^(    newTag:).*$$/\1 $(APP_VERSION)/' \
+		-e 's/^(    newTag:).*$$/\1 $(ROOK_IMAGE_VERSION)/' \
 		rook/base/toolbox/kustomization.yaml
 	for t in common	ceph-object-store ceph-object-store-clusterrolebinding \
 		ceph-poc ceph-poc-clusterrolebinding \
 		ceph-ssd ceph-ssd-clusterrolebinding; do \
 		sed -i -E \
-			-e 's/^(  version:).*$$/\1 v$(CHART_VERSION)/' \
+			-e 's/^(  version:).*$$/\1 v$(ROOK_CHAET_VERSION)/' \
 			rook/base/$$t/kustomization.yaml; \
 		cp rook/base/values.yaml rook/base/$$t/values.yaml; \
 		test/bin/kustomize build --enable-helm rook/base/$$t > rook/base/$$t.yaml; \
