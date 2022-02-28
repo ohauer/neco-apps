@@ -4,6 +4,7 @@ resources:
 - accurate.yaml
 - argocd.yaml
 - bmc-reverse-proxy.yaml
+- cattage.yaml
 - cert-manager.yaml
 - domestic-egress.yaml
 - elastic.yaml

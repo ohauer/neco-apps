@@ -53,6 +53,11 @@ update-calico:
 		https://docs.projectcalico.org/v$(shell echo $(latest_tag) | sed -E 's/^(.*)\.[[:digit:]]+\.[[:digit:]]+$$/\1/')/manifests/calico-policy-only.yaml
 	sed -i -E 's/newTag:.*$$/newTag: $(latest_tag)/' network-policy/base/kustomization.yaml
 
+.PHONY: update-cattage
+update-cattage:
+	$(call get-latest-helm,cattage,https://cybozu-go.github.io/cattage)
+	yq eval -i '.spec.source.targetRevision = "$(latest_helm)"' argocd-config/base/cattage.yaml
+
 .PHONY: update-cert-manager
 update-cert-manager:
 	$(call get-latest-tag,cert-manager)

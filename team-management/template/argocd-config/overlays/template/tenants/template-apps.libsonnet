@@ -8,7 +8,7 @@ function(name, repo, destination, revision) [{
       'is-tenant': 'true',
     },
     annotations: {
-      'argocd.argoproj.io/sync-wave': '9',
+      'argocd.argoproj.io/sync-wave': '10',
     },
   },
   spec: {

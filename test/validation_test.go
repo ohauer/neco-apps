@@ -121,16 +121,17 @@ func testApplicationResources(t *testing.T) {
 		"monitoring":                    "6",
 		"session-log":                   "6",
 		"teleport":                      "6",
+		"cattage":                       "7",
 		"grafana-sandbox":               "7",
 		"kube-metrics-adapter":          "7",
 		"prometheus-adapter":            "7",
 		"pvc-autoresizer":               "7",
 		"meows":                         "7",
-		"team-management":               "7",
-		"network-policy":                "8",
-		"tenet":                         "9",
+		"team-management":               "8",
+		"network-policy":                "9",
+		"tenet":                         "10",
 	}
-	tenantSyncWave := "9"
+	tenantSyncWave := "10"
 
 	// Default target revisions for each overlay.
 	defaultTargetRevisions := map[string]string{

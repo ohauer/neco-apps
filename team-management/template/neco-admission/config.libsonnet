@@ -1,5 +1,5 @@
-local utility = import '../../utility.libsonnet';
-function(settings) [{
+local utility = import '../utility.libsonnet';
+function(settings, extraRules) [{
   ArgoCDApplicationValidator: {
     rules: std.set(
       [
@@ -74,6 +74,12 @@ function(settings) [{
           ],
         },
         {
+          repository: 'https://cybozu-go.github.io/cattage',
+          projects: [
+            'default',
+          ],
+        },
+        {
           repository: 'https://cybozu-go.github.io/moco',
           projects: [
             'default',
@@ -85,7 +91,7 @@ function(settings) [{
             'default',
           ],
         },
-      ],
+      ] + extraRules,
       function(x) if std.objectHas(x, 'repositoryPrefix') then 'A' + x.repositoryPrefix else 'B' + x.repository
     ),
   },

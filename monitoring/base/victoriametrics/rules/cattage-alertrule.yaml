@@ -1,0 +1,18 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: cattage
+  namespace: monitoring
+spec:
+  groups:
+    - name: cattage
+      rules:
+        - alert: CattageDown
+          expr: |
+            absent(up{job="cattage"} == 1)
+          labels:
+            severity: error
+          for: 15m
+          annotations:
+            summary: cattage controller is down.
+            runbook: TBD

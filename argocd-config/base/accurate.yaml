@@ -51,6 +51,7 @@ spec:
             - team
             - development
             - pod-security.cybozu.com/policy
+            - cattage.cybozu.io/tenant
 
             # controller.config.annotationKeys -- Annotations to be propagated to sub-namespaces.
             # It is also possible to specify a glob pattern that can be interpreted by Go's "path.Match" func.

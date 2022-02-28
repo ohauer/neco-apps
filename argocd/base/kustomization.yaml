@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - upstream/install.yaml
   - neco/service.yaml
+  - application_admin.yaml
 patchesStrategicMerge:
   - configmap.yaml
   - deployment.yaml

@@ -34,6 +34,9 @@ var requiredResources = []string{
 	// Accurate
 	"subnamespaces.accurate.cybozu.com",
 
+	// Argo CD
+	"applications.argoproj.io",
+
 	// Calico
 	"networkpolicies.crd.projectcalico.org",
 	"networksets.crd.projectcalico.org",
@@ -94,7 +97,6 @@ var requiredResources = []string{
 // - ref: https://github.com/kubernetes/kubernetes/blob/release-1.18/plugin/pkg/auth/authorizer/rbac/bootstrappolicy/policy.go#L297
 var viewableResources = []string{
 	// Argo CD
-	"applications.argoproj.io",
 	"appprojects.argoproj.io",
 
 	// Calico
@@ -160,6 +162,9 @@ var prohibitedResources = []string{
 // viewableClusterResources is a list of cluster resources that Neco allows for tenant users
 // to view or list.
 var viewableClusterResources = []string{
+	// Cattage
+	"tenants.cattage.cybozu.io",
+
 	// Coil
 	"addressblocks.coil.cybozu.com",
 	"addresspools.coil.cybozu.com",

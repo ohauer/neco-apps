@@ -30,6 +30,9 @@ ArgoCDApplicationValidator:
       repository: https://cybozu-go.github.io/accurate
     - projects:
         - default
+      repository: https://cybozu-go.github.io/cattage
+    - projects:
+        - default
       repository: https://cybozu-go.github.io/moco
     - projects:
         - default

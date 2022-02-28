@@ -5,6 +5,7 @@ resources:
 - argocd-ingress.yaml
 - argocd.yaml
 - bmc-reverse-proxy.yaml
+- cattage.yaml
 - cert-manager.yaml
 - coil.yaml
 - customer-egress.yaml

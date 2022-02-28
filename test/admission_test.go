@@ -93,7 +93,7 @@ func testAdmission() {
 		Expect(err).NotTo(HaveOccurred())
 		stdout, stderr, err := ExecAtWithInput(boot0, buf.Bytes(), "kubectl", "apply", "-f", "-")
 		Expect(err).NotTo(HaveOccurred(), "stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-		ExecSafeAt(boot0, "kubectl", "delete", "application", "valid")
+		ExecSafeAt(boot0, "kubectl", "delete", "application", "valid", "-n", "argocd")
 
 		By("denying to create Application which points to invalid repo and belongs to default project")
 		buf.Reset()

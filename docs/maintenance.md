@@ -5,6 +5,7 @@ How to maintain neco-apps
 - [argocd](#argocd)
 - [bmc-reverse-proxy](#bmc-reverse-proxy)
 - [cadvisor](#cadvisor)
+- [cattage](#cattage)
 - [cert-manager](#cert-manager)
 - [customer-egress (Squid and unbound)](#customer-egress-squid-and-unbound)
 - [elastic (ECK)](#elastic-eck)
@@ -84,6 +85,17 @@ $ git diff
    $ make update-cadvisor
    $ git diff
    ```
+
+## cattage
+
+Check [releases](https://github.com/cybozu-go/cattage/releases) for changes.
+
+Update the manifest as follows:
+
+```console
+$ make update-cattage
+$ git diff
+```
 
 ## cert-manager
 

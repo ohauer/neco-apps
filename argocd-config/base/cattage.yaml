@@ -1,0 +1,121 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cattage
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/manifest-generate-paths: ..
+    argocd.argoproj.io/sync-wave: "7"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://cybozu-go.github.io/cattage
+    chart: cattage
+    targetRevision: 0.1.2
+    helm:
+      version: v3
+      values: |
+        image:
+          # image.repository -- cattage image repository to use.
+          repository: ghcr.io/cybozu-go/cattage
+
+          # image.tag -- cattage image tag to use.
+          # @default -- `{{ .Chart.AppVersion }}`
+          tag:  # 0.1.0
+
+          # image.pullPolicy -- cattage image pullPolicy.
+          pullPolicy:  # Always
+
+        controller:
+          # controller.replicas -- Specify the number of replicas of the controller Pod.
+          replicas: 2
+
+          # controller.resources -- Specify resources.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+
+          # controller.terminationGracePeriodSeconds -- Specify terminationGracePeriodSeconds.
+          terminationGracePeriodSeconds: 10
+
+          # controller.extraArgs -- Optional additional arguments.
+          extraArgs: []
+
+          config:
+            # controller.config.namespace --
+            namespace:
+              commonLabels:
+                accurate.cybozu.com/template: init-template
+              roleBindingTemplate: |
+                apiVersion: rbac.authorization.k8s.io/v1
+                kind: RoleBinding
+                roleRef:
+                  apiGroup: rbac.authorization.k8s.io
+                  kind: ClusterRole
+                  name: admin
+                subjects:
+                  - apiGroup: rbac.authorization.k8s.io
+                    kind: Group
+                    name: {{ .Name }}
+                  - kind: ServiceAccount
+                    name: node-{{ .Name }}
+                    namespace: teleport
+                  {{- range .Roles.admin }}
+                  - apiGroup: rbac.authorization.k8s.io
+                    kind: Group
+                    name: {{ . }}
+                  - kind: ServiceAccount
+                    name: node-{{ . }}
+                    namespace: teleport
+                  {{- end }}
+            argocd:
+              namespace: argocd
+              appProjectTemplate: |
+                apiVersion: argoproj.io/v1alpha1
+                kind: AppProject
+                spec:
+                  destinations:
+                  {{- range .Namespaces }}
+                    - namespace: {{ . }}
+                      server: '*'
+                  {{- end }}
+                  namespaceResourceBlacklist:
+                    - group: ""
+                      kind: ResourceQuota
+                    - group: ""
+                      kind: LimitRange
+                    - group: networking.k8s.io
+                      kind: NetworkPolicy
+                  orphanedResources:
+                    warn: false
+                  roles:
+                    - groups:
+                        - cybozu-private:{{ .Name }}
+                        {{- range .Roles.admin }}
+                        - cybozu-private:{{ . }}
+                        {{- end }}
+                      name: admin
+                      policies:
+                        - p, proj:{{ .Name }}:admin, applications, *, {{ .Name }}/*, allow
+                  sourceRepos:
+                    {{- range .Repositories }}
+                    - '{{ . }}'
+                    {{- else }}
+                    - 'https://github.com/cybozu-private/*'
+                    {{- end }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cattage-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  ignoreDifferences:
+    - group: cert-manager.io
+      kind: Certificate
+      jsonPointers:
+        - /spec/duration
+        - /spec/renewBefore
