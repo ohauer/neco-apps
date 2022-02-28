@@ -17,3 +17,5 @@ data:
     rgw_dynamic_resharding = false
     rgw enable ops log = true
     debug rgw = 20/20
+    [global]
+    mon_osd_down_out_subtree_limit = "root"
