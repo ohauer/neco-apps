@@ -28,6 +28,7 @@ func testDomesticEgress() {
 
 		By("should not access to Neco switch from Pods in namespaces that are not team=network")
 		ns := "dctest"
+		var podName string
 		Eventually(func() error {
 			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", ns, "get", "pods", "-l", "app=ubuntu-domestic-egress-test", "-o", "json")
 			if err != nil {
@@ -40,14 +41,13 @@ func testDomesticEgress() {
 			if len(podList.Items) != 1 {
 				return fmt.Errorf("podList length is not 1: %d", len(podList.Items))
 			}
-			podName := podList.Items[0].Name
-			// 10.72.2.0 is neco switch
-			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", ns, "exec", podName, "--", "ping", "-c", "1", "-W", "3", "10.72.2.0")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
-			}
+			podName = podList.Items[0].Name
 			return nil
-		}).ShouldNot(Succeed())
+		}).Should(Succeed())
+
+		// 10.72.2.0 is neco switch
+		_, _, err := ExecAt(boot0, "kubectl", "-n", ns, "exec", podName, "--", "ping", "-c", "1", "-W", "3", "10.72.2.0")
+		Expect(err).To(HaveOccurred())
 
 		By("should access to Neco switch from Pods in namespaces that are team=network")
 		ns = "dev-network"
