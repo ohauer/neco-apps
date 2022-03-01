@@ -79,13 +79,6 @@
       "repo": "https://github.com/cybozu-private/elasticsearch-apps.git",
       "team": "maneki"
     },
-    "ept-apps": {
-      "destinations": {
-        "stage0": "main"
-      },
-      "repo": "https://github.com/cybozu-private/ept-apps.git",
-      "team": "ept"
-    },
     "garoon-apps": {
       "destinations": {
         "osaka0": "stable",
@@ -220,17 +213,6 @@
         "pod-security.cybozu.com/policy": "traceable"
       }
     },
-    "ept": {
-      "app-ept": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
-      },
-      "dev-ept": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root",
-        "development": "true"
-      }
-    },
     "garoon": {
       "app-garoon": {
         "accurate.cybozu.com/template": "init-template",
@@ -314,6 +296,37 @@
     }
   },
   "tenants": {
+    "ept": {
+      "argocd": {
+        "repositories": [
+          "https://github.com/cybozu-private/*"
+        ]
+      },
+      "delegates": [
+        {
+          "name": "maneki",
+          "roles": [
+            "admin"
+          ]
+        }
+      ],
+      "rootNamespaces": [
+        {
+          "labels": {
+            "team": "ept"
+          },
+          "name": "app-ept"
+        },
+        {
+          "labels": {
+            "development": "true",
+            "team": "ept"
+          },
+          "name": "dev-ept"
+        }
+      ],
+      "stageOnly": true
+    },
     "set": {
       "argocd": {
         "repositories": [

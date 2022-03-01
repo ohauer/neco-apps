@@ -1,4 +1,4 @@
-function(apps, teams, tenants) [
+function(apps, teams) [
   {
     apiVersion: 'argoproj.io/v1alpha1',
     kind: 'AppProject',
@@ -102,7 +102,7 @@ function(apps, teams, tenants) [
           groups: std.set([
             'cybozu-private:csa',
             'cybozu-private:neco',
-          ] + std.map(function(x) 'cybozu-private:' + x, teams + tenants)),
+          ] + std.map(function(x) 'cybozu-private:' + x, teams)),
           policies: [
             'p, proj:tenant-apps:admin, applications, *, tenant-apps/*, allow',
           ],

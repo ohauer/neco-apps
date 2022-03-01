@@ -42,10 +42,6 @@
   get_teams(settings)::
     std.objectFields(settings.namespaces),
 
-  // get_tenants retrieves the array of tenants from settings.
-  get_tenants(settings)::
-    std.objectFields(settings.tenants),
-
   // get_team_namespaces retrieves the array of namespaces associated to a team.
   get_team_namespaces(settings, team)::
     std.objectFields(settings.namespaces[team]),

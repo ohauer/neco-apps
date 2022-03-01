@@ -20,16 +20,6 @@ spec:
       server: '*'
     - namespace: app-endpoint-discovery
       server: '*'
-    - namespace: app-ept
-      server: '*'
-    - namespace: app-ept-grpshuffle
-      server: '*'
-    - namespace: app-ept-monitoring
-      server: '*'
-    - namespace: app-ept-plantuml
-      server: '*'
-    - namespace: app-ept-wiki
-      server: '*'
     - namespace: app-es-cluster-allocator
       server: '*'
     - namespace: app-forest-certs
