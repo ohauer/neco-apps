@@ -18,3 +18,5 @@ data:
     mon_pg_warn_max_object_skew = 0
     [client]
     rgw_dynamic_resharding = false
+    [global]
+    mon_osd_down_out_subtree_limit = "root"
