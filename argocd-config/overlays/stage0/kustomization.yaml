@@ -29,6 +29,9 @@ patchesStrategicMerge:
 - network-policy.yaml
 - pod-security-admission.yaml
 - pvc-autoresizer.yaml
+- registry-elastic.yaml
+- registry-ghcr.yaml
+- registry-quay.yaml
 - rook.yaml
 - sandbox.yaml
 - sealed-secrets.yaml

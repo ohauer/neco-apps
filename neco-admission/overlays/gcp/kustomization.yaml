@@ -7,3 +7,5 @@ configMapGenerator:
     behavior: replace
     files:
       - config.yaml
+patchesStrategicMerge:
+  - deployment.yaml

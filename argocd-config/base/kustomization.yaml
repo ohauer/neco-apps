@@ -28,6 +28,9 @@ resources:
 - pod-security-admission.yaml
 - prometheus-adapter.yaml
 - pvc-autoresizer.yaml
+- registry-elastic.yaml
+- registry-ghcr.yaml
+- registry-quay.yaml
 - rook.yaml
 - sandbox.yaml
 - sealed-secrets.yaml

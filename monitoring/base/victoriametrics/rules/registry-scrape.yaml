@@ -1,0 +1,19 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMPodScrape
+metadata:
+  name: registry
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [ registry ]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: registry
+  podMetricsEndpoints:
+    - port: metrics
+      relabelConfigs:
+        - replacement: registry
+          targetLabel: job
+        - sourceLabels: [ __meta_kubernetes_pod_label_neco_cybozu_io_registry ]
+          action: replace
+          targetLabel: registry

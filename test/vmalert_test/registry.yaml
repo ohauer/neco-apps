@@ -1,0 +1,29 @@
+rule_files:
+  - ../../monitoring/base/victoriametrics/rules/converted/registry-alertrule.yaml
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'up{job="registry", registry="elastic"}'
+        values: '1+0x15'
+      - series: 'up{job="registry", registry="ghcr"}'
+        values: '0+0x15'
+      - series: 'up{job="registry", registry="quay"}'
+        values: 'stale'
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: RegistryQuayDown
+        exp_alerts:
+          - exp_labels:
+              severity: error
+            exp_annotations:
+              runbook: TBD
+              summary: registry quay is down.
+      - eval_time: 15m
+        alertname: RegistryGhcrDown
+        exp_alerts:
+          - exp_labels:
+              severity: error
+            exp_annotations:
+              runbook: TBD
+              summary: registry ghcr is down.

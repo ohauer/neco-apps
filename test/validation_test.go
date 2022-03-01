@@ -119,6 +119,9 @@ func testApplicationResources(t *testing.T) {
 		"kube-storage-version-migrator": "6",
 		"logging":                       "6",
 		"monitoring":                    "6",
+		"registry-elastic":              "6",
+		"registry-ghcr":                 "6",
+		"registry-quay":                 "6",
 		"session-log":                   "6",
 		"teleport":                      "6",
 		"cattage":                       "7",
@@ -209,7 +212,7 @@ func testApplicationResources(t *testing.T) {
 				if defRevision == "" {
 					t.Errorf("default targetRevision should be defined. application: %s, overlay: %s", app.Name, overlay)
 				}
-				if app.Spec.Source.Helm != nil {
+				if app.Spec.Source.Helm != nil && app.Spec.Source.Path == "" {
 					if app.Spec.Source.TargetRevision == defRevision {
 						t.Errorf("invalid targetRevision. application: %s, targetRevision: %s (should not be %s)", app.Name, app.Spec.Source.TargetRevision, defRevision)
 					}
