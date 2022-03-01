@@ -1,4 +1,4 @@
-apiVersion: tenet.cybozu.io/v1beta1
+apiVersion: tenet.cybozu.io/v1beta2
 kind: NetworkPolicyTemplate
 metadata:
     name: allow-intra-namespace-egress
@@ -13,7 +13,7 @@ spec:
           - matchLabels:
               "k8s:io.kubernetes.pod.namespace": {{.Name}}
 ---
-apiVersion: tenet.cybozu.io/v1beta1
+apiVersion: tenet.cybozu.io/v1beta2
 kind: NetworkPolicyAdmissionRule
 metadata:
     name: bmc-deny
