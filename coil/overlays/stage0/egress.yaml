@@ -5,7 +5,9 @@ metadata:
   namespace: domestic-egress
 spec:
   destinations:
+  - 10.0.80.0/20   # Forest Dev L7-rear
   - 10.176.0.0/16  # Forest Dev Farm14-mgmt
+  - 10.177.0.0/16  # Forest Dev Farm14-front
 ---
 apiVersion: coil.cybozu.com/v2
 kind: Egress
