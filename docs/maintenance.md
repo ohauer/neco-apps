@@ -36,7 +36,7 @@ How to maintain neco-apps
 - [pod-security-admission](#pod-security-admission)
 - [prometheus-adapter](#prometheus-adapter)
 - [pvc-autoresizer](#pvc-autoresizer)
-- [registry (Container Registry Mirror)](#registry)
+- [registry (Container Registry Mirror)](#registry-container-registry-mirror)
 - [rook](#rook)
   - [ceph](#ceph)
 - [s3gw](#s3gw)
@@ -477,7 +477,7 @@ $ make update-pvc-autoresizer CHART_VERSION=0.3.2
 $ git diff
 ```
 
-## registry
+## registry (Container Registry Mirror)
 
 Check [the release notes](https://github.com/distribution/distribution/releases).
 
