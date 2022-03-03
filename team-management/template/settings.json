@@ -166,7 +166,8 @@
     },
     "worker-apps": {
       "destinations": {
-        "stage0": "main"
+        "stage0": "main",
+        "tokyo0": "release"
       },
       "repo": "https://github.com/cybozu-private/worker-apps",
       "team": "cydec"
