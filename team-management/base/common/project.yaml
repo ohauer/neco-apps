@@ -109,6 +109,12 @@ spec:
       policies:
         - p, proj:tenant-app-of-apps:tenant-apps, applications, get, tenant-app-of-apps/tenant-apps, allow
         - p, proj:tenant-app-of-apps:tenant-apps, applications, sync, tenant-app-of-apps/tenant-apps, allow
+    - groups:
+        - cybozu-private:cydec
+      name: worker-apps
+      policies:
+        - p, proj:tenant-app-of-apps:worker-apps, applications, get, tenant-app-of-apps/worker-apps, allow
+        - p, proj:tenant-app-of-apps:worker-apps, applications, sync, tenant-app-of-apps/worker-apps, allow
   sourceRepos:
     - '*'
 ---
