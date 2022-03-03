@@ -163,6 +163,11 @@
       },
       "repo": "https://github.com/cybozu-private/neco-tenant-apps.git",
       "team": ""
+    },
+    "worker-apps": {
+      "destinations": {},
+      "repo": "https://github.com/cybozu-private/worker-apps",
+      "team": "cydec"
     }
   },
   "namespaces": {
