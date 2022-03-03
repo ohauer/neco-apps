@@ -166,6 +166,7 @@
     },
     "worker-apps": {
       "destinations": {
+        "osaka0": "release",
         "stage0": "main",
         "tokyo0": "release"
       },
