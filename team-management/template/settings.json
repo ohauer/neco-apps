@@ -165,7 +165,9 @@
       "team": ""
     },
     "worker-apps": {
-      "destinations": {},
+      "destinations": {
+        "stage0": "main"
+      },
       "repo": "https://github.com/cybozu-private/worker-apps",
       "team": "cydec"
     }

@@ -16,3 +16,4 @@ resources:
   - sgre-apps.yaml
   - slash-apps.yaml
   - tenant-apps.yaml
+  - worker-apps.yaml
