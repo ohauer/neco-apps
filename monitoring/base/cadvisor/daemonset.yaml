@@ -28,13 +28,8 @@ spec:
           protocol: TCP
           hostPort: 9110
         securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            add:
-            - DAC_READ_SEARCH
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
+          privileged: true
+      hostPID: true
       tolerations:
       - key: cke.cybozu.com/role
         operator: Equal
