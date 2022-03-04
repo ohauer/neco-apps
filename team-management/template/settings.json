@@ -179,6 +179,11 @@
       "app-csa": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
+      },
+      "app-csa-privileged": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "pod-security.cybozu.com/policy": "privileged"
       }
     },
     "cydec": {
