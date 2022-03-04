@@ -8,6 +8,7 @@ patchesStrategicMerge:
   - pushgateway/httpproxy.yaml
   - heartbeat.yaml
   - ingress-health/httpproxy.yaml
+  - victoriametrics/vmalertmanager.yaml
   - victoriametrics/vmcluster-largeset.yaml
 configMapGenerator:
   - name: vmalertmanager
