@@ -10,6 +10,8 @@ spec:
       server: '*'
     - namespace: app-csa-*
       server: '*'
+    - namespace: app-csa-privileged
+      server: '*'
     - namespace: app-forest-archive
       server: '*'
     - namespace: dev-*
