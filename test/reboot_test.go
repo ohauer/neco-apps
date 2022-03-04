@@ -313,10 +313,10 @@ func testRebootAllNodes() {
 					replicas = *d.Spec.Replicas
 				}
 
-				if replicas != d.Status.ReadyReplicas {
+				if replicas != d.Status.AvailableReplicas {
 					return fmt.Errorf(
 						"the number of replicas of Deployment %s/%s should be %d: %d",
-						d.Namespace, d.Name, replicas, d.Status.ReadyReplicas,
+						d.Namespace, d.Name, replicas, d.Status.AvailableReplicas,
 					)
 				}
 			}
@@ -343,10 +343,10 @@ func testRebootAllNodes() {
 					replicas = *d.Spec.Replicas
 				}
 
-				if replicas != d.Status.ReadyReplicas {
+				if replicas != d.Status.AvailableReplicas {
 					return fmt.Errorf(
 						"the number of replicas of StatefulSet %s/%s should be %d: %d",
-						d.Namespace, d.Name, replicas, d.Status.ReadyReplicas,
+						d.Namespace, d.Name, replicas, d.Status.AvailableReplicas,
 					)
 				}
 			}
