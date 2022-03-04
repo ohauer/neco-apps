@@ -9,6 +9,13 @@ csi:
   enableCephfsSnapshotter: false
   pluginPriorityClassName: ""
   provisionerPriorityClassName: ""
+  # for L4LB applying operation
+  rbdProvisionerTolerations:
+  - key: node.cybozu.io/cluster-not-ready
+    operator: Exists
+  rbdPluginTolerations:
+  - key: node.cybozu.io/cluster-not-ready
+    operator: Exists
 image:
   repository: quay.io/cybozu/rook
   tag: 1.8.3.1
@@ -18,6 +25,5 @@ resources:
   requests:
     cpu: 100m
     memory: 128Mi
-
 # To pass the CI tests easily.
 cephCommandsTimeoutSeconds: "300"

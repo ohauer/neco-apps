@@ -49,6 +49,11 @@ spec:
       - name: pg_autoscaler
         enabled: true
   placement:
+    all:
+      # for L4LB applying operation
+      tolerations:
+        - key: node.cybozu.io/cluster-not-ready
+          operator: Exists
     mon:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

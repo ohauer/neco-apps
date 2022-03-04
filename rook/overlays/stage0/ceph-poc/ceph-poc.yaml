@@ -550,6 +550,12 @@ data:
   CSI_RBD_FSGROUPPOLICY: ReadWriteOnceWithFSType
   CSI_RBD_GRPC_METRICS_PORT: "29091"
   CSI_RBD_LIVENESS_METRICS_PORT: "29081"
+  CSI_RBD_PLUGIN_TOLERATIONS: |-
+    - key: node.cybozu.io/cluster-not-ready
+      operator: Exists
+  CSI_RBD_PROVISIONER_TOLERATIONS: |-
+    - key: node.cybozu.io/cluster-not-ready
+      operator: Exists
   ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS: "300"
   ROOK_CSI_ENABLE_CEPHFS: "false"
   ROOK_CSI_ENABLE_GRPC_METRICS: "false"
@@ -716,6 +722,8 @@ spec:
         key: node.kubernetes.io/unreachable
         operator: Exists
         tolerationSeconds: 5
+      - key: node.cybozu.io/cluster-not-ready
+        operator: Exists
       volumes:
       - configMap:
           items:
@@ -789,6 +797,10 @@ spec:
             storage: 10Gi
         storageClassName: topolvm-provisioner
   placement:
+    all:
+      tolerations:
+      - key: node.cybozu.io/cluster-not-ready
+        operator: Exists
     mgr:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:

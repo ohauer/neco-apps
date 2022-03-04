@@ -49,6 +49,11 @@ spec:
       - name: pg_autoscaler
         enabled: true
   placement:
+    all:
+      # for L4LB applying operation
+      tolerations:
+        - key: node.cybozu.io/cluster-not-ready
+          operator: Exists
     mon:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -113,6 +118,9 @@ spec:
             - key: cke.cybozu.com/role
               operator: Equal
               value: storage
+            # for L4LB applying operation
+            - key: node.cybozu.io/cluster-not-ready
+              operator: Exists
           topologySpreadConstraints:
             - maxSkew: 1
               topologyKey: topology.kubernetes.io/zone
@@ -155,6 +163,10 @@ spec:
               accessModes:
                 - ReadWriteOnce
         placement:
+          # for L4LB applying operation
+          tolerations:
+            - key: node.cybozu.io/cluster-not-ready
+              operator: Exists
           topologySpreadConstraints:
             - maxSkew: 1
               topologyKey: topology.kubernetes.io/zone
