@@ -29,6 +29,12 @@ update-argocd:
 	sed -i -E '/name:.*dex$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' argocd/base/kustomization.yaml
 	$(call get-latest-tag,redis)
 	sed -i -E '/name:.*redis$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' argocd/base/kustomization.yaml
+	$(call get-latest-tag,argocd-notifications)
+	curl -sSLf -o argocd/base/upstream/notifications-install.yaml \
+		https://raw.githubusercontent.com/argoproj-labs/argocd-notifications/$(call upstream-tag,$(latest_tag))/manifests/install.yaml
+	curl -sSLf -o argocd/base/upstream/notifications-catalog.yaml \
+		https://raw.githubusercontent.com/argoproj-labs/argocd-notifications/$(call upstream-tag,$(latest_tag))/catalog/install.yaml
+	sed -i -E '/name:.*argocd-notifications$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' argocd/base/kustomization.yaml
 
 .PHONY: update-bmc-reverse-proxy
 update-bmc-reverse-proxy:

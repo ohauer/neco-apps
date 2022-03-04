@@ -43,3 +43,20 @@ spec:
       - sourceLabels: [__meta_kubernetes_service_name]
         action: keep
         regex: argocd-dex-server
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: argocd-notifications
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    matchNames: [argocd]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-notifications-controller-metrics
+  endpoints:
+  - port: metrics
+    relabelConfigs:
+      - replacement: argocd-notifications
+        targetLabel: job

@@ -142,3 +142,22 @@ kind: ConfigMap
 metadata:
   name: argocd-tls-certs-cm
 data: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+data:
+  subscriptions: |
+    - recipients:
+      - slack:neco-ops
+      selector: app.kubernetes.io/instance=argocd-config
+      triggers:
+      - on-created
+      - on-deleted
+      - on-deployed
+      - on-health-degraded
+      - on-sync-failed
+      - on-sync-running
+      - on-sync-status-unknown
+      - on-sync-succeeded

@@ -5,3 +5,15 @@ metadata:
 data:
   url: https://argocd.stage0.cybozu-ne.co
   admin.enabled: "false"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+data:
+  context: |
+    argocdUrl: https://argocd.stage0.cybozu-ne.co
+  service.slack: |
+    token: $slack-token
+    username: Argo CD (stage0)
+    icon: https://avatars.githubusercontent.com/u/30269780 # Argo Project icon

@@ -32,3 +32,13 @@ spec:
           annotations:
             summary: ArgoCD has disappeared from Prometheus target discovery.
             runbook: Please consider to find root causes, and solve the problems
+    - name: argocd-notifications
+      rules:
+        - alert: ArgoCDNotificationsDown
+          expr: |
+            absent(up{job="argocd-notifications"} == 1)
+          labels:
+            severity: error
+          for: 10m
+          annotations:
+            summary: Argo CD Notifications has disappeared from Prometheus target discovery.

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - ../../base
 patchesStrategicMerge:
+- argocd.yaml
 - argocd-ingress.yaml
 - bmc-reverse-proxy.yaml
 - cert-manager.yaml
