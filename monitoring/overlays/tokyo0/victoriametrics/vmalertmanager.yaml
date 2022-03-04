@@ -1,0 +1,15 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlertmanager
+metadata:
+  name: vmalertmanager-smallset
+  namespace: monitoring
+spec:
+  externalURL: https://vmalertmanager-smallset.teleport.tokyo0.cybozu-ne.co/
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlertmanager
+metadata:
+  name: vmalertmanager-largeset
+  namespace: monitoring
+spec:
+  externalURL: https://vmalertmanager-largeset.teleport.tokyo0.cybozu-ne.co/
