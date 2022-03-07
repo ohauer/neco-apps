@@ -7,4 +7,4 @@ spec:
   storage:
     resources:
       requests:
-        storage: 400Gi
+        storage: 1Ti
