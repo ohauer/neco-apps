@@ -151,7 +151,7 @@ data:
   subscriptions: |
     - recipients:
       - slack:neco-ops
-      selector: app.kubernetes.io/instance=argocd-config
+      selector: app.kubernetes.io/instance=argocd-config,is-tenant!=true
       triggers:
       - on-created
       - on-deleted
