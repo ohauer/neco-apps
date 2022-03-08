@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://cybozu-go.github.io/tenet
     chart: tenet
-    targetRevision: 0.1.2
+    targetRevision: 0.2.0
     helm:
       version: v3
   destination:

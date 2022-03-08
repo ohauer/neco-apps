@@ -562,6 +562,24 @@ func applyAndWaitForApplications(commitID string) {
 		return nil
 	}
 
+	//TODO: remove this block after releasing
+	// https://github.com/cybozu-go/neco-apps/pull/2321
+	if doUpgrade {
+		tenetCRDs := []string{
+			"networkpolicytemplates.tenet.cybozu.io",
+			"networkpolicyadmissionrules.tenet.cybozu.io",
+		}
+		for _, crd := range tenetCRDs {
+			_, _, err := ExecAt(boot0, "kubectl", "get", "crd", crd)
+			if err == nil {
+				stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "crd", crd, fmt.Sprintf("admission.cybozu.com/i-am-sure-to-delete=%s", crd))
+				Expect(err).ShouldNot(HaveOccurred(), "failed to annotate tenet crd: stdout=%s, stderr=%s", stdout, stderr)
+				stdout, stderr, err = ExecAt(boot0, "kubectl", "delete", "crd", crd)
+				Expect(err).ShouldNot(HaveOccurred(), "failed to delete tenet crd: stdout=%s, stderr=%s", stdout, stderr)
+			}
+		}
+	}
+
 	// want to do like "Eventually( Consistently(checkAllAppsSynced, 10sec, 1sec) )"
 	Eventually(func() error {
 		for i := 0; i < 10; i++ {
