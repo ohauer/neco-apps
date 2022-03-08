@@ -3,6 +3,9 @@ kind: GrafanaDashboard
 metadata:
   name: registry
 spec:
+  datasources:
+    - inputName: "DS_PROMETHEUS"
+      datasourceName: "vmcluster-largeset"
   json: >
     {
       "__inputs": [
@@ -835,7 +838,7 @@ spec:
         ]
       },
       "timezone": "",
-      "title": "registry",
+      "title": "Container Registry Mirror",
       "uid": "T925dF-Gz",
       "version": 3
     }
