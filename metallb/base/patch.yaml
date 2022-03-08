@@ -30,8 +30,12 @@ spec:
         - $patch: delete
           name: METALLB_ML_SECRET_KEY
       tolerations:
-        - key: "neco/exclude_noisy_neighbor"
-          operator: "Exists"
+      - key: cke.cybozu.com/state
+        operator: Exists
+      - key: csa/exclude_noisy_neighbor
+        operator: Exists
+      - key: neco/exclude_noisy_neighbor
+        operator: Exists
 ---
 apiVersion: apps/v1
 kind: Deployment

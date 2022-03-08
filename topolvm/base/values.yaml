@@ -16,6 +16,7 @@ scheduler:
     - key: CriticalAddonsOnly
       operator: Exists
     - key: cke.cybozu.com/master
+      operator: Exists
 
 # lvmd service
 lvmd:
@@ -36,12 +37,13 @@ lvmd:
       maxUnavailable: 35%
     type: RollingUpdate
   
-  # Temporary configuration for storage performance measurement
   tolerations:
-    - key: "csa/exclude_noisy_neighbor"
-      operator: "Exists"
-    - key: "neco/exclude_noisy_neighbor"
-      operator: "Exists"
+    - key: cke.cybozu.com/state
+      operator: Exists
+    - key: csa/exclude_noisy_neighbor
+      operator: Exists
+    - key: neco/exclude_noisy_neighbor
+      operator: Exists
 
 # CSI node service
 node:
@@ -56,12 +58,13 @@ node:
       maxUnavailable: 35%
     type: RollingUpdate
   
-  # Temporary configuration for storage performance measurement
   tolerations:
-    - key: "csa/exclude_noisy_neighbor"
-      operator: "Exists"
-    - key: "neco/exclude_noisy_neighbor"
-      operator: "Exists"
+    - key: cke.cybozu.com/state
+      operator: Exists
+    - key: csa/exclude_noisy_neighbor
+      operator: Exists
+    - key: neco/exclude_noisy_neighbor
+      operator: Exists
 
 # storageClasses -- Whether to create storageclass(s)
 # ref: https://kubernetes.io/docs/concepts/storage/storage-classes/

@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
 - ./upstream/metallb.yaml
 patchesStrategicMerge:
-- ./deployment.yaml
+- ./patch.yaml
 images:
 - name: quay.io/metallb/speaker
   newName: quay.io/cybozu/metallb

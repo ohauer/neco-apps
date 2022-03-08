@@ -19,6 +19,10 @@ spec:
           - name: http-metrics
             containerPort: 3500
       tolerations:
+        - key: cke.cybozu.com/master
+          operator: Exists
         - key: cke.cybozu.com/role
           operator: Equal
           value: storage
+        - key: cke.cybozu.com/state
+          operator: Exists

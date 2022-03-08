@@ -35,9 +35,13 @@ spec:
             path: /run/log/journal
           name: journal
       tolerations:
+        - key: cke.cybozu.com/master
+          operator: Exists
         - key: cke.cybozu.com/role
           operator: Equal
           value: storage
+        - key: cke.cybozu.com/state
+          operator: Exists
 ---
 $patch: delete
 apiVersion: v1

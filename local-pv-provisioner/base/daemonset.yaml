@@ -58,3 +58,5 @@ spec:
         - key: cke.cybozu.com/role
           operator: Equal
           value: storage
+        - key: cke.cybozu.com/state
+          operator: Exists
