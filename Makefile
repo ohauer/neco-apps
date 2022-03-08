@@ -379,14 +379,14 @@ setup:
 	rm -f /tmp/helm.tgz
 
 	# tanka
-	curl -sSLf -o $$(go env GOPATH)/bin/tk https://github.com/grafana/tanka/releases/download/v$(TANKA_VERSION)/tk-linux-amd64
+	./bin/curl-github -sSLf -o $$(go env GOPATH)/bin/tk https://github.com/grafana/tanka/releases/download/v$(TANKA_VERSION)/tk-linux-amd64
 	chmod +x $$(go env GOPATH)/bin/tk
 
 	# jb
 	go install github.com/jsonnet-bundler/jsonnet-bundler/cmd/jb@latest
 
 	# yq
-	curl -sSLf -o /tmp/yq.tar.gz https://github.com/mikefarah/yq/releases/download/v$(YQ_VERSION)/yq_linux_amd64.tar.gz
+	./bin/curl-github -sSLf -o /tmp/yq.tar.gz https://github.com/mikefarah/yq/releases/download/v$(YQ_VERSION)/yq_linux_amd64.tar.gz
 	tar --strip-components=1 -C $$(go env GOPATH)/bin -xzf /tmp/yq.tar.gz
 	mv $$(go env GOPATH)/bin/yq_linux_amd64 $$(go env GOPATH)/bin/yq
 	rm -f /tmp/yq.tar.gz

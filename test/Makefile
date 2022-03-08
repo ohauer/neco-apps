@@ -13,7 +13,9 @@ TEST_ID := test$(CIRCLE_BUILD_NUM)
 BASE_BRANCH = main
 COMMIT_ID = $(shell git rev-parse HEAD)
 SUDO = sudo
-WGET=wget --retry-on-http-error=503 --retry-connrefused --no-verbose
+WGET_OPTIONS=--retry-on-http-error=503 --retry-connrefused --no-verbose
+WGET=wget $(WGET_OPTIONS)
+WGET_GITHUB=../bin/wget-github $(WGET_OPTIONS)
 NUM_DASHBOARD = $(shell KUSTOMIZE_ENABLE_ALPHA_COMMANDS=true ./bin/kustomize cfg count ../monitoring/base/grafana-operator/dashboards | \
 	grep GrafanaDashboard | cut -d' ' -f2)
 export BOOT0 BOOT1 BOOT2 GINKGO SSH_PRIVKEY TEST_ID COMMIT_ID NUM_DASHBOARD SUDO
@@ -103,12 +105,12 @@ $(KUBECTL):
 
 $(KUSTOMIZE):
 	$(MAKE) setup-download
-	$(WGET) -O $(KUSTOMIZE_DLPATH) https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v$(KUSTOMIZE_VERSION)_linux_amd64.tar.gz
+	$(WGET_GITHUB) -O $(KUSTOMIZE_DLPATH) https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v$(KUSTOMIZE_VERSION)_linux_amd64.tar.gz
 	tar zxf $(KUSTOMIZE_DLPATH) -C $(BINDIR)
 
 $(PROMTOOL):
 	$(MAKE) setup-download
-	$(WGET) -O $(PROMTOOL_DLPATH) https://github.com/prometheus/prometheus/releases/download/v$(PROMTOOL_VERSION)/prometheus-$(PROMTOOL_VERSION).linux-amd64.tar.gz
+	$(WGET_GITHUB) -O $(PROMTOOL_DLPATH) https://github.com/prometheus/prometheus/releases/download/v$(PROMTOOL_VERSION)/prometheus-$(PROMTOOL_VERSION).linux-amd64.tar.gz
 	tar zxf $(PROMTOOL_DLPATH) -C $(BINDIR) --strip-components=1 prometheus-$(PROMTOOL_VERSION).linux-amd64/promtool
 
 $(TSH):
@@ -118,7 +120,7 @@ $(TSH):
 
 $(ARGOCD):
 	$(MAKE) setup-download
-	$(WGET) -O $(BINDIR)/argocd https://github.com/argoproj/argo-cd/releases/download/v$(ARGOCD_VERSION)/argocd-linux-amd64
+	$(WGET_GITHUB) -O $(BINDIR)/argocd https://github.com/argoproj/argo-cd/releases/download/v$(ARGOCD_VERSION)/argocd-linux-amd64
 	chmod +x $@
 
 .PHONY: setup
