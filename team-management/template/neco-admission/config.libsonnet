@@ -35,9 +35,9 @@ function(settings, extraRules) [{
         },
         {
           repositoryPrefix: 'https://github.com/cybozu-private',
-          projects: std.filter(function(x) x != 'csa', utility.get_teams(settings) + [
+          projects: std.sort(std.filter(function(x) x != 'csa', utility.get_teams(settings) + utility.get_tenants(settings) + [
             'tenant-app-of-apps',
-          ]),
+          ])),
         },
         {
           repositoryPrefix: 'https://github.com/garoon-private',

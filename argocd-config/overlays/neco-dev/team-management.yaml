@@ -1,0 +1,8 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: team-management
+  namespace: argocd
+spec:
+  source:
+    path: team-management/overlays/neco-dev

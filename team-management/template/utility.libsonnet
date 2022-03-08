@@ -50,6 +50,10 @@
   get_team_namespace_labels(settings, team, namespace)::
     settings.namespaces[team][namespace],
 
+  // get_tenants retrieves the array of tenants from settings.
+  get_tenants(settings)::
+    std.objectFields(settings.tenants),
+
   // get_all_namespaces retrieves the array of all namespaces associated to the tenant teams.
   get_all_namespaces(settings)::
     std.flattenArrays(std.map(function(x) self.get_team_namespaces(settings, x), self.get_teams(settings))),

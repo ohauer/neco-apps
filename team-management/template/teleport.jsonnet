@@ -7,4 +7,4 @@
 local settings = import 'settings.json';
 local teleport_template = import 'teleport/main.libsonnet';
 local utility = import 'utility.libsonnet';
-utility.prefix_file_names('teleport', teleport_template(utility.get_teams(settings)))
+utility.prefix_file_names('teleport', teleport_template(std.sort(utility.get_teams(settings) + utility.get_tenants(settings))))

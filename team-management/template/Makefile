@@ -54,6 +54,7 @@ team-management:
 			rm -rf $$i; \
 		fi; \
 	done
+	rm -rf ../base/tenant-*.yaml
 
 	$(MAKE) write-team-management
 
