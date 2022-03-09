@@ -1,5 +1,5 @@
 # This manifest is based on the this example (https://github.com/cybozu-go/moco/blob/v0.8.1/docs/usage.md).
-apiVersion: moco.cybozu.com/v1beta1
+apiVersion: moco.cybozu.com/v1beta2
 kind: MySQLCluster
 metadata:
   namespace: dctest

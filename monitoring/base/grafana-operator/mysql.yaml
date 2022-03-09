@@ -1,4 +1,4 @@
-apiVersion: moco.cybozu.com/v1beta1
+apiVersion: moco.cybozu.com/v1beta2
 kind: MySQLCluster
 metadata:
   namespace: monitoring

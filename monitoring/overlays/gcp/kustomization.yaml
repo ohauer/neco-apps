@@ -8,7 +8,7 @@ patchesStrategicMerge:
 patchesJSON6902:
   - target:
       group: moco.cybozu.com
-      version: v1beta1
+      version: v1beta2
       kind: MySQLCluster
       name: grafana-mysql
       namespace: monitoring
