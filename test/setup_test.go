@@ -557,7 +557,15 @@ func applyAndWaitForApplications(commitID string) {
 				}
 			}
 
-			return fmt.Errorf("%s is not initialized. argocd app get %s -o json: %s", target.name, target.name, appStdout)
+			err := fmt.Errorf("%s is not initialized. argocd app get %s -o json: %s", target.name, target.name, appStdout)
+			if target.name == "rook" {
+				namespaces := []string{"ceph-object-store", "ceph-ssd"}
+				for _, namespace := range namespaces {
+					stdout, stderr, kubectlerr := ExecAt(boot0, "kubectl", "get", "pod", "-n", namespace)
+					err = fmt.Errorf("%v\nnamespace: %s, stdout: %s, stderr: %s, kubectlerr: %v", err, namespace, stdout, stderr, kubectlerr)
+				}
+			}
+			return err
 		}
 		return nil
 	}
