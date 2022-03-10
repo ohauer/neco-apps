@@ -515,6 +515,12 @@ data:
   CSI_RBD_FSGROUPPOLICY: ReadWriteOnceWithFSType
   CSI_RBD_GRPC_METRICS_PORT: "29093"
   CSI_RBD_LIVENESS_METRICS_PORT: "29083"
+  CSI_RBD_PLUGIN_TOLERATIONS: |-
+    - key: node.cybozu.io/cluster-not-ready
+      operator: Exists
+  CSI_RBD_PROVISIONER_TOLERATIONS: |-
+    - key: node.cybozu.io/cluster-not-ready
+      operator: Exists
   ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS: "300"
   ROOK_CSI_ENABLE_CEPHFS: "false"
   ROOK_CSI_ENABLE_GRPC_METRICS: "false"
@@ -681,6 +687,8 @@ spec:
         key: node.kubernetes.io/unreachable
         operator: Exists
         tolerationSeconds: 5
+      - key: node.cybozu.io/cluster-not-ready
+        operator: Exists
       volumes:
       - configMap:
           items:
@@ -741,6 +749,10 @@ spec:
             storage: 10Gi
         storageClassName: topolvm-flash1-ext4
   placement:
+    all:
+      tolerations:
+      - key: node.cybozu.io/cluster-not-ready
+        operator: Exists
     mgr:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
@@ -788,6 +800,8 @@ spec:
         - key: cke.cybozu.com/role
           operator: Equal
           value: storage
+        - key: node.cybozu.io/cluster-not-ready
+          operator: Exists
         topologySpreadConstraints:
         - labelSelector:
             matchExpressions:
@@ -826,6 +840,9 @@ spec:
     - count: 6
       name: ssd
       placement:
+        tolerations:
+        - key: node.cybozu.io/cluster-not-ready
+          operator: Exists
         topologySpreadConstraints:
         - labelSelector:
             matchExpressions:

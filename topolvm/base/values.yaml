@@ -17,6 +17,9 @@ scheduler:
       operator: Exists
     - key: cke.cybozu.com/master
       operator: Exists
+    # for L4LB applying operation
+    - key: node.cybozu.io/cluster-not-ready
+      operator: Exists
 
 # lvmd service
 lvmd:
@@ -44,6 +47,9 @@ lvmd:
       operator: Exists
     - key: neco/exclude_noisy_neighbor
       operator: Exists
+    # for L4LB applying operation
+    - key: node.cybozu.io/cluster-not-ready
+      operator: Exists
 
 # CSI node service
 node:
@@ -64,6 +70,9 @@ node:
     - key: csa/exclude_noisy_neighbor
       operator: Exists
     - key: neco/exclude_noisy_neighbor
+      operator: Exists
+    # for L4LB applying operation
+    - key: node.cybozu.io/cluster-not-ready
       operator: Exists
 
 # storageClasses -- Whether to create storageclass(s)
@@ -133,6 +142,11 @@ controller:
   podDisruptionBudget:
     # podDisruptionBudget.enabled -- Enable podDisruptionBudget.
     enabled: true
+
+  # for L4LB applying operation
+  tolerations:
+    - key: node.cybozu.io/cluster-not-ready
+      operator: Exists
 
 priorityClass:
   # priorityClass.enabled -- Enable priorityClass.
