@@ -26,6 +26,7 @@ spec:
         protocol: TCP
   egress:
   - toCIDR:
+    # Switch network
     - 10.72.0.0/20
     - 10.76.0.0/20
     - 10.78.0.0/20

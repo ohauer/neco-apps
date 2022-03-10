@@ -3,8 +3,6 @@ kind: CiliumNetworkPolicy
 metadata:
   name: egress-hubble-relay-node-allow
   namespace: kube-system
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   endpointSelector:
     matchLabels:

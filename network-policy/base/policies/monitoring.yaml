@@ -3,8 +3,6 @@ kind: CiliumNetworkPolicy
 metadata:
   name: egress-prometheus
   namespace: monitoring
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   endpointSelector:
     matchLabels:
@@ -71,6 +69,8 @@ spec:
       - port: "10249"
         protocol: TCP
   - toCIDR:
+    # Node network
+    # CIDR based rule only applies to nodes outside the cluster including boot servers
     - 10.69.0.0/16
     toPorts:
     # etcd metrics

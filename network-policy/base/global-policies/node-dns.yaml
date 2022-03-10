@@ -2,8 +2,6 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-node-dns-allow
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   endpointSelector: {}
   egress:

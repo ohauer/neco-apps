@@ -2,8 +2,6 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-bmc-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   endpointSelector:
     matchExpressions:
@@ -13,6 +11,7 @@ spec:
       - bmc-reverse-proxy
   egressDeny:
   - toCIDR:
+    # BMC network
     - 10.72.16.0/20
     - 10.76.16.0/20
     - 10.78.16.0/20
@@ -21,12 +20,11 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-bastion-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   endpointSelector: {}
   egressDeny:
   - toCIDR:
+    # Bastion network
     - 10.72.48.0/24
     - 10.72.80.0/24
     - 10.76.48.0/24
@@ -38,8 +36,6 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-switch-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   endpointSelector:
     matchExpressions:
@@ -49,6 +45,7 @@ spec:
       - network-nat
   egressDeny:
   - toCIDR:
+    # Switch network
     - 10.72.0.0/20
     - 10.76.0.0/20
     - 10.78.0.0/20
@@ -57,8 +54,6 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-node-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   endpointSelector:
     matchExpressions:
@@ -72,4 +67,6 @@ spec:
       - vmagent
   egressDeny:
   - toCIDR:
+    # Node network
+    # CIDR based rule only applies to nodes outside the cluster including boot servers
     - 10.69.0.0/16

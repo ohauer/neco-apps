@@ -3,8 +3,6 @@ kind: CiliumNetworkPolicy
 metadata:
   name: egress-squid
   namespace: internet-egress
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   endpointSelector:
     matchLabels:
@@ -13,6 +11,7 @@ spec:
   - toEntities:
     - cluster
   - toCIDR:
+    # Private addresses
     - 10.0.0.0/8
     - 172.16.0.0/12
     - 192.168.0.0/16
@@ -22,8 +21,6 @@ kind: CiliumNetworkPolicy
 metadata:
   name: egress-unbound
   namespace: internet-egress
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
   endpointSelector:
     matchLabels:

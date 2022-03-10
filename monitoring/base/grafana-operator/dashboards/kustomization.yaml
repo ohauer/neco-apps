@@ -6,6 +6,7 @@ commonLabels:
 resources:
   - all-nodes.yaml
   - argocd.yaml
+  - calico.yaml
   - ceph-clusters.yaml
   - ceph-osd.yaml
   - cert-manager.yaml

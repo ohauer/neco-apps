@@ -1,0 +1,48 @@
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkSet
+metadata:
+  name: switch
+  namespace: domestic-egress
+  labels:
+    role: switch
+spec:
+  nets:
+    - 10.72.0.0/20
+    - 10.76.0.0/20
+    - 10.78.0.0/20
+---
+apiVersion: crd.projectcalico.org/v1
+kind: NetworkPolicy
+metadata:
+  name: network-nat
+  namespace: domestic-egress
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  order: 100.0
+  selector: app.kubernetes.io/component == 'egress' && app.kubernetes.io/instance == 'network-nat' && app.kubernetes.io/name == 'coil'
+  types:
+    - Ingress
+    - Egress
+  ingress:
+    - action: Allow
+      protocol: UDP
+      source:
+        namespaceSelector: team == 'network'
+      destination:
+        ports:
+          - 5555
+    - action: Allow
+      protocol: TCP
+      source:
+        namespaceSelector: team == 'neco'
+        selector: app.kubernetes.io/name == 'vmagent'
+      destination:
+        ports:
+        - metrics
+    - action: Deny
+  egress:
+    - action: Allow
+      destination:
+        selector: role == 'switch'
+    

@@ -2,8 +2,6 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-meows-runner-allow
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   endpointSelector:
     matchLabels:
@@ -25,8 +23,6 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-meows-dctest-runner
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   endpointSelector:
     matchLabels:
@@ -35,6 +31,7 @@ spec:
       k8s:io.kubernetes.pod.namespace: meows-runner
   egressDeny:
   - toCIDR:
+    # Private addresses
     - 10.0.0.0/8
     - 172.16.0.0/12
     - 192.168.0.0/16
@@ -43,8 +40,6 @@ apiVersion: cilium.io/v2
 kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-meows-allow
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   endpointSelector:
     matchLabels:

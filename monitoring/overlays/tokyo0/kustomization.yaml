@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - ../../base
   - grafana-operator/httpproxy.yaml
+  - victoriametrics/rules/network-policy-alertrule.yaml
+  - victoriametrics/rules/network-policy-scrape.yaml
 patchesStrategicMerge:
   - grafana-operator/grafana.yaml
   - pushgateway/httpproxy.yaml

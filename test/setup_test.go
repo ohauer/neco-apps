@@ -583,7 +583,9 @@ func applyAndWaitForApplications(commitID string) {
 	// want to do like "Eventually( Consistently(checkAllAppsSynced, 10sec, 1sec) )"
 	Eventually(func() error {
 		if doUpgrade {
-			removeCalicoIPTableRules()
+			if err := removeCalicoIPTableRules(); err != nil {
+				return err
+			}
 		}
 		for i := 0; i < 10; i++ {
 			err := checkAllAppsSynced()
@@ -593,7 +595,9 @@ func applyAndWaitForApplications(commitID string) {
 			time.Sleep(1 * time.Second)
 		}
 		if doUpgrade {
-			removeCalicoIPTableRules()
+			if err := removeCalicoIPTableRules(); err != nil {
+				return err
+			}
 		}
 		return nil
 	}, 60*time.Minute).Should(Succeed())
@@ -629,43 +633,60 @@ func applyAndWaitForApplications(commitID string) {
 	}
 }
 
-func removeCalicoIPTableRules() {
+func removeCalicoIPTableRules() error {
 	stdout, stderr, err := ExecAt(boot0, "ckecli", "cluster", "get")
-	Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+	if err != nil {
+		return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+	}
 	cluster := new(ckeCluster)
 	err = k8sYaml.Unmarshal(stdout, cluster)
-	Expect(err).ShouldNot(HaveOccurred())
+	if err != nil {
+		return err
+	}
 	for _, node := range cluster.Nodes {
 		stdout, stderr, err = ExecAt(boot0,
 			"ckecli", "ssh", node.Address, "--", "sudo", "iptables-legacy", "-L", "INPUT", "1")
-		Expect(err).ShouldNot(HaveOccurred(), "failed to list INPUT rule: stdout=%s, stderr=%s", stdout, stderr)
+		if err != nil {
+			return fmt.Errorf("failed to list INPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
 		if strings.HasPrefix(string(stdout), "cali-INPUT") {
 			stdout, stderr, err = ExecAt(boot0,
 				"ckecli", "ssh", node.Address, "--",
 				"sudo", "iptables-legacy", "-D", "INPUT", "-m", "comment", "--comment", "\"cali:Cz_u1IQiXIMmKD4c\"", "-j", "cali-INPUT")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to remove cali-INPUT rule: stdout=%s, stderr=%s", stdout, stderr)
+			if err != nil {
+				return fmt.Errorf("failed to remove cali-INPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
 		}
 
 		stdout, stderr, err = ExecAt(boot0,
 			"ckecli", "ssh", node.Address, "--", "sudo", "iptables-legacy", "-L", "OUTPUT", "1")
-		Expect(err).ShouldNot(HaveOccurred(), "failed to list OUTPUT rule: stdout=%s, stderr=%s", stdout, stderr)
+		if err != nil {
+			return fmt.Errorf("failed to list OUTPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
 		if strings.HasPrefix(string(stdout), "cali-OUTPUT") {
 			stdout, stderr, err = ExecAt(boot0,
 				"ckecli", "ssh", node.Address, "--",
 				"sudo", "iptables-legacy", "-D", "OUTPUT", "-m", "comment", "--comment", "\"cali:tVnHkvAo15HuiPy0\"", "-j", "cali-OUTPUT")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to remove cali-OUTPUT rule: stdout=%s, stderr=%s", stdout, stderr)
+			if err != nil {
+				return fmt.Errorf("failed to remove cali-OUTPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
 		}
 
 		stdout, stderr, err = ExecAt(boot0,
 			"ckecli", "ssh", node.Address, "--", "sudo", "iptables-legacy", "-L", "FORWARD", "1")
-		Expect(err).ShouldNot(HaveOccurred(), "failed to list FORWARD rule: stdout=%s, stderr=%s", stdout, stderr)
+		if err != nil {
+			return fmt.Errorf("failed to list FORWARD rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
 		if strings.HasPrefix(string(stdout), "cali-FORWARD") {
 			stdout, stderr, err = ExecAt(boot0,
 				"ckecli", "ssh", node.Address, "--",
 				"sudo", "iptables-legacy", "-D", "FORWARD", "-m", "comment", "--comment", "\"cali:wUHhoiAYhphO9Mso\"", "-j", "cali-FORWARD")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to remove cali-FORWARD rules: stdout=%s, stderr=%s", stdout, stderr)
+			if err != nil {
+				return fmt.Errorf("failed to remove cali-FORWARD rules: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
 		}
 	}
+	return nil
 }
 
 // Sometimes synchronization fails when argocd applies network policies.
