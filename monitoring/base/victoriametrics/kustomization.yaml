@@ -75,7 +75,6 @@ resources:
   - rules/node-alertrule.yaml
   - rules/node-scrape.yaml
   - rules/pvc-autoresizer-scrape.yaml
-  - rules/registry-alertrule.yaml
   - rules/registry-scrape.yaml
   - rules/rook-scrape.yaml
   - rules/sabakan-alertrule.yaml
