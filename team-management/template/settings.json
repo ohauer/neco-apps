@@ -35,7 +35,8 @@
       "app-monitoring",
       "app-monitoring-elasticstack",
       "app-oauth-redirector",
-      "app-octodns"
+      "app-octodns",
+      "app-schreiben"
     ],
     "network": [
       "app-network-*"
