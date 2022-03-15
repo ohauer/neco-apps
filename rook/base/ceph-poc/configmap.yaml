@@ -19,3 +19,6 @@ data:
     rgw_dynamic_resharding = false
     [global]
     mon_osd_down_out_subtree_limit = "root"
+    ; If HEALTH_WARN appears, it should be investigated, but there is
+    ; no requirement for slow ops. So this threshold was extended.
+    osd_op_complaint_time = 300.0
