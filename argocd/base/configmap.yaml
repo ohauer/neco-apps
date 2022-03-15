@@ -20,90 +20,84 @@ data:
     jsonPointers:
     - /spec/duration
     - /spec/renewBefore
-  resource.customizations: |
-    argoproj.io/Application:
-      health.lua: |
-        hs = {}
-        hs.status = "Progressing"
-        hs.message = ""
-        if obj.metadata ~= nil and obj.metadata.labels ~= nil and obj.metadata.labels["app.kubernetes.io/instance"] == "argocd-config" and obj.metadata.labels["is-tenant"] == "true" then
+  resource.customizations.health.argoproj.io_Application: |
+    hs = {}
+    hs.status = "Progressing"
+    hs.message = ""
+    if obj.metadata ~= nil and obj.metadata.labels ~= nil and obj.metadata.labels["app.kubernetes.io/instance"] == "argocd-config" and obj.metadata.labels["is-tenant"] == "true" then
+      hs.status = "Healthy"
+      hs.message = ""
+      return hs
+    end
+    if obj.status ~= nil then
+      if obj.status.health ~= nil then
+        hs.status = obj.status.health.status
+        if obj.status.health.message ~= nil then
+          hs.message = obj.status.health.message
+        end
+      end
+    end
+    return hs
+  resource.customizations.health.ceph.rook.io_CephCluster: |
+    hs = {}
+    if obj.status ~= nil then
+      if obj.status.ceph ~= nil then
+        if obj.status.ceph.health == "HEALTH_OK" or obj.status.ceph.health == "HEALTH_WARN" then
           hs.status = "Healthy"
-          hs.message = ""
+          hs.message = obj.status.message
           return hs
         end
-        if obj.status ~= nil then
-          if obj.status.health ~= nil then
-            hs.status = obj.status.health.status
-            if obj.status.health.message ~= nil then
-              hs.message = obj.status.health.message
-            end
-          end
-        end
-        return hs
-    ceph.rook.io/CephCluster:
-      health.lua: |
-        hs = {}
-        if obj.status ~= nil then
-          if obj.status.ceph ~= nil then
-            if obj.status.ceph.health == "HEALTH_OK" or obj.status.ceph.health == "HEALTH_WARN" then
-              hs.status = "Healthy"
-              hs.message = obj.status.message
-              return hs
-            end
-          end
-        end
+      end
+    end
 
-        hs.status = "Progressing"
-        hs.message = "Waiting for Ceph cluster to become HEALTH_OK or HEALTH_WARN"
+    hs.status = "Progressing"
+    hs.message = "Waiting for Ceph cluster to become HEALTH_OK or HEALTH_WARN"
+    return hs
+  resource.customizations.health.objectbucket.io_ObjectBucketClaim: |
+    hs = {}
+    if obj.status ~= nil then
+      if obj.status.phase == "Bound" then
+        hs.status = "Healthy"
+        hs.message = "Bound"
         return hs
-    objectbucket.io/ObjectBucketClaim:
-      health.lua: |
-        hs = {}
-        if obj.status ~= nil then
-          if obj.status.phase == "Bound" then
+      end
+    end
+
+    hs.status = "Progressing"
+    hs.message = "Waiting for a bucket to get created"
+    return hs
+  resource.customizations.health.accurate.cybozu.com_SubNamespace: |
+    hs = {}
+    if obj.status ~= nil then
+      if obj.status == "ok" then
+        hs.status = "Healthy"
+        hs.message = obj.status
+        return hs
+      end
+    end
+
+    hs.status = "Progressing"
+    hs.message = "Waiting for namespace creation"
+    return hs
+  resource.customizations.health.moco.cybozu.com_MySQLCluster:
+    hs = {}
+    if obj.status ~= nil and obj.status.conditions ~= nil then
+      for idx, cond in pairs(obj.status.conditions) do
+        if cond.type == "Healthy" then
+          if cond.status == "True" then
             hs.status = "Healthy"
-            hs.message = "Bound"
-            return hs
+          else
+            hs.status = "Progressing"
           end
+          hs.message = cond.message
+          return hs
         end
+      end
+    end
 
-        hs.status = "Progressing"
-        hs.message = "Waiting for a bucket to get created"
-        return hs
-    accurate.cybozu.com/SubNamespace:
-      health.lua: |
-        hs = {}
-        if obj.status ~= nil then
-          if obj.status == "ok" then
-            hs.status = "Healthy"
-            hs.message = obj.status
-            return hs
-          end
-        end
-
-        hs.status = "Progressing"
-        hs.message = "Waiting for namespace creation"
-        return hs
-    moco.cybozu.com/MySQLCluster:
-      health.lua: |
-        hs = {}
-        if obj.status ~= nil and obj.status.conditions ~= nil then
-          for idx, cond in pairs(obj.status.conditions) do
-            if cond.type == "Healthy" then
-              if cond.status == "True" then
-                hs.status = "Healthy"
-              else
-                hs.status = "Progressing"
-              end
-              hs.message = cond.message
-              return hs
-            end
-          end
-        end
-
-        hs.status = "Progressing"
-        hs.message = "Waiting for MySQLCluster to become healthy"
-        return hs
+    hs.status = "Progressing"
+    hs.message = "Waiting for MySQLCluster to become healthy"
+    return hs
   resource.compareoptions: |
     ignoreAggregatedRoles: true
   resource.exclusions: |
