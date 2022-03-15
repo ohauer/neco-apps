@@ -16,6 +16,10 @@ data:
           orgs:
           - name: cybozu-private
           teamNameField: slug
+  resource.customizations.ignoreDifferences.cert-manager.io_Certificate: |
+    jsonPointers:
+    - /spec/duration
+    - /spec/renewBefore
   resource.customizations: |
     argoproj.io/Application:
       health.lua: |
