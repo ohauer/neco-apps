@@ -1141,7 +1141,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "max without (instance) (ceph_health_status{namespace=\"${cluster}\"})",
@@ -1213,7 +1213,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "max(ceph_cluster_total_used_bytes{namespace=\"${cluster}\"})/max(ceph_cluster_total_bytes{namespace=\"${cluster}\"})",
@@ -1276,7 +1276,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "max(ceph_cluster_total_used_bytes{namespace=\"${cluster}\"})",
@@ -1339,7 +1339,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "max(ceph_cluster_total_bytes{namespace=\"${cluster}\"})",
@@ -1401,7 +1401,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "sum(ceph_osd_up{namespace=\"${cluster}\"})",
@@ -1463,7 +1463,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "sum(kube_deployment_status_replicas_available{namespace=\"${cluster}\",deployment=~\"rook-ceph-osd-.*\"})",
@@ -1532,7 +1532,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "topk(3, kubelet_volume_stats_used_bytes{namespace=\"${cluster}\",persistentvolumeclaim=~\"rook-ceph-mon-.*\"}/kubelet_volume_stats_capacity_bytes{namespace=\"${cluster}\",persistentvolumeclaim=~\"rook-ceph-mon-.*\"})",
@@ -1601,7 +1601,7 @@ spec:
                     {
                         "datasource": {
                             "type": "prometheus",
-                            "uid": "PE69955257349F7D3"
+                            "uid": "${datasource}"
                         },
                         "exemplar": true,
                         "expr": "topk(3, ceph_osd_stat_bytes_used{namespace=\"${cluster}\"}/ceph_osd_stat_bytes{namespace=\"${cluster}\"})",
