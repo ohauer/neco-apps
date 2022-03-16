@@ -69,6 +69,11 @@ function(team) [{
                 name: 'teleport-storage',
               },
               {
+                mountPath: '/opt/neco-operation-cli/bin',
+                name: 'neco-operation-cli',
+                readOnly: true,
+              },
+              {
                 mountPath: '/home/cybozu',
                 name: 'home-dir',
               },
@@ -94,6 +99,12 @@ function(team) [{
           {
             name: 'teleport-storage',
             emptyDir: {},
+          },
+          {
+            name: 'neco-operation-cli',
+            hostPath: {
+              path: '/opt/neco-operation-cli/bin',
+            },
           },
           {
             name: 'home-dir',
