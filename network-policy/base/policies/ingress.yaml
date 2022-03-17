@@ -1,59 +1,59 @@
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: ingress-contour
   namespace: ingress-global
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 900.0
-  selector: app.kubernetes.io/name == 'envoy'
-  types:
-    - Ingress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: envoy
   ingress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        ports:
-          - 8080
-          - 8443
+  - fromEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+    - ports:
+      - port: "8443"
+        protocol: TCP
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: ingress-contour
   namespace: ingress-forest
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 900.0
-  selector: app.kubernetes.io/name == 'envoy'
-  types:
-    - Ingress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: envoy
   ingress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        ports:
-          - 8080
-          - 8443
+  - fromEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+    - ports:
+      - port: "8443"
+        protocol: TCP
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: ingress-contour
   namespace: ingress-bastion
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 900.0
-  selector: app.kubernetes.io/name == 'envoy'
-  types:
-    - Ingress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: envoy
   ingress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        ports:
-          - 8080
-          - 8443
+  - fromEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+    - ports:
+      - port: "8443"
+        protocol: TCP

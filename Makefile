@@ -52,13 +52,6 @@ update-cadvisor:
 	rm -rf /tmp/cadvisor
 	sed -i -E '/newName:.*cadvisor$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' monitoring/base/kustomization.yaml
 
-.PHONY: update-calico
-update-calico:
-	$(call get-latest-tag,calico)
-	curl -sSLf -o network-policy/base/calico/upstream/calico-policy-only.yaml \
-		https://docs.projectcalico.org/v$(shell echo $(latest_tag) | sed -E 's/^(.*)\.[[:digit:]]+\.[[:digit:]]+$$/\1/')/manifests/calico-policy-only.yaml
-	sed -i -E 's/newTag:.*$$/newTag: $(latest_tag)/' network-policy/base/kustomization.yaml
-
 .PHONY: update-cattage
 update-cattage:
 	$(call get-latest-helm,cattage,https://cybozu-go.github.io/cattage)

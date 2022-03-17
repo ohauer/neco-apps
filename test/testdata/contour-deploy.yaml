@@ -31,19 +31,19 @@ spec:
   selector:
     app.kubernetes.io/name: testhttpd
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: ingress-httpdtest
   namespace: test-ingress
 spec:
-  order: 2000.0
-  selector: app.kubernetes.io/name == 'testhttpd'
-  types:
-    - Ingress
+  endpointSelector:
+    matchLabels:
+      app.kubernetes.io/name: testhttpd
   ingress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        ports:
-          - 8000
+  - fromEntities:
+    - world
+    toPorts:
+    - ports:
+      - port: "8000"
+        protocol: TCP

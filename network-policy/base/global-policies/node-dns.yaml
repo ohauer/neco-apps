@@ -1,23 +1,17 @@
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-node-dns-allow
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 500.0
-  types:
-    - Egress
+  endpointSelector: {}
   egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 53
-    - action: Allow
-      protocol: UDP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 53
+  - toEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "53"
+        protocol: TCP
+    - ports:
+      - port: "53"
+        protocol: UDP

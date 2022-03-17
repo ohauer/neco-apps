@@ -1,19 +1,17 @@
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: egress-hubble-relay-node-allow
   namespace: kube-system
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 500.0
-  selector: k8s-app == 'hubble-relay'
-  types:
-    - Egress
+  endpointSelector:
+    matchLabels:
+      k8s:k8s-app: hubble-relay
   egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 4244
+  - toEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "4244"
+        protocol: TCP

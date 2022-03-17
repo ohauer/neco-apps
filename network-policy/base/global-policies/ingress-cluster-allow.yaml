@@ -1,14 +1,18 @@
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: ingress-cluster-allow
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 9900.0
-  types:
-    - Ingress
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:app.kubernetes.io/instance
+      operator: NotIn
+      values:
+      - network-nat
   ingress:
-    - action: Allow
-      source:
-        selector: role == 'cluster'
+  - fromEntities:
+    - cluster
+  - fromCIDR:
+    # Cluster network
+    # CIDR based rule only applies to endpoints outside the cluster such as boot servers, nodes outside the cluster
+    - 10.0.0.0/8

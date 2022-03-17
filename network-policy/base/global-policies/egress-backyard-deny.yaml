@@ -1,59 +1,72 @@
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-bmc-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
-  order: 900.0
-  types:
-    - Egress
-  egress:
-    - action: Deny
-      destination:
-        selector: role == 'bmc'
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:io.kubernetes.pod.namespace
+      operator: NotIn
+      values:
+      - bmc-reverse-proxy
+  egressDeny:
+  - toCIDR:
+    # BMC network
+    - 10.72.16.0/20
+    - 10.76.16.0/20
+    - 10.78.16.0/20
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
-metadata:
-  name: egress-node-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  order: 900.0
-  types:
-    - Egress
-  egress:
-    - action: Deny
-      destination:
-        selector: role == 'node'
----
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-bastion-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
-  order: 900.0
-  types:
-    - Egress
-  egress:
-    - action: Deny
-      destination:
-        selector: role == 'bastion'
+  endpointSelector: {}
+  egressDeny:
+  - toCIDR:
+    # Bastion network
+    - 10.72.48.0/24
+    - 10.72.80.0/24
+    - 10.76.48.0/24
+    - 10.76.80.0/24
+    - 10.78.48.0/24
+    - 10.78.80.0/24
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-switch-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
-  order: 900.0
-  types:
-    - Egress
-  egress:
-    - action: Deny
-      destination:
-        selector: role == 'switch'
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:app.kubernetes.io/instance
+      operator: NotIn
+      values:
+      - network-nat
+  egressDeny:
+  - toCIDR:
+    # Switch network
+    - 10.72.0.0/20
+    - 10.76.0.0/20
+    - 10.78.0.0/20
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: egress-node-deny
+spec:
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:app.kubernetes.io/name
+      operator: NotIn
+      values:
+      - teleport
+    - key: k8s:app.kubernetes.io/name
+      operator: NotIn
+      values:
+      - vmagent
+  egressDeny:
+  - toCIDR:
+    # Node network
+    # CIDR based rule only applies to nodes outside the cluster including boot servers
+    - 10.69.0.0/16

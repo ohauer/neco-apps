@@ -37,10 +37,6 @@ var requiredResources = []string{
 	// Argo CD
 	"applications.argoproj.io",
 
-	// Calico
-	"networkpolicies.crd.projectcalico.org",
-	"networksets.crd.projectcalico.org",
-
 	// Cert-manager
 	"certificaterequests.cert-manager.io",
 	"certificates.cert-manager.io",
@@ -98,13 +94,6 @@ var requiredResources = []string{
 var viewableResources = []string{
 	// Argo CD
 	"appprojects.argoproj.io",
-
-	// Calico
-	"clusterinformations.crd.projectcalico.org",
-	"felixconfigurations.crd.projectcalico.org",
-	"globalnetworkpolicies.crd.projectcalico.org",
-	"globalnetworksets.crd.projectcalico.org",
-	"hostendpoints.crd.projectcalico.org",
 
 	// Cert-manager
 	"clusterissuers.cert-manager.io",
@@ -179,16 +168,6 @@ var viewableClusterResources = []string{
 
 // prohibitedClusterResources is a list of cluster resources that are not allowed to be created by unprivileged teams
 var prohibitedClusterResources = []string{
-	// Calico
-	"bgpconfigurations.crd.projectcalico.org",
-	"bgppeers.crd.projectcalico.org",
-	"blockaffinities.crd.projectcalico.org",
-	"ipamblocks.crd.projectcalico.org",
-	"ipamconfigs.crd.projectcalico.org",
-	"ipamhandles.crd.projectcalico.org",
-	"ippools.crd.projectcalico.org",
-	"kubecontrollersconfigurations.crd.projectcalico.org",
-
 	// kube-storage-version-migrator
 	"storagestates.migration.k8s.io",
 	"storageversionmigrations.migration.k8s.io",
@@ -212,32 +191,6 @@ func init() {
 		}
 		requiredResources = removed
 	}
-}
-
-func prepareForCilium() {
-	if isCiliumAbsent() {
-		var requiredResourcesWithoutCilium, viewableResourcesWithoutCilium []string
-		for _, res := range requiredResources {
-			if strings.HasPrefix(res, "cilium") {
-				continue
-			}
-			requiredResourcesWithoutCilium = append(requiredResourcesWithoutCilium, res)
-		}
-		requiredResources = requiredResourcesWithoutCilium
-
-		for _, res := range viewableResources {
-			if strings.HasPrefix(res, "cilium") {
-				continue
-			}
-			viewableResourcesWithoutCilium = append(viewableResourcesWithoutCilium, res)
-		}
-		viewableResources = viewableResourcesWithoutCilium
-	}
-}
-
-func isCiliumAbsent() bool {
-	_, _, err := ExecAt(boot0, "kubectl", "-n", "kube-system", "get", "ds", "cilium")
-	return err != nil
 }
 
 var (

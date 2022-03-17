@@ -1,62 +1,55 @@
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-meows-runner-allow
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 100.0
-  selector: app.kubernetes.io/name == 'meows' && app.kubernetes.io/component == 'runner'
-  types:
-    - Egress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: meows
+      k8s:app.kubernetes.io/component: runner
   egress:
-    - action: Allow
-      protocol: UDP
-      destination:
-        selector: app.kubernetes.io/name == 'coil' && app.kubernetes.io/component == 'egress' && app.kubernetes.io/instance == 'nat'
-        namespaceSelector: projectcalico.org/name == 'internet-egress'
-        ports:
-          - 5555
+  - toEndpoints:
+    - matchLabels:
+        k8s:app.kubernetes.io/name: coil
+        k8s:app.kubernetes.io/component: egress
+        k8s:app.kubernetes.io/instance: nat
+        k8s:io.kubernetes.pod.namespace: internet-egress
+    toPorts:
+    - ports:
+      - port: "5555"
+        protocol: UDP
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
-metadata:
-  name: egress-meows-runner-deny
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  order: 9900.0
-  selector: app.kubernetes.io/name == 'meows' && app.kubernetes.io/component == 'runner'
-  types:
-    - Egress
-  egress:
-    - action: Deny
----
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-meows-dctest-runner
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 101.0
-  selector: app.kubernetes.io/name == 'meows' && app.kubernetes.io/component == 'runner'
-  namespaceSelector: projectcalico.org/name == 'meows-runner'
-  types:
-    - Egress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: meows
+      k8s:app.kubernetes.io/component: runner
+      k8s:io.kubernetes.pod.namespace: meows-runner
+  egressDeny:
+  - toCIDR:
+    # Private addresses
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+---
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: egress-meows-allow
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: meows
   egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 53
-    - action: Allow
-      protocol: UDP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 53
-    - action: Deny
-      destination:
-        selector: role == 'private'
+  - toEndpoints:
+    - matchExpressions:
+      - key: reserved:host
+        operator: DoesNotExist
+      - key: reserved:remote-node
+        operator: DoesNotExist
+      - key: reserved:kube-apiserver
+        operator: DoesNotExist

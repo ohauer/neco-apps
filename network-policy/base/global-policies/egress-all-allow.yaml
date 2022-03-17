@@ -1,12 +1,20 @@
-apiVersion: crd.projectcalico.org/v1
-kind: GlobalNetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
 metadata:
   name: egress-all-allow
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 10000.0
-  types:
-    - Egress
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:app.kubernetes.io/name
+      operator: NotIn
+      values:
+      - meows
   egress:
-    - action: Allow
+  - toEndpoints:
+    - matchExpressions:
+      - key: reserved:host
+        operator: DoesNotExist
+      - key: reserved:remote-node
+        operator: DoesNotExist
+      - key: reserved:kube-apiserver
+        operator: DoesNotExist

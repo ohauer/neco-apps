@@ -1,46 +1,34 @@
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkSet
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
-  name: private
+  name: egress-squid
   namespace: internet-egress
-  labels:
-    role: private
 spec:
-  nets:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: squid
+  egressDeny:
+  - toEntities:
+    - cluster
+  - toCIDR:
+    # Private addresses
     - 10.0.0.0/8
     - 172.16.0.0/12
     - 192.168.0.0/16
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: egress-squid
-  namespace: internet-egress
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  order: 100.0
-  selector: app.kubernetes.io/name == 'squid'
-  types:
-    - Egress
-  egress:
-    - action: Deny
-      destination:
-        selector: role == 'private'
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: egress-unbound
   namespace: internet-egress
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
 spec:
-  order: 100.0
-  selector: app.kubernetes.io/name == 'unbound'
-  types:
-    - Egress
-  egress:
-    - action: Deny
-      destination:
-        selector: role == 'private'
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: unbound
+  egressDeny:
+  - toEntities:
+    - cluster
+  - toCIDR:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16

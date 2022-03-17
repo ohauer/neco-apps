@@ -590,6 +590,11 @@ func applyAndWaitForApplications(commitID string) {
 
 	// want to do like "Eventually( Consistently(checkAllAppsSynced, 10sec, 1sec) )"
 	Eventually(func() error {
+		if doUpgrade {
+			if err := removeCalicoIPTableRules(); err != nil {
+				return err
+			}
+		}
 		for i := 0; i < 10; i++ {
 			err := checkAllAppsSynced()
 			if err != nil {
@@ -597,8 +602,99 @@ func applyAndWaitForApplications(commitID string) {
 			}
 			time.Sleep(1 * time.Second)
 		}
+		if doUpgrade {
+			if err := removeCalicoIPTableRules(); err != nil {
+				return err
+			}
+		}
 		return nil
 	}, 60*time.Minute).Should(Succeed())
+
+	// TODO: remove this block after the Calico replacement is released
+	if doUpgrade {
+		calicoCRDs := []string{
+			"bgpconfigurations.crd.projectcalico.org",
+			"bgppeers.crd.projectcalico.org",
+			"blockaffinities.crd.projectcalico.org",
+			"clusterinformations.crd.projectcalico.org",
+			"felixconfigurations.crd.projectcalico.org",
+			"globalnetworkpolicies.crd.projectcalico.org",
+			"globalnetworksets.crd.projectcalico.org",
+			"hostendpoints.crd.projectcalico.org",
+			"ipamblocks.crd.projectcalico.org",
+			"ipamconfigs.crd.projectcalico.org",
+			"ipamhandles.crd.projectcalico.org",
+			"ippools.crd.projectcalico.org",
+			"kubecontrollersconfigurations.crd.projectcalico.org",
+			"networkpolicies.crd.projectcalico.org",
+			"networksets.crd.projectcalico.org",
+		}
+		for _, crd := range calicoCRDs {
+			_, _, err := ExecAt(boot0, "kubectl", "get", "crd", crd)
+			if err == nil {
+				stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "crd", crd, fmt.Sprintf("admission.cybozu.com/i-am-sure-to-delete=%s", crd))
+				Expect(err).ShouldNot(HaveOccurred(), "failed to annotate calico crd: stdout=%s, stderr=%s", stdout, stderr)
+				stdout, stderr, err = ExecAt(boot0, "kubectl", "delete", "crd", crd)
+				Expect(err).ShouldNot(HaveOccurred(), "failed to delete calico crd: stdout=%s, stderr=%s", stdout, stderr)
+			}
+		}
+	}
+}
+
+func removeCalicoIPTableRules() error {
+	stdout, stderr, err := ExecAt(boot0, "ckecli", "cluster", "get")
+	if err != nil {
+		return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+	}
+	cluster := new(ckeCluster)
+	err = k8sYaml.Unmarshal(stdout, cluster)
+	if err != nil {
+		return err
+	}
+	for _, node := range cluster.Nodes {
+		stdout, stderr, err = ExecAt(boot0,
+			"ckecli", "ssh", node.Address, "--", "sudo", "iptables-legacy", "-L", "INPUT", "1")
+		if err != nil {
+			return fmt.Errorf("failed to list INPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
+		if strings.HasPrefix(string(stdout), "cali-INPUT") {
+			stdout, stderr, err = ExecAt(boot0,
+				"ckecli", "ssh", node.Address, "--",
+				"sudo", "iptables-legacy", "-D", "INPUT", "-m", "comment", "--comment", "\"cali:Cz_u1IQiXIMmKD4c\"", "-j", "cali-INPUT")
+			if err != nil {
+				return fmt.Errorf("failed to remove cali-INPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+		}
+
+		stdout, stderr, err = ExecAt(boot0,
+			"ckecli", "ssh", node.Address, "--", "sudo", "iptables-legacy", "-L", "OUTPUT", "1")
+		if err != nil {
+			return fmt.Errorf("failed to list OUTPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
+		if strings.HasPrefix(string(stdout), "cali-OUTPUT") {
+			stdout, stderr, err = ExecAt(boot0,
+				"ckecli", "ssh", node.Address, "--",
+				"sudo", "iptables-legacy", "-D", "OUTPUT", "-m", "comment", "--comment", "\"cali:tVnHkvAo15HuiPy0\"", "-j", "cali-OUTPUT")
+			if err != nil {
+				return fmt.Errorf("failed to remove cali-OUTPUT rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+		}
+
+		stdout, stderr, err = ExecAt(boot0,
+			"ckecli", "ssh", node.Address, "--", "sudo", "iptables-legacy", "-L", "FORWARD", "1")
+		if err != nil {
+			return fmt.Errorf("failed to list FORWARD rule: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+		}
+		if strings.HasPrefix(string(stdout), "cali-FORWARD") {
+			stdout, stderr, err = ExecAt(boot0,
+				"ckecli", "ssh", node.Address, "--",
+				"sudo", "iptables-legacy", "-D", "FORWARD", "-m", "comment", "--comment", "\"cali:wUHhoiAYhphO9Mso\"", "-j", "cali-FORWARD")
+			if err != nil {
+				return fmt.Errorf("failed to remove cali-FORWARD rules: stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+		}
+	}
+	return nil
 }
 
 // Sometimes synchronization fails when argocd applies network policies.
@@ -655,14 +751,6 @@ func applyNetworkPolicy() {
 		stdout, stderr, err = ExecAtWithInput(boot0, data, "kubectl", "apply", "-f", "-")
 		Expect(err).ShouldNot(HaveOccurred(), "failed to apply non-crd resource: stdout=%s, stderr=%s", stdout, stderr)
 	}
-
-	Eventually(func() error {
-		return checkDeploymentReplicas("calico-typha", "kube-system", -1)
-	}, 3*time.Minute).Should(Succeed())
-
-	Eventually(func() error {
-		return checkDaemonSetNumber("calico-node", "kube-system", -1)
-	}, 3*time.Minute).Should(Succeed())
 }
 
 func setupArgoCD() {

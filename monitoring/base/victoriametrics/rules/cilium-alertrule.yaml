@@ -1,0 +1,28 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMRule
+metadata:
+  name: cilium
+  namespace: monitoring
+spec:
+  groups:
+    - name: cilium
+      rules:
+        - alert: CiliumAgentDown
+          expr: |
+            up{job="cilium"}==0
+              unless on(node) kube_node_spec_taint{key="node.kubernetes.io/unreachable"}
+          labels:
+            severity: critical
+          for: 10m
+          annotations:
+            summary: CiliumAgent has disappeared from Prometheus target discovery.
+            runbook: Please consider to find root causes, and solve the problems.
+        - alert: CiliumOperatorDown
+          expr: |
+            absent(up{job="cilium-operator"} == 1)
+          labels:
+            severity: critical
+          for: 15m
+          annotations:
+            summary: cilium operator is down.
+            runbook: TBD

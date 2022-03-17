@@ -1,50 +1,53 @@
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkSet
-metadata:
-  name: node
-  namespace: teleport
-  labels:
-    role: node
-spec:
-  nets:
-    - 10.69.0.0/16
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: egress-teleport-proxy-node-allow
   namespace: teleport
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 500.0
-  selector: app.kubernetes.io/name == 'teleport' && app.kubernetes.io/component == 'proxy'
-  types:
-    - Egress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: teleport
+      k8s:app.kubernetes.io/component: proxy
   egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 3022
+  - toEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "3022"
+        protocol: TCP
+  - toCIDR:
+    # Node network
+    # CIDR based rule only applies to nodes outside the cluster including boot servers
+    - 10.69.0.0/16
+    toPorts:
+    - ports:
+      - port: "3022"
+        protocol: TCP
 ---
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: egress-teleport-auth-etcd-allow
   namespace: teleport
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 500.0
-  selector: app.kubernetes.io/name == 'teleport' && app.kubernetes.io/component == 'auth'
-  types:
-    - Egress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: teleport
+      k8s:app.kubernetes.io/component: auth
   egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 2379
+  - toEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "2379"
+        protocol: TCP
+  - toCIDR:
+    # Node network
+    # CIDR based rule only applies to nodes outside the cluster including boot servers
+    - 10.69.0.0/16
+    toPorts:
+    - ports:
+      - port: "2379"
+        protocol: TCP

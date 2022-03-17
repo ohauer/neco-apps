@@ -1,48 +1,32 @@
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkSet
+apiVersion: "cilium.io/v2"
+kind: CiliumClusterwideNetworkPolicy
 metadata:
-  name: switch
-  namespace: domestic-egress
-  labels:
-    role: switch
+  name: network-nat
 spec:
-  nets:
+  endpointSelector:
+    matchLabels:
+      k8s:io.kubernetes.pod.namespace: domestic-egress
+      k8s:app.kubernetes.io/component: egress
+      k8s:app.kubernetes.io/instance: network-nat
+      k8s:app.kubernetes.io/name: coil
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.cilium.k8s.namespace.labels.team: network
+    toPorts:
+    - ports:
+      - port: "5555"
+        protocol: UDP
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: monitoring
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+  egress:
+  - toCIDR:
+    # Switch network
     - 10.72.0.0/20
     - 10.76.0.0/20
     - 10.78.0.0/20
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: network-nat
-  namespace: domestic-egress
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  order: 100.0
-  selector: app.kubernetes.io/component == 'egress' && app.kubernetes.io/instance == 'network-nat' && app.kubernetes.io/name == 'coil'
-  types:
-    - Ingress
-    - Egress
-  ingress:
-    - action: Allow
-      protocol: UDP
-      source:
-        namespaceSelector: team == 'network'
-      destination:
-        ports:
-          - 5555
-    - action: Allow
-      protocol: TCP
-      source:
-        namespaceSelector: team == 'neco'
-        selector: app.kubernetes.io/name == 'vmagent'
-      destination:
-        ports:
-        - metrics
-    - action: Deny
-  egress:
-    - action: Allow
-      destination:
-        selector: role == 'switch'
-    

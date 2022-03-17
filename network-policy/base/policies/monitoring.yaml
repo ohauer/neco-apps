@@ -1,101 +1,103 @@
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkSet
-metadata:
-  name: node
-  namespace: monitoring
-  labels:
-    role: node
-spec:
-  nets:
-    - 10.69.0.0/16
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: egress-prometheus
   namespace: monitoring
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
-  order: 500.0
-  selector: app.kubernetes.io/name == 'vmagent'
-  types:
-    - Egress
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: vmagent
   egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 6942
-          - 7472
-          - 8200
-          - 9093
-          - 9100
-          - 9105
-          - 9110
-          - 9384
-          - 9386
-          - 9090
-          - 10081
-          - 10180
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: egress-prometheus-etcd-metrics-allow
-  namespace: monitoring
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  order: 500.0
-  selector: app.kubernetes.io/name == 'vmagent'
-  types:
-    - Egress
-  egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 2381
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: egress-prometheus-calico-node-metrics-allow
-  namespace: monitoring
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  order: 500.0
-  selector: app.kubernetes.io/name == 'vmagent'
-  types:
-    - Egress
-  egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 9091
----
-apiVersion: crd.projectcalico.org/v1
-kind: NetworkPolicy
-metadata:
-  name: egress-prometheus-kube-proxy-metrics-allow
-  namespace: monitoring
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
-spec:
-  order: 500.0
-  selector: app.kubernetes.io/name == 'vmagent'
-  types:
-    - Egress
-  egress:
-    - action: Allow
-      protocol: TCP
-      destination:
-        selector: role == 'node'
-        ports:
-          - 10249
+  - toEntities:
+    - host
+    - remote-node
+    toPorts:
+    # etcd metrics
+    - ports:
+      - port: "2381"
+        protocol: TCP
+    # cilium-operator
+    - ports:
+      - port: "6942"
+        protocol: TCP
+    # metallb speaker
+    - ports:
+      - port: "7472"
+        protocol: TCP
+    # vault
+    - ports:
+      - port: "8200"
+        protocol: TCP
+    # cilium-agent
+    - ports:
+      - port: "9090"
+        protocol: TCP
+    # hubble
+    - ports:
+      - port: "9091"
+        protocol: TCP
+    # node_exporter
+    - ports:
+      - port: "9100"
+        protocol: TCP
+    # setup-hw
+    - ports:
+      - port: "9105"
+        protocol: TCP
+    # cadvisor
+    - ports:
+      - port: "9110"
+        protocol: TCP
+    # coild
+    - ports:
+      - port: "9384"
+        protocol: TCP
+    # coil-controller
+    - ports:
+      - port: "9386"
+        protocol: TCP
+    # sabakan
+    - ports:
+      - port: "10081"
+        protocol: TCP
+    # cke
+    - ports:
+      - port: "10180"
+        protocol: TCP
+    # kube-proxy
+    - ports:
+      - port: "10249"
+        protocol: TCP
+  - toCIDR:
+    # Node network
+    # CIDR based rule only applies to nodes outside the cluster including boot servers
+    - 10.69.0.0/16
+    toPorts:
+    # etcd metrics
+    - ports:
+      - port: "2381"
+        protocol: TCP
+    # vault
+    - ports:
+      - port: "8200"
+        protocol: TCP
+    # node_exporter
+    - ports:
+      - port: "9100"
+        protocol: TCP
+    # setup-hw
+    - ports:
+      - port: "9105"
+        protocol: TCP
+    # sabakan
+    - ports:
+      - port: "10081"
+        protocol: TCP
+    # cke
+    - ports:
+      - port: "10180"
+        protocol: TCP
+    # kube-proxy
+    - ports:
+      - port: "10249"
+        protocol: TCP
