@@ -52,6 +52,9 @@ spec:
               readOnly: true
             - mountPath: /var/lib/teleport
               name: teleport-storage
+            - mountPath: /opt/neco-operation-cli/bin
+              name: neco-operation-cli
+              readOnly: true
             - mountPath: /home/cybozu
               name: home-dir
       securityContext:
@@ -64,6 +67,9 @@ spec:
             secretName: teleport-node-secret-20211130
         - emptyDir: {}
           name: teleport-storage
+        - hostPath:
+            path: /opt/neco-operation-cli/bin
+          name: neco-operation-cli
         - ephemeral:
             volumeClaimTemplate:
               spec:
