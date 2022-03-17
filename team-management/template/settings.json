@@ -296,14 +296,33 @@
         "accurate.cybozu.com/type": "root",
         "development": "true"
       }
-    },
-    "set": {
-      "dev-set": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root",
-        "development": "true"
-      }
     }
   },
-  "tenants": {}
+  "tenants": {
+    "set": {
+      "argocd": {
+        "repositories": [
+          "https://github.com/cybozu-private/*"
+        ]
+      },
+      "delegates": [
+        {
+          "name": "maneki",
+          "roles": [
+            "admin"
+          ]
+        }
+      ],
+      "rootNamespaces": [
+        {
+          "labels": {
+            "development": "true",
+            "team": "set"
+          },
+          "name": "dev-set"
+        }
+      ],
+      "stageOnly": true
+    }
+  }
 }
