@@ -1,8 +1,8 @@
-# This manifest is based on the this example (https://github.com/cybozu-go/moco/blob/v0.8.1/docs/usage.md).
+# This manifest is based on the this example (https://github.com/cybozu-go/moco/blob/v0.11.1/docs/usage.md).
 apiVersion: moco.cybozu.com/v1beta2
 kind: MySQLCluster
 metadata:
-  namespace: dctest
+  namespace: test-moco
   name: test
 spec:
   # replicas is the number of mysqld Pods.  The default is 1.
@@ -13,6 +13,15 @@ spec:
       # At least a container named "mysqld" must be defined.
       - name: mysqld
         image: quay.io/cybozu/moco-mysql:8.0.24
+      # User-specified sidecar container (dummy)
+      - name: dummy
+        image: quay.io/cybozu/ubuntu-debug:20.04
+        command: ["pause"]
+      initContainers:
+      # User-specified init container (dummy)
+      - name: init-dummy
+        image: quay.io/cybozu/ubuntu-debug:20.04
+        command: ["sleep", "1"]
   volumeClaimTemplates:
   # At least a PVC named "mysql-data" must be defined.
   - metadata:
