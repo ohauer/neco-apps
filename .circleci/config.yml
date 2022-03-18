@@ -77,7 +77,7 @@ commands:
                 name: neco dctest (bootstrap) TAG=release
                 command: |
                   cd neco
-                  export MACHINE_TYPE=n1-standard-64
+                  export MACHINE_TYPE=n2-standard-80 LOCAL_SSD_COUNT=8
                   ./bin/run-dctest.sh bootstrap release "" menu-ss.yml
                 no_output_timeout: 61m
       - unless:
@@ -87,7 +87,7 @@ commands:
                 name: neco dctest (bootstrap) TAG=""
                 command: |
                   cd neco
-                  export MACHINE_TYPE=n1-standard-64
+                  export MACHINE_TYPE=n2-standard-80 LOCAL_SSD_COUNT=8
                   ./bin/run-dctest.sh bootstrap "" "" menu-ss.yml
                 no_output_timeout: 61m
 
