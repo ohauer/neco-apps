@@ -78,6 +78,8 @@ spec:
                 kind: AppProject
                 spec:
                   destinations:
+                    - namespace: sandbox
+                      server: '*'
                   {{- range .Namespaces }}
                     - namespace: {{ . }}
                       server: '*'

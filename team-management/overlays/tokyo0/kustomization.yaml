@@ -12,6 +12,6 @@ patchesStrategicMerge:
   - dev-maneki.yaml
   - dev-guests.yaml
   - dev-network.yaml
-  - dev-set.yaml
+  - tenant-set.yaml
 resources:
   - ../../base

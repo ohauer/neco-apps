@@ -17,4 +17,4 @@ resources:
   - ./neco-readonly
   - ./network
   - ./sandbox
-  - ./set
+  - tenant-set.yaml

@@ -5,6 +5,10 @@ function(name, tenant) [
     metadata: {
       name: name,
     },
-    spec: tenant,
+    spec: {
+      argocd: tenant.argocd,
+      rootNamespaces: tenant.rootNamespaces,
+      delegates: if std.objectHas(tenant, 'delegates') then tenant.delegates else [],
+    },
   },
 ]
