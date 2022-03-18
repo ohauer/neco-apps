@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	tenetNecoNamespace        = "dev-tenet-neco"
-	tenetTenantRootNamespace  = "dev-tenet-tenant-root"
-	tenetTenantChildNamespace = "dev-tenet-tenant-child"
-	tenetTemplateName         = "allow-intra-namespace-egress"
+	tenetNecoNamespace           = "dev-tenet-neco"
+	tenetTenantRootNamespace     = "dev-tenet-tenant-root"
+	tenetTenantChildNamespace    = "dev-tenet-tenant-child"
+	tenetTenantNamespaceToDelete = "dev-tenet-tenant-delete"
+	tenetTemplateName            = "allow-intra-namespace-egress"
 )
 
 var (
@@ -43,6 +44,9 @@ func prepareTenet() {
 		ExecSafeAt(boot0, "kubectl", "label", "namespace", tenetTenantRootNamespace, "accurate.cybozu.com/type=root")
 		By("creating child namespace")
 		_ = ExecSafeAtWithInput(boot0, tenetSubnamespaceYAML, "kubectl", "apply", "-f", "-")
+		By("creating namespace for cleanup test")
+		createNamespaceIfNotExists(tenetTenantNamespaceToDelete, false)
+		ExecSafeAt(boot0, "kubectl", "annotate", "namespace", tenetTenantNamespaceToDelete, fmt.Sprintf("tenet.cybozu.io/network-policy-template=%s", tenetTemplateName))
 	})
 }
 
@@ -68,28 +72,24 @@ func testTenet() {
 	})
 
 	It("should propagate template to child namespaces", func() {
-
 		Eventually(func() error {
 			return getCiliumNetworkPolicyInNamespace(tenetTenantChildNamespace, tenetTemplateName)
 		}).Should(Succeed())
 	})
 
-	It("should cleanup namespaces when opting-out", func() {
+	It("should cleanup namespace when opting-out", func() {
+		By("making sure ciliumnetworkpolicies exist")
+		Eventually(func() error {
+			return getCiliumNetworkPolicyInNamespace(tenetTenantNamespaceToDelete, tenetTemplateName)
+		}).Should(Succeed())
 		By("removing annotation")
-		ExecSafeAt(boot0, "kubectl", "annotate", "namespace", tenetTenantRootNamespace, "tenet.cybozu.io/network-policy-template-")
-		ExecSafeAt(boot0, "kubectl", "annotate", "namespace", tenetTenantChildNamespace, "tenet.cybozu.io/network-policy-template-")
+		ExecSafeAt(boot0, "kubectl", "annotate", "namespace", tenetTenantNamespaceToDelete, "tenet.cybozu.io/network-policy-template-")
 		Eventually(func() error {
-			return getCiliumNetworkPolicyInNamespace(tenetTenantRootNamespace, tenetTemplateName)
-		}).ShouldNot(Succeed())
-		Eventually(func() error {
-			return getCiliumNetworkPolicyInNamespace(tenetTenantChildNamespace, tenetTemplateName)
+			return getCiliumNetworkPolicyInNamespace(tenetTenantNamespaceToDelete, tenetTemplateName)
 		}).ShouldNot(Succeed())
 
 		Consistently(func() error {
-			return getCiliumNetworkPolicyInNamespace(tenetTenantRootNamespace, tenetTemplateName)
-		}).ShouldNot(Succeed())
-		Consistently(func() error {
-			return getCiliumNetworkPolicyInNamespace(tenetTenantChildNamespace, tenetTemplateName)
+			return getCiliumNetworkPolicyInNamespace(tenetTenantNamespaceToDelete, tenetTemplateName)
 		}).ShouldNot(Succeed())
 	})
 
