@@ -13,12 +13,6 @@
       "app-cybozu-com-mysql-restore",
       "app-mysql-tenant-service"
     ],
-    "ept": [
-      "app-ept-grpshuffle",
-      "app-ept-monitoring",
-      "app-ept-plantuml",
-      "app-ept-wiki"
-    ],
     "garoon": [
       "app-garoon-monitoring",
       "app-garoon-static"
