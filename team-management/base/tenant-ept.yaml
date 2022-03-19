@@ -7,10 +7,7 @@ spec:
   argocd:
     repositories:
       - https://github.com/cybozu-private/*
-  delegates:
-    - name: maneki
-      roles:
-        - admin
+  delegates: []
   rootNamespaces:
     - labels:
         team: ept

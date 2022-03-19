@@ -302,14 +302,6 @@
           "https://github.com/cybozu-private/*"
         ]
       },
-      "delegates": [
-        {
-          "name": "maneki",
-          "roles": [
-            "admin"
-          ]
-        }
-      ],
       "rootNamespaces": [
         {
           "labels": {
@@ -324,8 +316,7 @@
           },
           "name": "dev-ept"
         }
-      ],
-      "stageOnly": true
+      ]
     },
     "set": {
       "argocd": {
