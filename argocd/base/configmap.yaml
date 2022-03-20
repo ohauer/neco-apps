@@ -94,6 +94,21 @@ data:
     hs.status = "Progressing"
     hs.message = "Waiting for MySQLCluster to become healthy"
     return hs
+  resource.customizations.health.cattage.cybozu.io_Tenant:
+    hs = {}
+    if obj.status ~= nil then
+      if obj.status.health ~= nil then
+        if obj.status.health == "Healthy" then
+          hs.status = "Healthy"
+          hs.message = ""
+          return hs
+        end
+      end
+    end
+
+    hs.status = "Progressing"
+    hs.message = "Waiting for Tenant to become healthy"
+    return hs
   resource.compareoptions: |
     ignoreAggregatedRoles: true
   resource.exclusions: |
