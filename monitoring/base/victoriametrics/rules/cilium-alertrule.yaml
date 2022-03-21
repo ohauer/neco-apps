@@ -10,7 +10,7 @@ spec:
         - alert: CiliumAgentDown
           expr: |
             up{job="cilium"}==0
-              unless on(node) kube_node_spec_taint{key="node.kubernetes.io/unreachable"}
+              unless on(instance) label_replace(kube_node_spec_taint{key="node.kubernetes.io/unreachable"}, "instance", "$1:9090", "node", "(.*)")
           labels:
             severity: critical
           for: 10m
