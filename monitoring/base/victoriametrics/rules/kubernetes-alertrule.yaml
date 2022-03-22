@@ -413,7 +413,7 @@ spec:
         - alert: KubeDaemonSetNotScheduled
           annotations:
             summary: '{{ $value }} Pods of DaemonSet {{ $labels.namespace }}/{{ $labels.daemonset
-            }} are not scheduled.'
+              }} are not scheduled.'
             runbook: TBD
           expr: |
             (kube_daemonset_status_desired_number_scheduled{job="kube-state-metrics"} * on(namespace) group_left kube_namespace_labels{label_team="neco"})
