@@ -1,0 +1,136 @@
+image:
+  registry: quay.io
+  repository: cybozu/promtail
+  tag: 2.3.0.1
+
+priorityClassName: node-bound
+
+tolerations:
+  - key: cke.cybozu.com/role
+    operator: Equal
+    value: storage
+
+defaultVolumes:
+  - name: containers
+    hostPath:
+      path: /var/lib/docker/containers
+  - name: pods
+    hostPath:
+      path: /var/log/pods
+  - name: journal
+    hostPath:
+      path: /run/log/journal
+
+defaultVolumeMounts:
+  - name: containers
+    mountPath: /var/lib/docker/containers
+    readOnly: true
+  - name: pods
+    mountPath: /var/log/pods
+    readOnly: true
+  - name: journal
+    mountPath: /var/log/journal
+    readOnly: true
+
+config:
+  lokiAddress: http://loki-small.logging-small:3100/loki/api/v1/push
+  snippets:
+    scrapeConfigs: |
+      # See also https://github.com/grafana/loki/blob/master/production/ksonnet/promtail/scrape_config.libsonnet for reference
+      - job_name: kubernetes-pods
+        pipeline_stages:
+          - cri: {}
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels:
+              - __meta_kubernetes_pod_controller_name
+            regex: ([0-9a-z-.]+?)(-[0-9a-f]{8,10})?
+            action: replace
+            target_label: __tmp_controller_name
+          - source_labels:
+              - __meta_kubernetes_pod_label_app_kubernetes_io_name
+              - __meta_kubernetes_pod_label_app
+              - __tmp_controller_name
+              - __meta_kubernetes_pod_name
+            regex: ^;*([^;]+)(;.*)?$
+            action: replace
+            target_label: app
+          - source_labels:
+              - __meta_kubernetes_pod_label_app_kubernetes_io_component
+              - __meta_kubernetes_pod_label_component
+            regex: ^;*([^;]+)(;.*)?$
+            action: replace
+            target_label: component
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_node_name
+            target_label: node_name
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_namespace
+            target_label: namespace
+          - action: replace
+            replacement: $1
+            separator: /
+            source_labels:
+              - namespace
+              - app
+            target_label: job
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_name
+            target_label: pod
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_name
+            target_label: container
+          - action: replace
+            replacement: /var/log/pods/*$1/*.log
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_uid
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+          - action: replace
+            replacement: /var/log/pods/*$1/*.log
+            regex: true/(.*)
+            separator: /
+            source_labels:
+              - __meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash
+              - __meta_kubernetes_pod_annotation_kubernetes_io_config_hash
+              - __meta_kubernetes_pod_container_name
+            target_label: __path__
+          - action: keep
+            source_labels:
+            - namespace
+            regex: ceph-.*
+      - job_name: journal
+        journal:
+          json: false
+          max_age: 12h
+          path: /var/log/journal
+          labels:
+            job: systemd-journal
+            instance: ${HOSTNAME}
+        relabel_configs:
+          - source_labels: ["__journal__systemd_unit"]
+            target_label: "unit"
+          - source_labels: ["__journal__systemd_unit"]
+            regex: ^session-\d+\.scope$
+            target_label: "unit"
+            replacement: session.scope
+          - source_labels: ["__journal__systemd_unit"]
+            regex: ^sshd@\d+-\d+\.\d+\.\d+\.\d+:\d+-\d+\.\d+\.\d+\.\d+:\d+\.service$
+            target_label: "unit"
+            replacement: sshd.service
+          - source_labels: ["__journal_syslog_identifier"]
+            target_label: "syslog_identifier"
+          - source_labels: ["__journal_container_name"]
+            target_label: "container_name"
+          - source_labels: ["__journal__hostname"]
+            target_label: "hostname"
+          - action: keep
+            source_labels:
+            - syslog_identifier
+            regex: kernel

@@ -1,0 +1,18 @@
+config:
+  compactor:
+    retention_enabled: true
+    # Set to the same value with the online sample. (https://grafana.com/docs/loki/latest/operations/storage/retention/#retention-configuration)
+    retention_delete_delay: 2h
+  limits_config:
+    retention_period: 168h
+
+image:
+  repository: quay.io/cybozu/loki
+  tag: 2.3.0.1
+
+persistence:
+  enabled: true
+  existingClaim: loki-small-data
+
+rbac:
+  pspEnabled: false

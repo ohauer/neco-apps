@@ -18,6 +18,7 @@ resources:
 - kube-storage-version-migrator.yaml
 - local-pv-provisioner.yaml
 - logging.yaml
+- logging-small.yaml
 - meows.yaml
 - metallb.yaml
 - moco.yaml

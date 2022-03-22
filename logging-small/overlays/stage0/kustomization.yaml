@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+patchesJSON6902:
+  # Temporary configuration for storage performance measurement
+  - target:
+      group: apps
+      version: v1
+      kind: DaemonSet
+      name: promtail-small
+      namespace: logging-small
+    patch: |-
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "csa/exclude_noisy_neighbor"
+          operator: "Exists"
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "neco/exclude_noisy_neighbor"
+          operator: "Exists"

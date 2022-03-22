@@ -110,6 +110,7 @@ func testApplicationResources(t *testing.T) {
 		"bmc-reverse-proxy":             "5",
 		"customer-egress":               "5",
 		"elastic":                       "5",
+		"logging-small":                 "5",
 		"moco":                          "5",
 		"rook":                          "5",
 		"sandbox":                       "5",

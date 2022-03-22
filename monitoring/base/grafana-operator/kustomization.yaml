@@ -6,7 +6,7 @@ resources:
   - manifests
   - configmap.yaml
   - datasources/loki.yaml
-  - datasources/csa-loki.yaml
+  - datasources/loki-small.yaml
   - datasources/victoriametrics.yaml
   - grafana.yaml
   - mysql.yaml
