@@ -1,0 +1,23 @@
+- name: baseline
+  nonCoreVolumeTypes: true
+  allowPrivilegeEscalation: true
+  rootGroups: true
+  seccomp: true
+  forceRunAsNonRoot: true
+- name: traceable
+  nonCoreVolumeTypes: true
+  allowPrivilegeEscalation: true
+  rootGroups: true
+  seccomp: true
+  forceRunAsNonRoot: true
+  allowedHostPaths:
+  - pathPrefix: /sys/kernel/tracing
+- name: rootable
+  nonCoreVolumeTypes: true
+  allowPrivilegeEscalation: true
+  rootGroups: true
+  runAsRoot: true
+  seccomp: true
+  allowedHostPaths:
+  - pathPrefix: /sys/kernel/tracing
+- name: restricted

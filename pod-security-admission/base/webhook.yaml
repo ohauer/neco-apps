@@ -11,6 +11,7 @@ webhooks:
       values:
       - privileged
       - traceable
+      - rootable
 - admissionReviewVersions:
   - v1
   - v1beta1
@@ -38,6 +39,33 @@ webhooks:
     resources:
     - pods
   sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: psa-webhook-service
+      namespace: kube-system
+      path: /mutate-rootable
+  failurePolicy: Fail
+  name: rootable.mpod.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: pod-security.cybozu.com/policy
+      operator: In
+      values:
+      - rootable
+  reinvocationPolicy: IfNeeded
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+  sideEffects: None
 ---
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
@@ -54,6 +82,7 @@ webhooks:
       values:
       - privileged
       - traceable
+      - rootable
 - admissionReviewVersions:
   - v1
   - v1beta1
@@ -70,6 +99,32 @@ webhooks:
       operator: In
       values:
       - traceable
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  - v1beta1
+  clientConfig:
+    service:
+      name: psa-webhook-service
+      namespace: kube-system
+      path: /validate-rootable
+  failurePolicy: Fail
+  name: rootable.vpod.kb.io
+  namespaceSelector:
+    matchExpressions:
+    - key: pod-security.cybozu.com/policy
+      operator: In
+      values:
+      - rootable
   rules:
   - apiGroups:
     - ""

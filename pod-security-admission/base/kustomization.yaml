@@ -5,5 +5,11 @@ resources:
   - upstream/install.yaml
 patchesStrategicMerge:
   - certificate.yaml
-  - configmap.yaml
+  - delete-config.yaml
   - webhook.yaml
+configMapGenerator:
+  # remove original ConfigMap in install.yaml (by delete-config.yaml) and
+  # replace with the one generated with name suffix hash.
+  - name: psa-pod-security-admission-config
+    files:
+      - config.yaml
