@@ -14,6 +14,8 @@ spec:
     relabelConfigs:
       - replacement: cilium
         targetLabel: job
+      - sourceLabels: [__meta_kubernetes_pod_node_name]
+        targetLabel: node
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
 kind: VMPodScrape
