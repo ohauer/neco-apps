@@ -89,8 +89,6 @@ spec:
   relabelConfigs:
     - replacement: kubernetes-cadvisor
       targetLabel: job
-    - action: labelmap
-      regex: __meta_kubernetes_node_label_(.+)
   metricRelabelConfigs:
     - sourceLabels: [container_label_io_kubernetes_container_name]
       targetLabel: container
