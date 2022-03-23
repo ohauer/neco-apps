@@ -4,3 +4,4 @@ resources:
   - templates/ingress-same-ns.yaml
   - templates/ingress-same-team.yaml
   - templates/egress-bmc-deny.yaml
+  - admission/forbid-egress-node.yaml
