@@ -51,3 +51,23 @@ spec:
     - ports:
       - port: "2379"
         protocol: TCP
+---
+# Temporary fix: This policy allow teleport apps to access teleport-proxy LB
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-teleport-app-allow
+  namespace: teleport
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: teleport
+      k8s:app.kubernetes.io/component: app
+  egress:
+  - toEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "443"
+        protocol: TCP
