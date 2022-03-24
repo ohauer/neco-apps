@@ -397,6 +397,21 @@ func testSetup() {
 	})
 }
 
+// annotateNamespaceToDeleteDuringUpgrade adds `admission.cybozu.com/i-am-sure-to-delete` annotation,
+//  which is required to delete a namespace, during upgrade.
+// If the namespace does not exist (= already deleted by Argo CD, etc), It does nothing.
+// It does nothing in non-upgrade case neither.
+// This function is intended to be used in pre- and post-sync special processes.
+func annotateNamespaceToDeleteDuringUpgrade(namespace string) {
+	if doUpgrade {
+		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", namespace)
+		if err == nil {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", namespace, "admission.cybozu.com/i-am-sure-to-delete="+namespace)
+			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
+		}
+	}
+}
+
 func applyAndWaitForApplications(commitID string) {
 	By("creating Argo CD app")
 	Eventually(func() error {
@@ -437,6 +452,10 @@ func applyAndWaitForApplications(commitID string) {
 			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
 		}
 	}
+
+	// TODO: remove this block after release the PR bellow
+	// https://github.com/cybozu-go/neco-apps/pull/2414
+	annotateNamespaceToDeleteDuringUpgrade("app-csa-privileged")
 
 	By("syncing argocd-config")
 	Eventually(func() error {
