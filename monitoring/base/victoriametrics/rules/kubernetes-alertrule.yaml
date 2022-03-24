@@ -673,10 +673,22 @@ spec:
             runbook: Please consider resizing volume
         - alert: PersistentVolumeUsageRapidIncrease
           expr: |
-            delta(kubelet_volume_stats_used_bytes[10m])
+            delta(kubelet_volume_stats_used_bytes{persistentvolumeclaim!~"(vmsingle|vmstorage)-.*"}[10m])
             * on(namespace) group_left kube_namespace_labels{label_team="neco"}
             / (1024 * 1024 * 1024) > 10
           for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: Disk usage of `{{ $labels.persistentvolumeclaim }}, {{ $labels.namespace }}` increases rapidly over 10GiB in 10 minutes.
+            runbook: TBD
+        - alert: PersistentVolumeUsageRapidIncrease
+          expr: |
+            delta(kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"(vmsingle|vmstorage)-.*"}[10m])
+            * on(namespace) group_left kube_namespace_labels{label_team="neco"}
+            / (1024 * 1024 * 1024) > 10
+          # longer `for` for VictoriaMetrics PVs. 1m is too sensitive and causes many false positives.
+          for: 15m
           labels:
             severity: warning
           annotations:
