@@ -280,6 +280,11 @@
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root"
       },
+      "app-sgre-rootable": {
+        "accurate.cybozu.com/template": "init-template",
+        "accurate.cybozu.com/type": "root",
+        "pod-security.cybozu.com/policy": "rootable"
+      },
       "dev-maneki": {
         "accurate.cybozu.com/template": "init-template",
         "accurate.cybozu.com/type": "root",

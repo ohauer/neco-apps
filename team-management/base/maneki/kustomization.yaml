@@ -5,6 +5,7 @@ commonLabels:
 kind: Kustomization
 resources:
   - app-maneki.yaml
+  - app-sgre-rootable.yaml
   - dev-maneki.yaml
   - maneki.yaml
   - project.yaml
