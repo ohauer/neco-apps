@@ -66,6 +66,8 @@ spec:
       server: '*'
     - namespace: app-schreiben
       server: '*'
+    - namespace: app-sgre-rootable
+      server: '*'
     - namespace: dev-*
       server: '*'
     - namespace: maneki
