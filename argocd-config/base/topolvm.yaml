@@ -17,6 +17,12 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: topolvm-system
+  ignoreDifferences:
+  - group: cert-manager.io
+    kind: Certificate
+    jsonPointers:
+    - /spec/duration
+    - /spec/renewBefore
   syncPolicy:
     automated:
       prune: true
