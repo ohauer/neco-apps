@@ -274,6 +274,20 @@ func isPrivileged(team string) bool {
 	return false
 }
 
+var teamsNotManagedByManeki = []string{"ept"}
+
+func managedByManeki(team string) bool {
+	if isPrivileged(team) {
+		return false
+	}
+	for _, t := range teamsNotManagedByManeki {
+		if team == t {
+			return false
+		}
+	}
+	return true
+}
+
 func testTeamManagement() {
 	It("should give appropriate authority to unprivileged team", func() {
 		namespaceList := []string{}
@@ -366,7 +380,7 @@ func testTeamManagement() {
 				for _, resource := range secretResources {
 					key := keyGen(team, ns, resource)
 
-					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && !isPrivileged(nsOwner[ns])) {
+					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && managedByManeki(nsOwner[ns])) {
 						expectedVerbs[key] = adminVerbs
 					} else {
 						expectedVerbs[key] = prohibitedVerbs
@@ -383,7 +397,7 @@ func testTeamManagement() {
 				for _, resource := range requiredResources {
 					key := keyGen(team, ns, resource)
 
-					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && !isPrivileged(nsOwner[ns])) {
+					if ns == "sandbox" || nsOwner[ns] == team || (team == "maneki" && managedByManeki(nsOwner[ns])) {
 						expectedVerbs[key] = adminVerbs
 					} else {
 						expectedVerbs[key] = viewVerbs

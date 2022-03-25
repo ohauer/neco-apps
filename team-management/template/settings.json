@@ -13,12 +13,6 @@
       "app-cybozu-com-mysql-restore",
       "app-mysql-tenant-service"
     ],
-    "ept": [
-      "app-ept-grpshuffle",
-      "app-ept-monitoring",
-      "app-ept-plantuml",
-      "app-ept-wiki"
-    ],
     "garoon": [
       "app-garoon-monitoring",
       "app-garoon-static"
@@ -78,13 +72,6 @@
       },
       "repo": "https://github.com/cybozu-private/elasticsearch-apps.git",
       "team": "maneki"
-    },
-    "ept-apps": {
-      "destinations": {
-        "stage0": "main"
-      },
-      "repo": "https://github.com/cybozu-private/ept-apps.git",
-      "team": "ept"
     },
     "garoon-apps": {
       "destinations": {
@@ -215,17 +202,6 @@
         "pod-security.cybozu.com/policy": "traceable"
       }
     },
-    "ept": {
-      "app-ept": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
-      },
-      "dev-ept": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root",
-        "development": "true"
-      }
-    },
     "garoon": {
       "app-garoon": {
         "accurate.cybozu.com/template": "init-template",
@@ -309,6 +285,28 @@
     }
   },
   "tenants": {
+    "ept": {
+      "argocd": {
+        "repositories": [
+          "https://github.com/cybozu-private/*"
+        ]
+      },
+      "rootNamespaces": [
+        {
+          "labels": {
+            "team": "ept"
+          },
+          "name": "app-ept"
+        },
+        {
+          "labels": {
+            "development": "true",
+            "team": "ept"
+          },
+          "name": "dev-ept"
+        }
+      ]
+    },
     "set": {
       "argocd": {
         "repositories": [

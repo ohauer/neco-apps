@@ -557,18 +557,37 @@ func applyAndWaitForApplications(commitID string) {
 			}
 
 			// TODO: remove this block after release the PR bellow
+			// https://github.com/cybozu-go/neco-apps/pull/2327
 			// https://github.com/cybozu-go/neco-apps/pull/2389
 			if doUpgrade {
 				if app.Name == "team-management" && app.Status.Sync.Status != SyncStatusCodeSynced {
 					fmt.Printf("%s failed to sync team-management app: syncStatus=%s, healthStatus=%s\n",
 						time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+
 					_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "dev-set")
 					if err == nil {
-						fmt.Printf("%s remove app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+						fmt.Printf("%s remove dev set app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
 							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
 						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "dev-set", "app.kubernetes.io/instance-")
 						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
 					}
+
+					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "app-ept")
+					if err == nil {
+						fmt.Printf("%s remove app-ept app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "app-ept", "app.kubernetes.io/instance-")
+						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
+					}
+
+					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "dev-ept")
+					if err == nil {
+						fmt.Printf("%s remove dev-ept app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "dev-ept", "app.kubernetes.io/instance-")
+						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
+					}
+
 					if app.Operation == nil {
 						fmt.Printf("%s sync team-management manually: syncStatus=%s, healthStatus=%s\n",
 							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)

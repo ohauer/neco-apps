@@ -6,7 +6,6 @@ resources:
   - cydec-apps.yaml
   - dbre-apps.yaml
   - elasticsearch-apps.yaml
-  - ept-apps.yaml
   - garoon-apps.yaml
   - hazama-apps.yaml
   - izumo-apps.yaml

@@ -6,7 +6,6 @@ resources:
   - ./csa
   - ./cydec
   - ./dbre
-  - ./ept
   - ./garoon
   - ./izumo
   - ./kintone-neco
@@ -17,4 +16,5 @@ resources:
   - ./neco-readonly
   - ./network
   - ./sandbox
+  - tenant-ept.yaml
   - tenant-set.yaml

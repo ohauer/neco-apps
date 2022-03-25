@@ -4,7 +4,6 @@ kind: Kustomization
 patchesStrategicMerge:
   - dev-cydec.yaml
   - dev-dbre.yaml
-  - dev-ept.yaml
   - dev-garoon.yaml
   - dev-team-izumo.yaml
   - dev-team-kintone.yaml
@@ -12,6 +11,7 @@ patchesStrategicMerge:
   - dev-maneki.yaml
   - dev-guests.yaml
   - dev-network.yaml
+  - tenant-ept.yaml
   - tenant-set.yaml
 resources:
   - ../../base
