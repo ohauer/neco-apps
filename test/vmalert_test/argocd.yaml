@@ -38,6 +38,31 @@ tests:
               runbook: See https://github.com/cybozu-go/neco-apps/blob/main/DEVELOPMENT.md#out-of-sync
   - interval: 1m
     input_series:
+      - series: 'argocd_app_info{name="rook",sync_status="Synced",project="default",dest_namespace="ceph-object-store"}'
+        values: 0+0x20
+      - series: 'argocd_app_info{name="metallb",sync_status="Synced",project="default",dest_namespace="kube-system"}'
+        values: 0+0x20
+      - series: 'argocd_app_info{name="rook",sync_status="Unknown",project="default",dest_namespace="ceph-object-store"}'
+        values: 1+0x20
+      - series: 'argocd_app_info{name="metallb",sync_status="Unknown",project="default",dest_namespace="kube-system"}'
+        values: 1+0x20
+      - series: 'kube_namespace_labels{namespace="ceph-object-store",label_team="csa"}'
+        values: 1+0x20
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: AppOutOfSync
+        exp_alerts:
+          - exp_labels:
+              name: metallb
+              severity: error
+              sync_status: Unknown
+              project: default
+              dest_namespace: kube-system
+            exp_annotations:
+              summary: metallb is out-of-sync.
+              runbook: See https://github.com/cybozu-go/neco-apps/blob/main/DEVELOPMENT.md#out-of-sync
+  - interval: 1m
+    input_series:
       - series: 'argocd_app_info{name="monitoring",sync_status="Unknown",project="default"}'
         values: 1+0x20
       - series: 'argocd_app_info{name="metallb",sync_status="Unknown",project="default"}'

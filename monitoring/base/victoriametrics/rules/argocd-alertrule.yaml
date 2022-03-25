@@ -8,7 +8,7 @@ spec:
     - name: argocd-config
       rules:
         - alert: AppOutOfSync
-          expr: max without(health_status,operation) (argocd_app_info{sync_status!="Synced",project="default"}) == 1
+          expr: max without(health_status,operation) (argocd_app_info{sync_status!="Synced",project="default"} unless on(dest_namespace) label_replace(kube_namespace_labels{label_team="csa"}, "dest_namespace", "$1", "namespace", "(.*)")) == 1
           for: 20m
           labels:
             severity: error
