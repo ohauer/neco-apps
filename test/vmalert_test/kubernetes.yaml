@@ -1033,3 +1033,24 @@ tests:
             exp_annotations:
               runbook: TBD
               summary: Disk usage of `volume4, foobar` increases rapidly over 10GiB in 10 minutes.
+  - interval: 1m
+    input_series:
+      - series: 'kubelet_volume_stats_used_bytes{job="prometheus", persistentvolumeclaim="vmsingle-foo", namespace="foo"}'
+        values: '0+1073741825x30' # 0 1GiB+1 2GiB+2 ... 10GiB+10 ...
+      - series: 'kube_namespace_labels{job="kube-state-metrics", label_team="neco", namespace="foo"}'
+        values: '1+0x30'
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: PersistentVolumeUsageRapidIncrease
+        exp_alerts: []
+      - eval_time: 25m
+        alertname: PersistentVolumeUsageRapidIncrease
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+              job: prometheus
+              namespace: foo
+              persistentvolumeclaim: vmsingle-foo
+            exp_annotations:
+              runbook: TBD
+              summary: Disk usage of `vmsingle-foo, foo` increases rapidly over 10GiB in 10 minutes.
