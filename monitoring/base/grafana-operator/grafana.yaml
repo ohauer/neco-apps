@@ -14,6 +14,10 @@ spec:
           name: github-auth-20200423
     securityContext:
       runAsUser: 10000
+  resources:
+    requests:
+      cpu: "3"
+      memory: 1Gi
   config:
     log:
       mode: "console"
