@@ -22,6 +22,9 @@ spec:
         - --containerd=/var/run/k8s-containerd.sock
         - --store_container_labels=false
         - --whitelisted_container_labels=io.kubernetes.container.name,io.kubernetes.pod.name,io.kubernetes.pod.namespace
+        env:
+        - name: GOMAXPROCS
+          value: "1"
         ports:
         - name: http
           containerPort: 8080
