@@ -77,7 +77,7 @@
     "garoon-apps": {
       "destinations": {
         "osaka0": "stable",
-        "stage0": "main",
+        "stage0": "staging",
         "tokyo0": "stable"
       },
       "repo": "https://github.com/cybozu-private/garoon-apps.git",
