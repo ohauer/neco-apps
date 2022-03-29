@@ -30,7 +30,8 @@
       "app-monitoring-elasticstack",
       "app-oauth-redirector",
       "app-octodns",
-      "app-schreiben"
+      "app-schreiben",
+      "app-schreiben-mta"
     ],
     "network": [
       "app-network-*"
