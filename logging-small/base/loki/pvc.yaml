@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: loki-small-data
+  namespace: logging-small
+  annotations:
+    resize.topolvm.io/storage_limit: 100Gi
+    resize.topolvm.io/threshold: 10%
+    resize.topolvm.io/increase: 10Gi
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: topolvm-flash1-xfs

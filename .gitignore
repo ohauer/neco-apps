@@ -24,6 +24,7 @@
 /pvc-autoresizer/base/charts
 /topolvm/base/charts
 /rook/base/*/charts
+/logging-small/base/*/charts
 
 # Editors
 *~

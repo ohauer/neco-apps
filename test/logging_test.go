@@ -30,13 +30,20 @@ func testLogging() {
 		masterNodeName := getNodeName("master")
 		checkLog("should get audit logs from master", fmt.Sprintf(`'{job="kubernetes-apiservers", type="audit", instance="%s"}'`, masterNodeName))
 	})
+
+	It("should be successful", func() {
+		checkLogSmall("should get pod logs", `'{namespace="ceph-object-store"}'`) // get logs from all pods
+
+		checkLogSmall("should get journal logs from ss", `'{syslog_identifier="kernel", hostname=~".*-ss.*"}'`)
+
+		checkLogSmall("should get journal logs from cs", `'{syslog_identifier="kernel", hostname=~".*-cs.*"}'`)
+	})
 }
 
-func checkLog(title, query string) {
+func checkLogCommon(title string, f func() ([]byte, []byte, error)) {
 	By(title, func() {
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0,
-				"kubectl", "exec", "-n", "logging", "deployment/query-frontend", "--", "logcli", "query", query, "-ojsonl")
+			stdout, stderr, err := f()
 			if err != nil {
 				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
 			}
@@ -64,6 +71,20 @@ func checkLog(title, query string) {
 
 			return nil
 		}).Should(Succeed())
+	})
+}
+
+func checkLog(title, query string) {
+	checkLogCommon(title, func() ([]byte, []byte, error) {
+		return ExecAt(boot0,
+			"kubectl", "exec", "-n", "logging", "deployment/query-frontend", "--", "logcli", "query", query, "-ojsonl")
+	})
+}
+
+func checkLogSmall(title, query string) {
+	checkLogCommon(title, func() ([]byte, []byte, error) {
+		return ExecAt(boot0,
+			"kubectl", "exec", "-n", "logging-small", "statefulset/loki-small", "--", "logcli", "query", query, "-ojsonl")
 	})
 }
 

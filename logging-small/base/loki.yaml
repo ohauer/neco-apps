@@ -1,0 +1,194 @@
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app: loki
+    chart: loki-2.7.0
+    heritage: Helm
+    release: loki-small
+  name: loki-small
+  namespace: logging-small
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: loki
+    chart: loki-2.7.0
+    heritage: Helm
+    release: loki-small
+  name: loki-small
+  namespace: logging-small
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: loki
+    chart: loki-2.7.0
+    heritage: Helm
+    release: loki-small
+  name: loki-small
+  namespace: logging-small
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: loki-small
+subjects:
+- kind: ServiceAccount
+  name: loki-small
+  namespace: logging-small
+---
+apiVersion: v1
+data:
+  loki.yaml: YXV0aF9lbmFibGVkOiBmYWxzZQpjaHVua19zdG9yZV9jb25maWc6CiAgbWF4X2xvb2tfYmFja19wZXJpb2Q6IDBzCmNvbXBhY3RvcjoKICByZXRlbnRpb25fZGVsZXRlX2RlbGF5OiAyaAogIHJldGVudGlvbl9lbmFibGVkOiB0cnVlCiAgc2hhcmVkX3N0b3JlOiBmaWxlc3lzdGVtCiAgd29ya2luZ19kaXJlY3Rvcnk6IC9kYXRhL2xva2kvYm9sdGRiLXNoaXBwZXItY29tcGFjdG9yCmluZ2VzdGVyOgogIGNodW5rX2Jsb2NrX3NpemU6IDI2MjE0NAogIGNodW5rX2lkbGVfcGVyaW9kOiAzbQogIGNodW5rX3JldGFpbl9wZXJpb2Q6IDFtCiAgbGlmZWN5Y2xlcjoKICAgIHJpbmc6CiAgICAgIGt2c3RvcmU6CiAgICAgICAgc3RvcmU6IGlubWVtb3J5CiAgICAgIHJlcGxpY2F0aW9uX2ZhY3RvcjogMQogIG1heF90cmFuc2Zlcl9yZXRyaWVzOiAwCmxpbWl0c19jb25maWc6CiAgZW5mb3JjZV9tZXRyaWNfbmFtZTogZmFsc2UKICByZWplY3Rfb2xkX3NhbXBsZXM6IHRydWUKICByZWplY3Rfb2xkX3NhbXBsZXNfbWF4X2FnZTogMTY4aAogIHJldGVudGlvbl9wZXJpb2Q6IDE2OGgKc2NoZW1hX2NvbmZpZzoKICBjb25maWdzOgogIC0gZnJvbTogIjIwMjAtMTAtMjQiCiAgICBpbmRleDoKICAgICAgcGVyaW9kOiAyNGgKICAgICAgcHJlZml4OiBpbmRleF8KICAgIG9iamVjdF9zdG9yZTogZmlsZXN5c3RlbQogICAgc2NoZW1hOiB2MTEKICAgIHN0b3JlOiBib2x0ZGItc2hpcHBlcgpzZXJ2ZXI6CiAgaHR0cF9saXN0ZW5fcG9ydDogMzEwMApzdG9yYWdlX2NvbmZpZzoKICBib2x0ZGJfc2hpcHBlcjoKICAgIGFjdGl2ZV9pbmRleF9kaXJlY3Rvcnk6IC9kYXRhL2xva2kvYm9sdGRiLXNoaXBwZXItYWN0aXZlCiAgICBjYWNoZV9sb2NhdGlvbjogL2RhdGEvbG9raS9ib2x0ZGItc2hpcHBlci1jYWNoZQogICAgY2FjaGVfdHRsOiAyNGgKICAgIHNoYXJlZF9zdG9yZTogZmlsZXN5c3RlbQogIGZpbGVzeXN0ZW06CiAgICBkaXJlY3Rvcnk6IC9kYXRhL2xva2kvY2h1bmtzCnRhYmxlX21hbmFnZXI6CiAgcmV0ZW50aW9uX2RlbGV0ZXNfZW5hYmxlZDogZmFsc2UKICByZXRlbnRpb25fcGVyaW9kOiAwcw==
+kind: Secret
+metadata:
+  labels:
+    app: loki
+    chart: loki-2.7.0
+    heritage: Helm
+    release: loki-small
+  name: loki-small
+  namespace: logging-small
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: loki
+    chart: loki-2.7.0
+    heritage: Helm
+    release: loki-small
+  name: loki-small
+  namespace: logging-small
+spec:
+  ports:
+  - name: http-metrics
+    port: 3100
+    protocol: TCP
+    targetPort: http-metrics
+  selector:
+    app: loki
+    release: loki-small
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: loki
+    chart: loki-2.7.0
+    heritage: Helm
+    release: loki-small
+    variant: headless
+  name: loki-small-headless
+  namespace: logging-small
+spec:
+  clusterIP: None
+  ports:
+  - name: http-metrics
+    port: 3100
+    protocol: TCP
+    targetPort: http-metrics
+  selector:
+    app: loki
+    release: loki-small
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  annotations:
+    resize.topolvm.io/increase: 10Gi
+    resize.topolvm.io/storage_limit: 100Gi
+    resize.topolvm.io/threshold: 10%
+  name: loki-small-data
+  namespace: logging-small
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: topolvm-flash1-xfs
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: loki
+    chart: loki-2.7.0
+    heritage: Helm
+    release: loki-small
+  name: loki-small
+  namespace: logging-small
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loki
+      release: loki-small
+  serviceName: loki-small-headless
+  template:
+    metadata:
+      annotations:
+        checksum/config: 2247e3e289a75d99a6aec20bb7b3409ceb8a6e9130151ab9758b758b5267d808
+        prometheus.io/port: http-metrics
+        prometheus.io/scrape: "true"
+      labels:
+        app: loki
+        name: loki
+        release: loki-small
+    spec:
+      affinity: {}
+      containers:
+      - args:
+        - -config.file=/etc/loki/loki.yaml
+        env: null
+        image: quay.io/cybozu/loki:2.3.0.1
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          httpGet:
+            path: /ready
+            port: http-metrics
+          initialDelaySeconds: 45
+        name: loki
+        ports:
+        - containerPort: 3100
+          name: http-metrics
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: http-metrics
+          initialDelaySeconds: 45
+        resources: {}
+        securityContext:
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /etc/loki
+          name: config
+        - mountPath: /data
+          name: storage
+          subPath: null
+      initContainers: []
+      nodeSelector: {}
+      securityContext:
+        fsGroup: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        runAsUser: 10001
+      serviceAccountName: loki-small
+      terminationGracePeriodSeconds: 4800
+      tolerations: []
+      volumes:
+      - name: config
+        secret:
+          secretName: loki-small
+      - name: storage
+        persistentVolumeClaim:
+          claimName: loki-small-data
+  updateStrategy:
+    type: RollingUpdate

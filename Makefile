@@ -5,13 +5,15 @@ TANKA_VERSION = 0.15.1
 JSONNET_LIBS_K8S_ALPHA_VERSION = 1.20
 YQ_VERSION = 4.11.2
 
+KUSTOMIZE = test/bin/kustomize
+
 .PHONY: all
 all:
 	@echo Read docs/maintenance.md for the usage
 
 .PHONY: test-generate
 test-generate:
-	$(MAKE) update-rook
+	$(MAKE) update-loki-small update-promtail-small update-rook
 
 .PHONY: update-accurate
 update-accurate:
@@ -198,6 +200,30 @@ update-logging-promtail:
 	$(call get-latest-tag,promtail)
 	sed -i -E '/name:.*promtail$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/promtail/kustomization.yaml
 
+LOKI_SMALL_IMAGE_VERSION := $(shell awk '/LOKI_IMAGE:/ {print $$2}' logging-small/base/VERSIONS)
+LOKI_SMALL_CHART_VERSION := $(shell awk '/LOKI_CHART:/ {print $$2}' logging-small/base/VERSIONS)
+.PHONY: update-loki-small
+update-loki-small: $(KUSTOMIZE)
+	sed -i -E \
+		-e 's/^(  tag:).*$$/\1 $(LOKI_SMALL_IMAGE_VERSION)/' \
+		logging-small/base/loki/values.yaml
+	sed -i -E \
+		-e 's/^(  version:).*$$/\1 $(LOKI_SMALL_CHART_VERSION)/' \
+		logging-small/base/loki/kustomization.yaml
+	$(KUSTOMIZE) build --enable-helm logging-small/base/loki > logging-small/base/loki.yaml
+
+PROMTAIL_SMALL_IMAGE_VERSION := $(shell awk '/PROMTAIL_IMAGE:/ {print $$2}' logging-small/base/VERSIONS)
+PROMTAIL_SMALL_CHART_VERSION := $(shell awk '/PROMTAIL_CHART:/ {print $$2}' logging-small/base/VERSIONS)
+.PHONY: update-promtail-small
+update-promtail-small: $(KUSTOMIZE)
+	sed -i -E \
+		-e 's/^(  tag:).*$$/\1 $(PROMTAIL_SMALL_IMAGE_VERSION)/' \
+		logging-small/base/promtail/values.yaml
+	sed -i -E \
+		-e 's/^(  version:).*$$/\1 $(PROMTAIL_SMALL_CHART_VERSION)/' \
+		logging-small/base/promtail/kustomization.yaml
+	$(KUSTOMIZE) build --enable-helm logging-small/base/promtail > logging-small/base/promtail.yaml
+
 .PHONY: update-machines-endpoints
 update-machines-endpoints:
 	$(call get-latest-tag,machines-endpoints)
@@ -285,7 +311,7 @@ update-rook:
 			-e 's/^(  version:).*$$/\1 v$(ROOK_CHAET_VERSION)/' \
 			rook/base/$$t/kustomization.yaml; \
 		cp rook/base/values.yaml rook/base/$$t/values.yaml; \
-		test/bin/kustomize build --enable-helm rook/base/$$t > rook/base/$$t.yaml; \
+		$(KUSTOMIZE) build --enable-helm rook/base/$$t > rook/base/$$t.yaml; \
 	done
 	mv rook/base/ceph-poc*.yaml rook/overlays/stage0/ceph-poc/
 

@@ -18,6 +18,7 @@ How to maintain neco-apps
 - [logging](#logging)
   - [loki, loki-canary](#loki-loki-canary)
   - [promtail](#promtail)
+- [logging-small](#logging-small)
 - [machines-endpoints](#machines-endpoints)
 - [meows](#meows)
 - [metallb](#metallb)
@@ -290,6 +291,34 @@ Update the image tag as follows.
 ```console
 $ make update-logging-promtail
 $ git diff
+```
+
+## logging-small
+
+Check the chart version by the following commands.
+
+```console
+## Add helm repository if necessary.
+$ helm repo add logging-small https://grafana.github.io/helm-charts
+## Update the repository if it already exists.
+$ helm repo update
+## Select the appropriate container from quay.io. The latest container may not necessarily be suitable.
+$ helm search repo logging-small/loki --versions
+$ helm search repo logging-small/promtail --versions
+```
+
+Replace the value of `base/VERSIONS` with the `CHART VERSION` you checked above and the container tag in quay.io.
+
+Update `values.yaml` file.
+- The configuration to get the pod logs is based on the upstream values file.
+- The configuration to get journal (kernel) logs is based on neco-apps.
+
+Regenerate base resource yaml files.
+
+```console
+$ rm -rf logging-small/base/*/charts
+$ make update-loki-small
+$ make update-promtail-small
 ```
 
 ## machines-endpoints
