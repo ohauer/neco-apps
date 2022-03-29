@@ -16,7 +16,7 @@ spec:
   source:
     path: argocd-config/overlays/stage0
     repoURL: https://github.com/cybozu-private/garoon-apps.git
-    targetRevision: main
+    targetRevision: staging
   syncPolicy:
     automated:
       prune: true
