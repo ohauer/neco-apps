@@ -10,4 +10,4 @@ spec:
         spec:
           resources:
             requests:
-              storage: 1Ti
+              storage: 1536Gi
