@@ -14,6 +14,28 @@ scrape_configs:
   - job_name: kubernetes-pods
     pipeline_stages:
       - cri: {}
+      # Export histogram of ceph-rgw services latency
+      - match:
+          # Log example:
+          # beast: 0x7f6ba8451790: 10.64.10.202 - ceph-user-PXg7DdmV [31/Mar/2022:02:28:27.955 +0000] "DELETE /1234/abc.rnd HTTP/1.1" 204 0 - "aws-cli/1.18.69 Python/3.8.10 Linux/5.10.102-flatcar botocore/1.16.19" - latency=0.035002209s
+          selector: '{namespace=~"ceph-.*",app="ceph-rgw"} |= "beast:" != "/swift/healthcheck"'
+          stages:
+            - regex:
+                expression: '.* \"(?P<method>[^ ]*) .*\" (?P<http_status>.*) .* - \".*\" - latency=(?P<latency>.*)s.*'
+            - labelallow:
+                - namespace
+                - pod
+            - labels:
+                method:
+                http_status:
+            - metrics:
+                request_duration_seconds:
+                  type: Histogram
+                  description: "rgw latency metrics"
+                  prefix: ceph_rgw_
+                  source: latency
+                  config:
+                    buckets: [0.0125,0.025,0.05,0.1,0.2,0.4,0.8,1.6,3.2,6.4,12.8,25.6,51.2,102.4]
     kubernetes_sd_configs:
       - role: pod
     relabel_configs:

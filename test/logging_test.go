@@ -13,7 +13,7 @@ import (
 )
 
 func testLogging() {
-	It("should be successful", func() {
+	It("should get some patterns logs from logging system", func() {
 		checkLog("should get pod logs", `'{namespace="logging"}'`) // get logs from all pods
 
 		ssNodeName := getNodeName("ss")
@@ -31,12 +31,26 @@ func testLogging() {
 		checkLog("should get audit logs from master", fmt.Sprintf(`'{job="kubernetes-apiservers", type="audit", instance="%s"}'`, masterNodeName))
 	})
 
-	It("should be successful", func() {
+	It("should get logs from logging-small", func() {
 		checkLogSmall("should get pod logs", `'{namespace="ceph-object-store"}'`) // get logs from all pods
 
 		checkLogSmall("should get journal logs from ss", `'{syslog_identifier="kernel", hostname=~".*-ss.*"}'`)
 
 		checkLogSmall("should get journal logs from cs", `'{syslog_identifier="kernel", hostname=~".*-cs.*"}'`)
+	})
+
+	It("should export ceph-rgw request duration seconds", func() {
+		query := `histogram_quantile(0.95, sum(rate(ceph_rgw_request_duration_seconds_bucket{}[5m])) by (le, pod, namespace, http_status, method))`
+		Eventually(func() error {
+			result, err := queryMetrics(MonitoringLargeset, query)
+			if err != nil {
+				return err
+			}
+			if len(result.Data.Result) <= 0 {
+				return fmt.Errorf("no count metrics is retrieved")
+			}
+			return nil
+		}).ShouldNot(HaveOccurred())
 	})
 }
 

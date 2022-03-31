@@ -48,6 +48,8 @@ kind: VMPodScrape
 metadata:
   name: logging-promtail
   namespace: monitoring
+  labels:
+    smallset: "true"
 spec:
   namespaceSelector:
     matchNames: [logging]
@@ -56,6 +58,7 @@ spec:
       app.kubernetes.io/name: promtail
   podMetricsEndpoints:
   - port: http-metrics
+    honorLabels: true
     relabelConfigs:
       - replacement: promtail
         targetLabel: job

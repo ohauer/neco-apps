@@ -363,6 +363,7 @@ func testVMCustomResources(t *testing.T) {
 	}
 	expectedSmallsetPodScrapes := []string{
 		"kube-state-metrics-telemetry",
+		"logging-promtail",
 		"topolvm",
 		"victoriametrics-operator",
 	}
