@@ -16,7 +16,7 @@ spec:
   source:
     path: argocd-config/overlays/osaka0
     repoURL: https://github.com/cybozu-private/garoon-apps.git
-    targetRevision: stable
+    targetRevision: production
   syncPolicy:
     automated:
       prune: true
