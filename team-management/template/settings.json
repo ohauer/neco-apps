@@ -11,6 +11,7 @@
       "app-cybozu-com-mysql",
       "app-cybozu-com-mysql-replica",
       "app-cybozu-com-mysql-restore",
+      "app-dbre-monitoring",
       "app-mysql-tenant-service"
     ],
     "garoon": [

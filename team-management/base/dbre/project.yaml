@@ -12,6 +12,8 @@ spec:
       server: '*'
     - namespace: app-cybozu-com-mysql-restore
       server: '*'
+    - namespace: app-dbre-monitoring
+      server: '*'
     - namespace: app-mysql-tenant-service
       server: '*'
     - namespace: dev-*
