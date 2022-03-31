@@ -28,19 +28,19 @@ spec:
             severity: warning
         - alert: BootServerNotHealthy
           annotations:
-            summary: "Not-healthy boot server(s) exist."
+            summary: "Boot server `{{ $labels.serial }}` at `{{ $labels.address }}` in rack `{{ $labels.rack }}` is not healthy."
             runbook: TBD
           expr: |
-            sum(sabakan_machine_status{status!~"healthy|retired", role="boot"}) > 0
+            sum by(address, serial, rack) (sabakan_machine_status{status!~"healthy|retired", role="boot"}) > 0
           for: 30m
           labels:
             severity: error
         - alert: NodeUnreachable
           annotations:
-            summary: "Node `{{ $labels.serial }}` at `{{ $labels.address }}` is unreachable."
+            summary: "Node `{{ $labels.serial }}` at `{{ $labels.address }}` in rack `{{ $labels.rack }}` is unreachable."
             runbook: "Perform the server retirement procedure."
           expr: |
-            sum by(address, serial) (sabakan_machine_status{status="unreachable"}) > 0
+            sum by(address, serial, rack) (sabakan_machine_status{status="unreachable"}) > 0
           for: 60m
           labels:
             severity: urgent

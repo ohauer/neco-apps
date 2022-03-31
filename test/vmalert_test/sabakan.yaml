@@ -36,9 +36,9 @@ tests:
               runbook: TBD
   - interval: 1m
     input_series:
-      - series: 'sabakan_machine_status{instance="boot-0", address="1.2.3.4", serial="abcd", status="healthy", role="boot"}'
+      - series: 'sabakan_machine_status{instance="boot-0", address="1.2.3.4", serial="abcd", rack="2", status="healthy", role="boot"}'
         values: 0+0x30
-      - series: 'sabakan_machine_status{instance="boot-0", address="1.2.3.4", serial="abcd", status="unhealthy", role="boot"}'
+      - series: 'sabakan_machine_status{instance="boot-0", address="1.2.3.4", serial="abcd", rack="2", status="unhealthy", role="boot"}'
         values: 1+0x30
     alert_rule_test:
       - eval_time: 30m
@@ -46,14 +46,17 @@ tests:
         exp_alerts:
           - exp_labels:
               severity: error
+              address: "1.2.3.4"
+              serial: "abcd"
+              rack: "2"
             exp_annotations:
-              summary: Not-healthy boot server(s) exist.
+              summary: "Boot server `abcd` at `1.2.3.4` in rack `2` is not healthy."
               runbook: TBD
   - interval: 1m
     input_series:
-      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", status="healthy"}
+      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", rack="2", status="healthy"}
         values: 0+0x60
-      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", status="unreachable"}
+      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", rack="2", status="unreachable"}
         values: 1+0x60
     alert_rule_test:
       - eval_time: 60m
@@ -63,22 +66,23 @@ tests:
               severity: urgent
               address: "1.2.3.4"
               serial: "abcd"
+              rack: "2"
             exp_annotations:
-              summary: "Node `abcd` at `1.2.3.4` is unreachable."
+              summary: "Node `abcd` at `1.2.3.4` in rack `2` is unreachable."
               runbook: "Perform the server retirement procedure."
   - interval: 1m
     input_series:
-      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", status="healthy"}
+      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", rack="2", status="healthy"}
         values: 0+0x30 1+0x30
-      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", status="unreachable"}
+      - series: sabakan_machine_status{address="1.2.3.4", serial="abcd", rack="2", status="unreachable"}
         values: 1+0x30 0+0x30
-      - series: sabakan_machine_status{address="1.2.3.5", serial="abce", status="healthy"}
+      - series: sabakan_machine_status{address="1.2.3.5", serial="abce", rack="2", status="healthy"}
         values: 1+0x20 0+0x30 1+0x10
-      - series: sabakan_machine_status{address="1.2.3.5", serial="abce", status="unreachable"}
+      - series: sabakan_machine_status{address="1.2.3.5", serial="abce", rack="2", status="unreachable"}
         values: 0+0x20 1+0x30 0+0x10
-      - series: sabakan_machine_status{address="1.2.3.6", serial="abcf", status="healthy"}
+      - series: sabakan_machine_status{address="1.2.3.6", serial="abcf", rack="2", status="healthy"}
         values: 1+0x40 0+0x20
-      - series: sabakan_machine_status{address="1.2.3.6", serial="abcf", status="unreachable"}
+      - series: sabakan_machine_status{address="1.2.3.6", serial="abcf", rack="2", status="unreachable"}
         values: 0+0x40 1+0x20
     alert_rule_test:
       - eval_time: 60m
