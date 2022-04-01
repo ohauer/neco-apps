@@ -16,8 +16,8 @@ csi:
   rbdPluginTolerations:
   - key: node.cybozu.io/cluster-not-ready
     operator: Exists
-  #cephcsi:
-    #image: quay.io/cephcsi/cephcsi:v3.5.1
+  cephcsi:
+    image: quay.io/cybozu/cephcsi:3.5.1.1
   registrar:
     image: quay.io/cybozu/csi-node-driver-registrar:2.4.0.1
   provisioner:

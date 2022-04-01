@@ -523,6 +523,7 @@ data:
       operator: Exists
   ROOK_CEPH_COMMANDS_TIMEOUT_SECONDS: "300"
   ROOK_CSI_ATTACHER_IMAGE: quay.io/cybozu/csi-attacher:3.4.0.1
+  ROOK_CSI_CEPH_IMAGE: quay.io/cybozu/cephcsi:3.5.1.1
   ROOK_CSI_ENABLE_CEPHFS: "false"
   ROOK_CSI_ENABLE_GRPC_METRICS: "false"
   ROOK_CSI_ENABLE_RBD: "true"
