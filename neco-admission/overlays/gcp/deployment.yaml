@@ -18,6 +18,7 @@ spec:
             - --valid-image-prefix=ghcr.io/cybozu/
             - --valid-image-prefix=ghcr.io/cybozu-go/
             - --valid-image-prefix=ghcr.io/cybozu-private/
+            - --valid-image-prefix=ghcr.io/topolvm/
             - --valid-image-prefix=docker.elastic.co/
             - --valid-image-prefix=quay.io/gravitational/teleport-ent
             - --valid-image-prefix=quay.io/gravitational/teleport
