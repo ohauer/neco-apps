@@ -92,6 +92,7 @@ func prepareTest() {
 	Context("preparing cattage", prepareCattage)
 	Context("preparing meows", prepareMeows)
 	Context("preparing tenet", prepareTenet)
+	Context("preparing tenant network-policy", prepareTenantNetworkPolicy)
 	Context("preparing network-policy", prepareNetworkPolicy) // this must be the last preparation.
 }
 
@@ -129,6 +130,7 @@ func runTest() {
 	Context("cattage", testCattage)
 	Context("tenet", testTenet)
 	Context("hubble", testHubble)
+	Context("tenant-network-policy", testTenantNetworkPolicy)
 }
 
 func alertcheckTest() {
