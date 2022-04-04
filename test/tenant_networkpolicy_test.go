@@ -11,7 +11,8 @@ import (
 const (
 	testTenantNamespace  = "dev-tenant-netpol"
 	testTenantNamespace2 = "dev-tenant-netpol2"
-	testTenantTeam       = "tenant"
+	testTenantTeam       = "neco-guests"
+	testRootNamespace    = "dev-guests"
 )
 
 var (
@@ -26,10 +27,8 @@ var (
 func prepareTenantNetworkPolicy() {
 	It("should prepare test pods in test namespaces", func() {
 		By("preparing namespaces")
-		createNamespaceIfNotExists(testTenantNamespace, false)
-		createNamespaceIfNotExists(testTenantNamespace2, false)
-		ExecSafeAt(boot0, "kubectl", "label", "namespace", testTenantNamespace, "team="+testTenantTeam)
-		ExecSafeAt(boot0, "kubectl", "label", "namespace", testTenantNamespace2, "team="+testTenantTeam)
+		ExecSafeAt(boot0, "kubectl", "accurate", "sub", "create", testTenantNamespace, testRootNamespace)
+		ExecSafeAt(boot0, "kubectl", "accurate", "sub", "create", testTenantNamespace2, testRootNamespace)
 
 		By("opting namespaces into network policies")
 		ExecSafeAt(boot0, "kubectl", "annotate", "namespace", testTenantNamespace, "tenet.cybozu.io/network-policy-template=allow-same-namespace-ingress")
