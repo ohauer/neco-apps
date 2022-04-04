@@ -173,6 +173,7 @@
       "team": "cydec"
     }
   },
+  "migrating_teams": [],
   "namespaces": {
     "csa": {
       "app-csa": {

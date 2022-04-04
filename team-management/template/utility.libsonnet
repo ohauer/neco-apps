@@ -42,6 +42,10 @@
   get_teams(settings)::
     std.objectFields(settings.namespaces),
 
+  // get_migrating_teams retrieves the array of migrating team from settings.
+  get_migrating_teams(settings)::
+    std.filter(function(x) std.count(settings.migrating_teams, x) > 0, self.get_teams(settings)),
+
   // get_team_namespaces retrieves the array of namespaces associated to a team.
   get_team_namespaces(settings, team)::
     std.objectFields(settings.namespaces[team]),

@@ -5,5 +5,4 @@ metadata:
   namespace: argocd
 spec:
   source:
-    path: team-management/overlays/stage0
-    targetRevision: stage
+    path: team-management/overlays/gcp
