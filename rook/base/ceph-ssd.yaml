@@ -753,7 +753,7 @@ metadata:
   namespace: ceph-ssd
 spec:
   cephVersion:
-    image: quay.io/cybozu/ceph:16.2.7.0
+    image: quay.io/cybozu/ceph:16.2.7.1
   dashboard:
     ssl: true
   dataDirHostPath: /var/lib/rook
