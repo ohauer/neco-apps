@@ -3,6 +3,12 @@ kind: Grafana
 metadata:
   name: grafana
 spec:
+  # Overwrite with default requests value.
+  # refs: https://github.com/grafana-operator/grafana-operator/blob/v4.2.0/controllers/model/grafanaDeployment.go#L22-L23
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
   # If Grafana uses MySQL, main container initialization takes muuuuuuch longer on dctest.
   livenessProbeSpec:
     periodSeconds: 10
