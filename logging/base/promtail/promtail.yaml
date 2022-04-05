@@ -2,24 +2,24 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/instance: promtail-small
+    app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
     app.kubernetes.io/version: 2.4.2
     helm.sh/chart: promtail-3.11.0
-  name: promtail-small
-  namespace: logging-small
+  name: logging-promtail
+  namespace: logging
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/instance: promtail-small
+    app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
     app.kubernetes.io/version: 2.4.2
     helm.sh/chart: promtail-3.11.0
-  name: promtail-small
+  name: logging-promtail
 rules:
 - apiGroups:
   - ""
@@ -38,41 +38,54 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/instance: promtail-small
+    app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
     app.kubernetes.io/version: 2.4.2
     helm.sh/chart: promtail-3.11.0
-  name: promtail-small
+  name: logging-promtail
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: promtail-small
+  name: logging-promtail
 subjects:
 - kind: ServiceAccount
-  name: promtail-small
-  namespace: logging-small
+  name: logging-promtail
+  namespace: logging
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   labels:
-    app.kubernetes.io/instance: promtail-small
+    app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
     app.kubernetes.io/version: 2.4.2
     helm.sh/chart: promtail-3.11.0
-  name: promtail-small
-  namespace: logging-small
+  name: logging-promtail
+  namespace: logging
 stringData:
   promtail.yaml: "server:\n  log_level: info\n  http_listen_port: 3101\n\nclient:\n
-    \ url: http://loki-small.logging-small:3100/loki/api/v1/push\n  \n\npositions:\n
-    \ filename: /run/promtail/positions.yaml\n\nscrape_configs:\n  # See also https://github.com/grafana/loki/blob/master/production/ksonnet/promtail/scrape_config.libsonnet
+    \ url: http://distributor.logging:3100/loki/api/v1/push\n  \n\npositions:\n  filename:
+    /run/promtail/positions.yaml\n\nscrape_configs:\n  # See also https://github.com/grafana/loki/blob/master/production/ksonnet/promtail/scrape_config.libsonnet
     for reference\n  - job_name: kubernetes-pods\n    pipeline_stages:\n      - cri:
-    {}\n    kubernetes_sd_configs:\n      - role: pod\n    relabel_configs:\n      -
-    source_labels:\n          - __meta_kubernetes_pod_controller_name\n        regex:
-    ([0-9a-z-.]+?)(-[0-9a-f]{8,10})?\n        action: replace\n        target_label:
-    __tmp_controller_name\n      - source_labels:\n          - __meta_kubernetes_pod_label_app_kubernetes_io_name\n
+    {}\n      #\n      # Added by CSA\n      #\n      # Export histogram of ceph-rgw
+    services latency\n      - match:\n          # Log example:\n          # beast:
+    0x7f6ba8451790: 10.64.10.202 - ceph-user-PXg7DdmV [31/Mar/2022:02:28:27.955 +0000]
+    \"DELETE /1234/abc.rnd HTTP/1.1\" 204 0 - \"aws-cli/1.18.69 Python/3.8.10 Linux/5.10.102-flatcar
+    botocore/1.16.19\" - latency=0.035002209s\n          selector: '{namespace=~\"ceph-.*\",app=\"ceph-rgw\"}
+    |= \"beast:\" != \"/swift/healthcheck\"'\n          stages:\n            - regex:\n
+    \               expression: '.* \\\"(?P<method>[^ ]*) .*\\\" (?P<http_status>.*)
+    .* - \\\".*\\\" - latency=(?P<latency>.*)s.*'\n            - labelallow:\n                -
+    namespace\n                - pod\n            - labels:\n                method:\n
+    \               http_status:\n            - metrics:\n                request_duration_seconds:\n
+    \                 type: Histogram\n                  description: \"rgw latency
+    metrics\"\n                  prefix: ceph_rgw_\n                  source: latency\n
+    \                 config:\n                    buckets: [0.0125,0.025,0.05,0.1,0.2,0.4,0.8,1.6,3.2,6.4,12.8,25.6,51.2,102.4]\n
+    \   kubernetes_sd_configs:\n      - role: pod\n    relabel_configs:\n      - source_labels:\n
+    \         - __meta_kubernetes_pod_controller_name\n        regex: ([0-9a-z-.]+?)(-[0-9a-f]{8,10})?\n
+    \       action: replace\n        target_label: __tmp_controller_name\n      -
+    source_labels:\n          - __meta_kubernetes_pod_label_app_kubernetes_io_name\n
     \         - __meta_kubernetes_pod_label_app\n          - __tmp_controller_name\n
     \         - __meta_kubernetes_pod_name\n        regex: ^;*([^;]+)(;.*)?$\n        action:
     replace\n        target_label: app\n      - source_labels:\n          - __meta_kubernetes_pod_label_app_kubernetes_io_component\n
@@ -92,8 +105,13 @@ stringData:
     /var/log/pods/*$1/*.log\n        separator: /\n        source_labels:\n        -
     __meta_kubernetes_pod_annotationpresent_kubernetes_io_config_hash\n        - __meta_kubernetes_pod_annotation_kubernetes_io_config_hash\n
     \       - __meta_kubernetes_pod_container_name\n        target_label: __path__\n
-    \     - action: keep\n        regex: ceph-.*\n        source_labels:\n        -
-    namespace\n  \n  - job_name: journal\n    journal:\n      json: false\n      max_age:
+    \ \n  #\n  # Added by neco\n  #\n  - job_name: kubernetes-apiservers\n    static_configs:\n
+    \     - targets:\n          - localhost\n        labels:\n          job: kubernetes-apiservers\n
+    \         __path__: /var/log/audit/*.log\n    relabel_configs:\n      - target_label:
+    type\n        replacement: audit\n      - target_label: instance\n        replacement:
+    ${HOSTNAME}\n    pipeline_stages:\n      - json:\n          expressions:\n            timestamp:
+    stageTimestamp\n      - timestamp:\n          format: RFC3339Nano\n          source:
+    timestamp\n  - job_name: journal\n    journal:\n      json: false\n      max_age:
     12h\n      path: /var/log/journal\n      labels:\n        job: systemd-journal\n
     \       instance: ${HOSTNAME}\n    relabel_configs:\n      - source_labels: [\"__journal__systemd_unit\"]\n
     \       target_label: \"unit\"\n      - source_labels: [\"__journal__systemd_unit\"]\n
@@ -104,36 +122,41 @@ stringData:
     [\"__journal_syslog_identifier\"]\n        target_label: \"syslog_identifier\"\n
     \     - source_labels: [\"__journal_container_name\"]\n        target_label: \"container_name\"\n
     \     - source_labels: [\"__journal__hostname\"]\n        target_label: \"hostname\"\n
-    \     - action: keep\n        source_labels:\n        - syslog_identifier\n        regex:
-    kernel\n"
+    \ #\n  # Added by CSA\n  #\n  # collect ceph logs\n  - job_name: ceph\n    static_configs:\n
+    \     - targets:\n          - localhost\n        labels:\n          job: ceph\n
+    \         __path__: /var/lib/rook/*/log/**\n    pipeline_stages:\n      - regex:\n
+    \         source: filename\n          expression: \"/var/lib/rook/(?P<namespace>.*)/log/.*\"\n
+    \     - labels:\n          namespace: namespace\n    relabel_configs:\n      -
+    target_label: instance\n        replacement: ${HOSTNAME}\n"
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   labels:
-    app.kubernetes.io/instance: promtail-small
+    app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
     app.kubernetes.io/version: 2.4.2
     helm.sh/chart: promtail-3.11.0
-  name: promtail-small
-  namespace: logging-small
+  name: logging-promtail
+  namespace: logging
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/instance: promtail-small
+      app.kubernetes.io/instance: logging
       app.kubernetes.io/name: promtail
   template:
     metadata:
       annotations:
-        checksum/config: 8788b8d34e06614fb2b193c521349b3d9fd48ee1492e7e2b2194d19c0971ae4c
+        checksum/config: f2bd0923ba6f7407cb5e67cebd96ebc242b8b558576d09d6b5b701bbef776750
       labels:
-        app.kubernetes.io/instance: promtail-small
+        app.kubernetes.io/instance: logging
         app.kubernetes.io/name: promtail
     spec:
       containers:
       - args:
         - -config.file=/etc/promtail/promtail.yaml
+        - -config.expand-env=true
         env:
         - name: HOSTNAME
           valueFrom:
@@ -158,6 +181,8 @@ spec:
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
+            add:
+            - DAC_READ_SEARCH
             drop:
             - ALL
           readOnlyRootFilesystem: true
@@ -172,24 +197,34 @@ spec:
         - mountPath: /var/log/pods
           name: pods
           readOnly: true
+        - mountPath: /var/log/audit
+          name: audit
+          readOnly: true
         - mountPath: /var/log/journal
           name: journal
+          readOnly: true
+        - mountPath: /var/lib/rook
+          name: ceph
           readOnly: true
       priorityClassName: node-bound
       securityContext:
         runAsGroup: 0
         runAsUser: 0
-      serviceAccountName: promtail-small
+      serviceAccountName: logging-promtail
       tolerations:
+      - key: cke.cybozu.com/master
+        operator: Exists
       - key: cke.cybozu.com/role
         operator: Equal
         value: storage
+      - key: cke.cybozu.com/state
+        operator: Exists
       volumes:
       - name: config
         secret:
-          secretName: promtail-small
+          secretName: logging-promtail
       - hostPath:
-          path: /run/promtail-small
+          path: /run/promtail
         name: run
       - hostPath:
           path: /var/lib/docker/containers
@@ -198,6 +233,15 @@ spec:
           path: /var/log/pods
         name: pods
       - hostPath:
+          path: /var/log/audit
+        name: audit
+      - hostPath:
           path: /run/log/journal
         name: journal
-  updateStrategy: {}
+      - hostPath:
+          path: /var/lib/rook
+        name: ceph
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 25%
+    type: RollingUpdate

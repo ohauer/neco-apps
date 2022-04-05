@@ -255,59 +255,19 @@ Promtail is an agent for Loki.
 It is published in Loki repository.
 Check [loki releases](https://github.com/grafana/loki/releases) for the changes of Promtail.
 
-There is no official kubernetes manifests for promtail.
-Generate manifests from the Helm charts and check the changes as follows.
-
-```
-LOGGING_DIR=$GOPATH/src/github.com/cybozu-go/neco-apps/logging
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
-helm search repo -l grafana | grep grafana/promtail
-# Example output with a header line:
-#   NAME                            CHART VERSION   APP VERSION     DESCRIPTION
-#   grafana/promtail                3.5.1           2.2.1           Promtail is an agent which ships the contents o...
-#   grafana/promtail                3.5.0           2.2.0           Promtail is an agent which ships the contents o...
-
-# Choose the latest `CHART VERSION` which matches the target Loki's `APP VERSION` and set the value like below.
-PROMTAIL_CHART_VERSION=X.Y.Z
-helm template logging --namespace=logging grafana/promtail --version=${PROMTAIL_CHART_VERSION} > ${LOGGING_DIR}/base/promtail/upstream/promtail.yaml
-cd ${LOGGING_DIR}
-git diff
-```
-
-Check the difference between the existing manifest and the new manifest, and update the kustomization patch.
-
-In upstream, loki and promtail settings are stored in secret resource. The configuration is now written in configmap, so decode the secret and compare the settings.
+There is no official kubernetes manifests for promtail. 
+The manifest is generated from the upstream latest helm version by the following command.
 
 ```console
-$ yq eval '.stringData."promtail.yaml" | select(.)' logging/base/promtail/upstream/promtail.yaml > /tmp/promtail.yaml
-$ diff -u logging/base/promtail/config/promtail.yaml /tmp/promtail.yaml
-
-# diff of .client.url is intentional
-```
-
-Update the image tag as follows.
-
-```console
+$ rm -rf logging/base/promtail/upstream/charts
 $ make update-logging-promtail
 $ git diff
+$ make diff-logging-promtail-config
+# Above command generates diff of promtail config between upstream and ours.
+# diff of .client.url and Added sections are intentional.
 ```
 
 ## logging-small
-
-Check the chart version by the following commands.
-
-```console
-## Add helm repository if necessary.
-$ helm repo add logging-small https://grafana.github.io/helm-charts
-## Update the repository if it already exists.
-$ helm repo update
-## Select the appropriate container from quay.io. The latest container may not necessarily be suitable.
-$ helm search repo logging-small/loki --versions
-$ helm search repo logging-small/promtail --versions
-```
-
-Replace the value of `base/VERSIONS` with the `CHART VERSION` you checked above and the container tag in quay.io.
 
 Update `values.yaml` file.
 - The configuration to get the pod logs is based on the upstream values file.
@@ -319,6 +279,9 @@ Regenerate base resource yaml files.
 $ rm -rf logging-small/base/*/charts
 $ make update-loki-small
 $ make update-promtail-small
+$ diff-promtail-small-config
+# Above command generates diff of promtail config between upstream and ours.
+# diff of .client.url, keep action of ceph-* namespace, and scraping journal are intentional.
 ```
 
 ## machines-endpoints
