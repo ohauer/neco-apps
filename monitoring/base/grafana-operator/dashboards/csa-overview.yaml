@@ -1549,6 +1549,94 @@ spec:
                     "type": "prometheus",
                     "uid": "${datasource}"
                 },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "palette-classic"
+                        },
+                        "custom": {
+                            "axisLabel": "",
+                            "axisPlacement": "auto",
+                            "barAlignment": 0,
+                            "drawStyle": "line",
+                            "fillOpacity": 0,
+                            "gradientMode": "none",
+                            "hideFrom": {
+                                "legend": false,
+                                "tooltip": false,
+                                "viz": false
+                            },
+                            "lineInterpolation": "linear",
+                            "lineWidth": 1,
+                            "pointSize": 5,
+                            "scaleDistribution": {
+                                "type": "linear"
+                            },
+                            "showPoints": "auto",
+                            "spanNulls": false,
+                            "stacking": {
+                                "group": "A",
+                                "mode": "none"
+                            },
+                            "thresholdsStyle": {
+                                "mode": "off"
+                            }
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 80
+                                }
+                            ]
+                        }
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 8,
+                    "w": 9,
+                    "x": 9,
+                    "y": 29
+                },
+                "id": 77,
+                "options": {
+                    "legend": {
+                        "calcs": [],
+                        "displayMode": "list",
+                        "placement": "bottom"
+                    },
+                    "tooltip": {
+                        "mode": "single"
+                    }
+                },
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "${datasource}"
+                        },
+                        "exemplar": true,
+                        "expr": "histogram_quantile(0.9, sum by (le, http_status, method) (rate(ceph_rgw_request_duration_seconds_bucket{namespace=\"${cluster}\"}[5m])))",
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "RGW response time(p90)",
+                "type": "timeseries"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                },
                 "description": "",
                 "fieldConfig": {
                     "defaults": {
@@ -1579,8 +1667,8 @@ spec:
                 "gridPos": {
                     "h": 4,
                     "w": 9,
-                    "x": 9,
-                    "y": 29
+                    "x": 0,
+                    "y": 33
                 },
                 "id": 21,
                 "options": {
