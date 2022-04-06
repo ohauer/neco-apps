@@ -47,8 +47,6 @@ spec:
         # I want to allow the image only in dctest, but it is difficult to change this array by kustomize. So add it here.
         - --valid-image-prefix=quay.io/gravitational/teleport
         - --valid-image-prefix=gcr.io/datadoghq/agent
-        # TODO: remove this after we build our own images for Rook
-        - --valid-image-prefix=k8s.gcr.io/sig-storage/,quay.io/cephcsi/
         image: quay.io/cybozu/neco-admission
         resources:
           requests:
