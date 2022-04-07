@@ -102,7 +102,7 @@ metadata:
   annotations:
     resize.topolvm.io/increase: 10Gi
     resize.topolvm.io/storage_limit: 100Gi
-    resize.topolvm.io/threshold: 10%
+    resize.topolvm.io/threshold: 25%
   name: loki-small-data
   namespace: logging-small
 spec:
