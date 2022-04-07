@@ -23,4 +23,3 @@ spec:
             - --valid-image-prefix=quay.io/gravitational/teleport-ent
             - --valid-image-prefix=quay.io/gravitational/teleport
             - --valid-image-prefix=gcr.io/datadoghq/agent
-            - --valid-image-prefix=k8s.gcr.io/sig-storage/,quay.io/cephcsi/
