@@ -1377,8 +1377,8 @@ spec:
                 "gridPos": {
                     "h": 4,
                     "w": 3,
-                    "x": 12,
-                    "y": 25
+                    "x": 0,
+                    "y": 29
                 },
                 "id": 23,
                 "options": {
@@ -1439,8 +1439,8 @@ spec:
                 "gridPos": {
                     "h": 4,
                     "w": 3,
-                    "x": 15,
-                    "y": 25
+                    "x": 3,
+                    "y": 29
                 },
                 "id": 27,
                 "options": {
@@ -1480,6 +1480,138 @@ spec:
                     "type": "prometheus",
                     "uid": "${datasource}"
                 },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                },
+                                {
+                                    "color": "red",
+                                    "value": 0.85
+                                }
+                            ]
+                        },
+                        "unit": "percentunit"
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 3,
+                    "x": 6,
+                    "y": 29
+                },
+                "id": 99,
+                "options": {
+                    "colorMode": "value",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "text": {},
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.4.0-pre",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "${datasource}"
+                        },
+                        "exemplar": false,
+                        "expr": "(delta(sum(ceph_cluster_total_used_bytes{namespace=\"${cluster}\"})[30d]) + sum(ceph_cluster_total_used_bytes{namespace=\"${cluster}\"})) / sum(ceph_cluster_total_bytes{namespace=\"${cluster}\"})",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "One month forecast(usage)",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                },
+                "description": "",
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "mappings": [],
+                        "thresholds": {
+                            "mode": "absolute",
+                            "steps": [
+                                {
+                                    "color": "green",
+                                    "value": null
+                                }
+                            ]
+                        },
+                        "unit": "bytes"
+                    },
+                    "overrides": []
+                },
+                "gridPos": {
+                    "h": 4,
+                    "w": 3,
+                    "x": 9,
+                    "y": 29
+                },
+                "id": 123,
+                "options": {
+                    "colorMode": "none",
+                    "graphMode": "none",
+                    "justifyMode": "auto",
+                    "orientation": "auto",
+                    "reduceOptions": {
+                        "calcs": [
+                            "lastNotNull"
+                        ],
+                        "fields": "",
+                        "values": false
+                    },
+                    "textMode": "auto"
+                },
+                "pluginVersion": "8.4.0-pre",
+                "targets": [
+                    {
+                        "datasource": {
+                            "type": "prometheus",
+                            "uid": "${datasource}"
+                        },
+                        "exemplar": false,
+                        "expr": "clamp_min(((3 * delta(sum(ceph_cluster_total_used_bytes{namespace=\"${cluster}\"})[30d]) + sum(ceph_cluster_total_used_bytes{namespace=\"${cluster}\"})) / 0.85) - sum(ceph_cluster_total_bytes{namespace=\"${cluster}\"}), 0)",
+                        "instant": true,
+                        "interval": "",
+                        "legendFormat": "",
+                        "refId": "A"
+                    }
+                ],
+                "title": "Capacity to be expanded",
+                "type": "stat"
+            },
+            {
+                "datasource": {
+                    "type": "prometheus",
+                    "uid": "${datasource}"
+                },
                 "description": "",
                 "fieldConfig": {
                     "defaults": {
@@ -1511,7 +1643,7 @@ spec:
                     "h": 4,
                     "w": 9,
                     "x": 0,
-                    "y": 29
+                    "y": 33
                 },
                 "id": 20,
                 "options": {
@@ -1603,7 +1735,7 @@ spec:
                     "h": 8,
                     "w": 9,
                     "x": 9,
-                    "y": 29
+                    "y": 33
                 },
                 "id": 77,
                 "options": {
@@ -1668,7 +1800,7 @@ spec:
                     "h": 4,
                     "w": 9,
                     "x": 0,
-                    "y": 33
+                    "y": 37
                 },
                 "id": 21,
                 "options": {
