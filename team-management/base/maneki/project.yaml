@@ -16,6 +16,8 @@ spec:
       server: '*'
     - namespace: app-cydec
       server: '*'
+    - namespace: app-dashboard-server-db
+      server: '*'
     - namespace: app-dbre-monitoring
       server: '*'
     - namespace: app-elasticsearch
