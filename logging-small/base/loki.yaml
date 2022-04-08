@@ -4,7 +4,7 @@ kind: ServiceAccount
 metadata:
   labels:
     app: loki
-    chart: loki-2.7.0
+    chart: loki-2.10.3
     heritage: Helm
     release: loki-small
   name: loki-small
@@ -15,7 +15,7 @@ kind: Role
 metadata:
   labels:
     app: loki
-    chart: loki-2.7.0
+    chart: loki-2.10.3
     heritage: Helm
     release: loki-small
   name: loki-small
@@ -26,7 +26,7 @@ kind: RoleBinding
 metadata:
   labels:
     app: loki
-    chart: loki-2.7.0
+    chart: loki-2.10.3
     heritage: Helm
     release: loki-small
   name: loki-small
@@ -42,12 +42,12 @@ subjects:
 ---
 apiVersion: v1
 data:
-  loki.yaml: YXV0aF9lbmFibGVkOiBmYWxzZQpjaHVua19zdG9yZV9jb25maWc6CiAgbWF4X2xvb2tfYmFja19wZXJpb2Q6IDBzCmNvbXBhY3RvcjoKICByZXRlbnRpb25fZGVsZXRlX2RlbGF5OiAyaAogIHJldGVudGlvbl9lbmFibGVkOiB0cnVlCiAgc2hhcmVkX3N0b3JlOiBmaWxlc3lzdGVtCiAgd29ya2luZ19kaXJlY3Rvcnk6IC9kYXRhL2xva2kvYm9sdGRiLXNoaXBwZXItY29tcGFjdG9yCmluZ2VzdGVyOgogIGNodW5rX2Jsb2NrX3NpemU6IDI2MjE0NAogIGNodW5rX2lkbGVfcGVyaW9kOiAzbQogIGNodW5rX3JldGFpbl9wZXJpb2Q6IDFtCiAgbGlmZWN5Y2xlcjoKICAgIHJpbmc6CiAgICAgIGt2c3RvcmU6CiAgICAgICAgc3RvcmU6IGlubWVtb3J5CiAgICAgIHJlcGxpY2F0aW9uX2ZhY3RvcjogMQogIG1heF90cmFuc2Zlcl9yZXRyaWVzOiAwCmxpbWl0c19jb25maWc6CiAgZW5mb3JjZV9tZXRyaWNfbmFtZTogZmFsc2UKICByZWplY3Rfb2xkX3NhbXBsZXM6IHRydWUKICByZWplY3Rfb2xkX3NhbXBsZXNfbWF4X2FnZTogMTY4aAogIHJldGVudGlvbl9wZXJpb2Q6IDE2OGgKc2NoZW1hX2NvbmZpZzoKICBjb25maWdzOgogIC0gZnJvbTogIjIwMjAtMTAtMjQiCiAgICBpbmRleDoKICAgICAgcGVyaW9kOiAyNGgKICAgICAgcHJlZml4OiBpbmRleF8KICAgIG9iamVjdF9zdG9yZTogZmlsZXN5c3RlbQogICAgc2NoZW1hOiB2MTEKICAgIHN0b3JlOiBib2x0ZGItc2hpcHBlcgpzZXJ2ZXI6CiAgaHR0cF9saXN0ZW5fcG9ydDogMzEwMApzdG9yYWdlX2NvbmZpZzoKICBib2x0ZGJfc2hpcHBlcjoKICAgIGFjdGl2ZV9pbmRleF9kaXJlY3Rvcnk6IC9kYXRhL2xva2kvYm9sdGRiLXNoaXBwZXItYWN0aXZlCiAgICBjYWNoZV9sb2NhdGlvbjogL2RhdGEvbG9raS9ib2x0ZGItc2hpcHBlci1jYWNoZQogICAgY2FjaGVfdHRsOiAyNGgKICAgIHNoYXJlZF9zdG9yZTogZmlsZXN5c3RlbQogIGZpbGVzeXN0ZW06CiAgICBkaXJlY3Rvcnk6IC9kYXRhL2xva2kvY2h1bmtzCnRhYmxlX21hbmFnZXI6CiAgcmV0ZW50aW9uX2RlbGV0ZXNfZW5hYmxlZDogZmFsc2UKICByZXRlbnRpb25fcGVyaW9kOiAwcw==
+  loki.yaml: YXV0aF9lbmFibGVkOiBmYWxzZQpjaHVua19zdG9yZV9jb25maWc6CiAgbWF4X2xvb2tfYmFja19wZXJpb2Q6IDBzCmNvbXBhY3RvcjoKICByZXRlbnRpb25fZGVsZXRlX2RlbGF5OiAyaAogIHJldGVudGlvbl9lbmFibGVkOiB0cnVlCiAgc2hhcmVkX3N0b3JlOiBmaWxlc3lzdGVtCiAgd29ya2luZ19kaXJlY3Rvcnk6IC9kYXRhL2xva2kvYm9sdGRiLXNoaXBwZXItY29tcGFjdG9yCmluZ2VzdGVyOgogIGNodW5rX2Jsb2NrX3NpemU6IDI2MjE0NAogIGNodW5rX2lkbGVfcGVyaW9kOiAzbQogIGNodW5rX3JldGFpbl9wZXJpb2Q6IDFtCiAgbGlmZWN5Y2xlcjoKICAgIHJpbmc6CiAgICAgIGt2c3RvcmU6CiAgICAgICAgc3RvcmU6IGlubWVtb3J5CiAgICAgIHJlcGxpY2F0aW9uX2ZhY3RvcjogMQogIG1heF90cmFuc2Zlcl9yZXRyaWVzOiAwCiAgd2FsOgogICAgZGlyOiAvZGF0YS9sb2tpL3dhbApsaW1pdHNfY29uZmlnOgogIGVuZm9yY2VfbWV0cmljX25hbWU6IGZhbHNlCiAgcmVqZWN0X29sZF9zYW1wbGVzOiB0cnVlCiAgcmVqZWN0X29sZF9zYW1wbGVzX21heF9hZ2U6IDE2OGgKICByZXRlbnRpb25fcGVyaW9kOiAxNjhoCnNjaGVtYV9jb25maWc6CiAgY29uZmlnczoKICAtIGZyb206ICIyMDIwLTEwLTI0IgogICAgaW5kZXg6CiAgICAgIHBlcmlvZDogMjRoCiAgICAgIHByZWZpeDogaW5kZXhfCiAgICBvYmplY3Rfc3RvcmU6IGZpbGVzeXN0ZW0KICAgIHNjaGVtYTogdjExCiAgICBzdG9yZTogYm9sdGRiLXNoaXBwZXIKc2VydmVyOgogIGh0dHBfbGlzdGVuX3BvcnQ6IDMxMDAKc3RvcmFnZV9jb25maWc6CiAgYm9sdGRiX3NoaXBwZXI6CiAgICBhY3RpdmVfaW5kZXhfZGlyZWN0b3J5OiAvZGF0YS9sb2tpL2JvbHRkYi1zaGlwcGVyLWFjdGl2ZQogICAgY2FjaGVfbG9jYXRpb246IC9kYXRhL2xva2kvYm9sdGRiLXNoaXBwZXItY2FjaGUKICAgIGNhY2hlX3R0bDogMjRoCiAgICBzaGFyZWRfc3RvcmU6IGZpbGVzeXN0ZW0KICBmaWxlc3lzdGVtOgogICAgZGlyZWN0b3J5OiAvZGF0YS9sb2tpL2NodW5rcwp0YWJsZV9tYW5hZ2VyOgogIHJldGVudGlvbl9kZWxldGVzX2VuYWJsZWQ6IGZhbHNlCiAgcmV0ZW50aW9uX3BlcmlvZDogMHM=
 kind: Secret
 metadata:
   labels:
     app: loki
-    chart: loki-2.7.0
+    chart: loki-2.10.3
     heritage: Helm
     release: loki-small
   name: loki-small
@@ -58,7 +58,7 @@ kind: Service
 metadata:
   labels:
     app: loki
-    chart: loki-2.7.0
+    chart: loki-2.10.3
     heritage: Helm
     release: loki-small
   name: loki-small
@@ -79,7 +79,7 @@ kind: Service
 metadata:
   labels:
     app: loki
-    chart: loki-2.7.0
+    chart: loki-2.10.3
     heritage: Helm
     release: loki-small
     variant: headless
@@ -118,7 +118,7 @@ kind: StatefulSet
 metadata:
   labels:
     app: loki
-    chart: loki-2.7.0
+    chart: loki-2.10.3
     heritage: Helm
     release: loki-small
   name: loki-small
@@ -134,12 +134,12 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 2247e3e289a75d99a6aec20bb7b3409ceb8a6e9130151ab9758b758b5267d808
+        checksum/config: 6216c7089cae9b1a805304b22cf5f0654afcf32104efd2feeb84145e45edc24e
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
       labels:
         app: loki
-        name: loki
+        name: loki-small
         release: loki-small
     spec:
       affinity: {}
@@ -168,6 +168,8 @@ spec:
         securityContext:
           readOnlyRootFilesystem: true
         volumeMounts:
+        - mountPath: /tmp
+          name: tmp
         - mountPath: /etc/loki
           name: config
         - mountPath: /data
@@ -184,6 +186,8 @@ spec:
       terminationGracePeriodSeconds: 4800
       tolerations: []
       volumes:
+      - emptyDir: {}
+        name: tmp
       - name: config
         secret:
           secretName: loki-small

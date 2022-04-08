@@ -13,7 +13,7 @@ all:
 
 .PHONY: test-generate
 test-generate:
-	$(MAKE) update-loki-small update-promtail-small update-rook
+	$(MAKE) update-rook
 
 .PHONY: update-accurate
 update-accurate:
@@ -196,32 +196,45 @@ update-logging-loki:
 	sed -i -E '/name:.*memcached-exporter$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/loki/kustomization.yaml
 
 .PHONY: update-logging-promtail
-update-logging-promtail:
+update-logging-promtail: $(KUSTOMIZE)
+	$(call get-latest-helm,grafana,https://grafana.github.io/helm-charts,grafana/promtail)
 	$(call get-latest-tag,promtail)
-	sed -i -E '/name:.*promtail$$/!b;n;s/newTag:.*$$/newTag: $(latest_tag)/' logging/base/promtail/kustomization.yaml
+	yq eval -i '.helmCharts[0].version = "$(latest_helm)"' logging/base/promtail/upstream/kustomization.yaml
+	sed -i -E 's/tag:.*$$/tag: $(latest_tag)/' logging/base/promtail/upstream/values.yaml
+	$(KUSTOMIZE) build --enable-helm logging/base/promtail/upstream > logging/base/promtail/promtail.yaml
 
-LOKI_SMALL_IMAGE_VERSION := $(shell awk '/LOKI_IMAGE:/ {print $$2}' logging-small/base/VERSIONS)
-LOKI_SMALL_CHART_VERSION := $(shell awk '/LOKI_CHART:/ {print $$2}' logging-small/base/VERSIONS)
+.PHONY: diff-logging-promtail-config
+diff-logging-promtail-config:
+	d=$$(mktemp -d); \
+	version=$$(yq eval '.helmCharts[0].version' logging/base/promtail/upstream/kustomization.yaml); \
+	helm template logging --namespace=logging grafana/promtail --version=$$version | yq eval '.stringData."promtail.yaml" | select(.)' - > $$d/orig.yaml && \
+	yq eval '.stringData."promtail.yaml" | select(.)' logging/base/promtail/promtail.yaml > $$d/my.yaml && \
+	(diff -u $$d/orig.yaml $$d/my.yaml || true) && \
+	rm -r $$d
+
 .PHONY: update-loki-small
 update-loki-small: $(KUSTOMIZE)
-	sed -i -E \
-		-e 's/^(  tag:).*$$/\1 $(LOKI_SMALL_IMAGE_VERSION)/' \
-		logging-small/base/loki/values.yaml
-	sed -i -E \
-		-e 's/^(  version:).*$$/\1 $(LOKI_SMALL_CHART_VERSION)/' \
-		logging-small/base/loki/kustomization.yaml
+	$(call get-latest-helm,grafana,https://grafana.github.io/helm-charts,grafana/loki)
+	$(call get-latest-tag,loki)
+	yq eval -i '.helmCharts[0].version = "$(latest_helm)"' logging-small/base/loki/kustomization.yaml
+	sed -i -E 's/tag:.*$$/tag: $(latest_tag)/' logging-small/base/loki/values.yaml
 	$(KUSTOMIZE) build --enable-helm logging-small/base/loki > logging-small/base/loki.yaml
 
-PROMTAIL_SMALL_IMAGE_VERSION := $(shell awk '/PROMTAIL_IMAGE:/ {print $$2}' logging-small/base/VERSIONS)
-PROMTAIL_SMALL_CHART_VERSION := $(shell awk '/PROMTAIL_CHART:/ {print $$2}' logging-small/base/VERSIONS)
+.PHONY: diff-promtail-small-config
+diff-promtail-small-config:
+	d=$$(mktemp -d); \
+	version=$$(yq eval '.helmCharts[0].version' logging-small/base/promtail/kustomization.yaml); \
+	helm template logging-small --namespace=logging-small grafana/promtail --version=$$version | yq eval '.stringData."promtail.yaml" | select(.)' - > $$d/orig.yaml && \
+	yq eval '.stringData."promtail.yaml" | select(.)' logging-small/base/promtail.yaml > $$d/my.yaml && \
+	(diff -u $$d/orig.yaml $$d/my.yaml || true) && \
+	rm -r $$d
+
 .PHONY: update-promtail-small
 update-promtail-small: $(KUSTOMIZE)
-	sed -i -E \
-		-e 's/^(  tag:).*$$/\1 $(PROMTAIL_SMALL_IMAGE_VERSION)/' \
-		logging-small/base/promtail/values.yaml
-	sed -i -E \
-		-e 's/^(  version:).*$$/\1 $(PROMTAIL_SMALL_CHART_VERSION)/' \
-		logging-small/base/promtail/kustomization.yaml
+	$(call get-latest-helm,grafana,https://grafana.github.io/helm-charts,grafana/promtail)
+	$(call get-latest-tag,promtail)
+	yq eval -i '.helmCharts[0].version = "$(latest_helm)"' logging-small/base/promtail/kustomization.yaml
+	sed -i -E 's/tag:.*$$/tag: $(latest_tag)/' logging-small/base/promtail/values.yaml
 	$(KUSTOMIZE) build --enable-helm logging-small/base/promtail > logging-small/base/promtail.yaml
 
 .PHONY: update-machines-endpoints
@@ -384,9 +397,10 @@ define get-latest-gh
 $(eval latest_gh := $(shell curl -sSf https://api.github.com/repos/$1/releases/latest | jq -r '.tag_name'))
 endef
 
-# usage get-latest-helm REPO URL
+# usage get-latest-helm REPO URL [KEYWORD]
 define get-latest-helm
-$(eval latest_helm := $(shell helm repo add $1 $2 >/dev/null; helm repo update >/dev/null; helm search repo $1 -o json | jq -r .[0].version))
+$(eval keyword := $(if $(3),$(3),$(1)))
+$(eval latest_helm := $(shell helm repo add $1 $2 >/dev/null; helm repo update >/dev/null; helm search repo $(keyword) -o json | jq -r .[0].version))
 endef
 
 .PHONY: setup
