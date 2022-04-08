@@ -780,7 +780,7 @@ metadata:
   namespace: ceph-poc
 spec:
   cephVersion:
-    image: quay.io/cybozu/ceph:16.2.7.1
+    image: quay.io/cybozu/ceph:16.2.7.2
   dashboard:
     ssl: true
   dataDirHostPath: /var/lib/rook
