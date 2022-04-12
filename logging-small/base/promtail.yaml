@@ -200,4 +200,7 @@ spec:
       - hostPath:
           path: /run/log/journal
         name: journal
-  updateStrategy: {}
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 25%
+    type: RollingUpdate

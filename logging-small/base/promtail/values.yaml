@@ -3,6 +3,11 @@ image:
   repository: cybozu/promtail
   tag: 2.3.0.1
 
+updateStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 25%
+
 priorityClassName: node-bound
 
 tolerations:
