@@ -1,0 +1,19 @@
+apiVersion: tenet.cybozu.io/v1beta2
+kind: NetworkPolicyTemplate
+metadata:
+    name: allow-same-team-ingress
+spec:
+    policyTemplate: |
+      apiVersion: cilium.io/v2
+      kind: CiliumNetworkPolicy
+      metadata:
+        name: allow-same-team-ingress
+      spec:
+        endpointSelector: {}
+        ingress:
+        - fromEndpoints:
+          - matchLabels:
+              "k8s.io.cilium.k8s.namespace.labels.team": {{ index .Labels "team" }}
+        - fromEndpoints:
+          - matchLabels:
+              "k8s:io.kubernetes.pod.namespace": monitoring

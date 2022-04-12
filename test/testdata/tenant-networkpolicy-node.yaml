@@ -1,0 +1,10 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-node-forbidden
+  namespace: test-tenant-netpol
+spec:
+  endpointSelector: {}
+  egress:
+  - toCIDR:
+    - 10.69.0.0/16

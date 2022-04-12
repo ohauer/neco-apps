@@ -17,3 +17,4 @@ resources:
   - global-policies/ingress-cluster-allow.yaml
   - global-policies/node-dns.yaml
   - global-policies/scheduler.yaml
+  - global-policies/tenant-ingress-cluster-allow.yaml

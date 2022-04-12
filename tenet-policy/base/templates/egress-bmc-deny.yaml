@@ -1,0 +1,17 @@
+apiVersion: tenet.cybozu.io/v1beta2
+kind: NetworkPolicyTemplate
+metadata:
+    name: egress-bmc-deny
+spec:
+    policyTemplate: |
+      apiVersion: cilium.io/v2
+      kind: CiliumNetworkPolicy
+      metadata:
+        name: egress-bmc-deny
+      spec:
+        endpointSelector: {}
+        egressDeny:
+        - toCIDR:
+          - 10.72.16.0/20
+          - 10.76.16.0/20
+          - 10.78.16.0/20

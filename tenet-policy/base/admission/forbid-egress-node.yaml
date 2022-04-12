@@ -1,0 +1,11 @@
+apiVersion: tenet.cybozu.io/v1beta2
+kind: NetworkPolicyAdmissionRule
+metadata:
+    name: forbid-egress-node
+spec:
+    namespaceSelector:
+      excludeLabels:
+        team: neco
+    forbiddenIPRanges:
+      - cidr: 10.69.0.0/16
+        type: egress

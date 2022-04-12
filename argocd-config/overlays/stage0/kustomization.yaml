@@ -40,4 +40,5 @@ patchesStrategicMerge:
 - session-log.yaml
 - team-management.yaml
 - teleport.yaml
+- tenet-policy.yaml
 - topolvm.yaml

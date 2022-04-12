@@ -1,0 +1,29 @@
+apiVersion: cilium.io/v2
+kind: CiliumClusterwideNetworkPolicy
+metadata:
+  name: tenant-ingress-cluster-allow
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  endpointSelector:
+    matchExpressions:
+    - key: k8s:app.kubernetes.io/instance
+      operator: NotIn
+      values:
+      - network-nat
+    - key: k8s.io.cilium.k8s.namespace.labels.team
+      operator: NotIn
+      values:
+        - neco
+  ingress:
+    - fromEntities:
+      - cluster
+    - fromCIDR:
+      # Cluster network
+      # CIDR based rule only applies to endpoints outside the cluster such as boot servers, nodes outside the cluster
+      - 10.0.0.0/8
+  description: |
+    This is a temporary policy for backwards-compatibility while
+    tenants are being migrated to tenet-provided network policies.
+    As tenants preparations are done, add them to the exclusion list accordingly.
+    Once all tenants have been migrated this policy can be deleted.

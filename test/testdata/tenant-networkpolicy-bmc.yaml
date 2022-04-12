@@ -1,0 +1,10 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: egress-bmc-forbidden
+  namespace: test-tenant-netpol
+spec:
+  endpointSelector: {}
+  egress:
+  - toCIDR:
+    - 10.72.16.0/20
