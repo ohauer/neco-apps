@@ -197,8 +197,8 @@ update-logging-loki:
 
 .PHONY: update-logging-promtail
 update-logging-promtail: $(KUSTOMIZE)
-	$(call get-latest-helm,grafana,https://grafana.github.io/helm-charts,grafana/promtail)
 	$(call get-latest-tag,promtail)
+	$(call get-latest-helm-by-app,grafana,https://grafana.github.io/helm-charts,grafana/promtail,$(shell echo $(latest_tag)|sed -E 's/\.[0-9]+$$//'))
 	yq eval -i '.helmCharts[0].version = "$(latest_helm)"' logging/base/promtail/upstream/kustomization.yaml
 	sed -i -E 's/tag:.*$$/tag: $(latest_tag)/' logging/base/promtail/upstream/values.yaml
 	$(KUSTOMIZE) build --enable-helm logging/base/promtail/upstream > logging/base/promtail/promtail.yaml
@@ -214,8 +214,8 @@ diff-logging-promtail-config:
 
 .PHONY: update-loki-small
 update-loki-small: $(KUSTOMIZE)
-	$(call get-latest-helm,grafana,https://grafana.github.io/helm-charts,grafana/loki)
 	$(call get-latest-tag,loki)
+	$(call get-latest-helm-by-app,grafana,https://grafana.github.io/helm-charts,grafana/loki,v$(shell echo $(latest_tag)|sed -E 's/\.[0-9]+$$//'))
 	yq eval -i '.helmCharts[0].version = "$(latest_helm)"' logging-small/base/loki/kustomization.yaml
 	sed -i -E 's/tag:.*$$/tag: $(latest_tag)/' logging-small/base/loki/values.yaml
 	$(KUSTOMIZE) build --enable-helm logging-small/base/loki > logging-small/base/loki.yaml
@@ -231,8 +231,8 @@ diff-promtail-small-config:
 
 .PHONY: update-promtail-small
 update-promtail-small: $(KUSTOMIZE)
-	$(call get-latest-helm,grafana,https://grafana.github.io/helm-charts,grafana/promtail)
 	$(call get-latest-tag,promtail)
+	$(call get-latest-helm-by-app,grafana,https://grafana.github.io/helm-charts,grafana/promtail,$(shell echo $(latest_tag)|sed -E 's/\.[0-9]+$$//'))
 	yq eval -i '.helmCharts[0].version = "$(latest_helm)"' logging-small/base/promtail/kustomization.yaml
 	sed -i -E 's/tag:.*$$/tag: $(latest_tag)/' logging-small/base/promtail/values.yaml
 	$(KUSTOMIZE) build --enable-helm logging-small/base/promtail > logging-small/base/promtail.yaml
@@ -397,10 +397,14 @@ define get-latest-gh
 $(eval latest_gh := $(shell curl -sSf https://api.github.com/repos/$1/releases/latest | jq -r '.tag_name'))
 endef
 
-# usage get-latest-helm REPO URL [KEYWORD]
+# usage get-latest-helm REPO URL
 define get-latest-helm
-$(eval keyword := $(if $(3),$(3),$(1)))
-$(eval latest_helm := $(shell helm repo add $1 $2 >/dev/null; helm repo update >/dev/null; helm search repo $(keyword) -o json | jq -r .[0].version))
+$(eval latest_helm := $(shell helm repo add $1 $2 >/dev/null; helm repo update >/dev/null; helm search repo $1 -o json | jq -r .[0].version))
+endef
+
+# usage get-latest-helm REPO URL KEYWORD APP_VERSION
+define get-latest-helm-by-app
+$(eval latest_helm := $(shell helm repo add $1 $2 >/dev/null; helm repo update >/dev/null; helm search repo $3 -l -o json | jq -r 'map(select(.app_version=="$4"))[0]'.version))
 endef
 
 .PHONY: setup

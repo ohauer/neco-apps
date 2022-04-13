@@ -279,7 +279,7 @@ Regenerate base resource yaml files.
 $ rm -rf logging-small/base/*/charts
 $ make update-loki-small
 $ make update-promtail-small
-$ diff-promtail-small-config
+$ make diff-promtail-small-config
 # Above command generates diff of promtail config between upstream and ours.
 # diff of .client.url, keep action of ceph-* namespace, and scraping journal are intentional.
 ```

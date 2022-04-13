@@ -148,6 +148,7 @@ config:
             - __meta_kubernetes_pod_container_name
             target_label: __path__
 
+    extraScrapeConfigs: |
       #
       # Added by neco
       #

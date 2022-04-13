@@ -5,8 +5,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
   namespace: logging-small
 ---
@@ -17,8 +17,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
 rules:
 - apiGroups:
@@ -41,8 +41,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -60,8 +60,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
   namespace: logging-small
 stringData:
@@ -105,7 +105,12 @@ stringData:
     \     - source_labels: [\"__journal_container_name\"]\n        target_label: \"container_name\"\n
     \     - source_labels: [\"__journal__hostname\"]\n        target_label: \"hostname\"\n
     \     - action: keep\n        source_labels:\n        - syslog_identifier\n        regex:
-    kernel\n"
+    kernel\n  #\n  # Added by CSA\n  #\n  # collect ceph logs\n  - job_name: ceph\n
+    \   static_configs:\n      - targets:\n          - localhost\n        labels:\n
+    \         job: ceph\n          __path__: /var/lib/rook/*/log/**\n    pipeline_stages:\n
+    \     - regex:\n          source: filename\n          expression: \"/var/lib/rook/(?P<namespace>.*)/log/.*\"\n
+    \     - labels:\n          namespace: namespace\n    relabel_configs:\n      -
+    target_label: instance\n        replacement: ${HOSTNAME}\n"
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -114,8 +119,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
   namespace: logging-small
 spec:
@@ -126,7 +131,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 8788b8d34e06614fb2b193c521349b3d9fd48ee1492e7e2b2194d19c0971ae4c
+        checksum/config: a3e817f97866f69c75fb15aa9b6c455d5e5914af30ee46a1785b72b0cf34cdf5
       labels:
         app.kubernetes.io/instance: promtail-small
         app.kubernetes.io/name: promtail
