@@ -70,3 +70,23 @@ config:
             source_labels:
             - syslog_identifier
             regex: kernel
+      #
+      # Added by CSA
+      #
+      # collect ceph logs
+      - job_name: ceph
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              job: ceph
+              __path__: /var/lib/rook/*/log/**
+        pipeline_stages:
+          - regex:
+              source: filename
+              expression: "/var/lib/rook/(?P<namespace>.*)/log/.*"
+          - labels:
+              namespace: namespace
+        relabel_configs:
+          - target_label: instance
+            replacement: ${HOSTNAME}

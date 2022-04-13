@@ -148,7 +148,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: f2bd0923ba6f7407cb5e67cebd96ebc242b8b558576d09d6b5b701bbef776750
+        checksum/config: 6186d966fbabc9613e9794a96c44f9c97c770a10f2f1fee14b4535cdf0296e3a
       labels:
         app.kubernetes.io/instance: logging
         app.kubernetes.io/name: promtail
