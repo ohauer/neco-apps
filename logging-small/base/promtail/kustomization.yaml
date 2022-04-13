@@ -7,7 +7,7 @@ helmCharts:
     releaseName: promtail-small
     repo: https://grafana.github.io/helm-charts
     valuesFile: values.yaml
-    version: 3.11.0
+    version: 3.8.2
 namespace: logging-small
 patchesJson6902:
   - target:

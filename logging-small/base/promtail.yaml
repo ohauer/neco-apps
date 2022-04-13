@@ -5,8 +5,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
   namespace: logging-small
 ---
@@ -17,8 +17,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
 rules:
 - apiGroups:
@@ -41,8 +41,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -60,8 +60,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
   namespace: logging-small
 stringData:
@@ -119,8 +119,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: promtail-small
   namespace: logging-small
 spec:
@@ -131,7 +131,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 3ccb74de1095b6788b6551062b5f1ececa9f12f51aa4ae96997c350f1440ca97
+        checksum/config: a3e817f97866f69c75fb15aa9b6c455d5e5914af30ee46a1785b72b0cf34cdf5
       labels:
         app.kubernetes.io/instance: promtail-small
         app.kubernetes.io/name: promtail

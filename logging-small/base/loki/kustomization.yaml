@@ -7,7 +7,7 @@ helmCharts:
     releaseName: loki-small
     repo: https://grafana.github.io/helm-charts
     valuesFile: values.yaml
-    version: 2.10.3
+    version: 2.7.0
 namespace: logging-small
 resources:
   - pvc.yaml

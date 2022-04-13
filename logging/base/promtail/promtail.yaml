@@ -5,8 +5,8 @@ metadata:
     app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: logging-promtail
   namespace: logging
 ---
@@ -17,8 +17,8 @@ metadata:
     app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: logging-promtail
 rules:
 - apiGroups:
@@ -41,8 +41,8 @@ metadata:
     app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: logging-promtail
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -60,8 +60,8 @@ metadata:
     app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: logging-promtail
   namespace: logging
 stringData:
@@ -136,8 +136,8 @@ metadata:
     app.kubernetes.io/instance: logging
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.4.2
-    helm.sh/chart: promtail-3.11.0
+    app.kubernetes.io/version: 2.3.0
+    helm.sh/chart: promtail-3.8.2
   name: logging-promtail
   namespace: logging
 spec:
@@ -148,7 +148,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: 6186d966fbabc9613e9794a96c44f9c97c770a10f2f1fee14b4535cdf0296e3a
+        checksum/config: 3fc3e8ddbaeade7fd278fe8e5e4d5df9fed2ad3b7f75ee682cc29e398618a478
       labels:
         app.kubernetes.io/instance: logging
         app.kubernetes.io/name: promtail
