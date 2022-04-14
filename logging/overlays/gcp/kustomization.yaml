@@ -34,6 +34,11 @@ patchesJSON6902:
         value:
           key: "neco/exclude_noisy_neighbor"
           operator: "Exists"
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "neco/reserved_for_meows"
+          operator: "Exists"
   - target:
       group: apps
       version: v1
@@ -50,4 +55,9 @@ patchesJSON6902:
         path: /spec/template/spec/tolerations/-
         value:
           key: "neco/exclude_noisy_neighbor"
+          operator: "Exists"
+      - op: add
+        path: /spec/template/spec/tolerations/-
+        value:
+          key: "neco/reserved_for_meows"
           operator: "Exists"

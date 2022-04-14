@@ -47,6 +47,8 @@ lvmd:
       operator: Exists
     - key: neco/exclude_noisy_neighbor
       operator: Exists
+    - key: neco/reserved_for_meows
+      operator: Exists
     # for L4LB applying operation
     - key: node.cybozu.io/cluster-not-ready
       operator: Exists
@@ -70,6 +72,8 @@ node:
     - key: csa/exclude_noisy_neighbor
       operator: Exists
     - key: neco/exclude_noisy_neighbor
+      operator: Exists
+    - key: neco/reserved_for_meows
       operator: Exists
     # for L4LB applying operation
     - key: node.cybozu.io/cluster-not-ready

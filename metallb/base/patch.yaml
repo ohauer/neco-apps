@@ -36,6 +36,8 @@ spec:
         operator: Exists
       - key: neco/exclude_noisy_neighbor
         operator: Exists
+      - key: neco/reserved_for_meows
+        operator: Exists
 ---
 apiVersion: apps/v1
 kind: Deployment
