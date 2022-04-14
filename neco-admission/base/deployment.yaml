@@ -79,6 +79,10 @@ spec:
               exec:
                 command: ["sleep", "5"]
       terminationGracePeriodSeconds: 10
+      tolerations:
+      - key: node.cybozu.io/cluster-not-ready
+        effect: NoExecute
+        operator: Exists
       volumes:
         - name: certs
           secret:
