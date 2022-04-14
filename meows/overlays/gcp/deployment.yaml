@@ -10,7 +10,7 @@ spec:
       containers:
       - name: controller
         args:
-        - --runner-image=quay.io/cybozu/meows-neco-runner:0.6.2.1
+        - --runner-image=quay.io/cybozu/meows-neco-runner:0.7.0.1
         env:
         - name: NO_PROXY
           value: 10.0.0.0/8
