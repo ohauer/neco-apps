@@ -14,7 +14,7 @@ spec:
             - --grafana-image=quay.io/cybozu/grafana
             - --grafana-image-tag=8.3.3.2
             - --grafana-plugins-init-container-image=quay.io/cybozu/grafana_plugins_init
-            - --grafana-plugins-init-container-tag=0.0.5.1
+            - --grafana-plugins-init-container-tag=0.0.5.2
             - --scan-all
           env:
             - name: NO_PROXY
