@@ -22,6 +22,8 @@ var (
 	tenantNetworkPolicyBmcYAML []byte
 	//go:embed testdata/tenant-networkpolicy-node.yaml
 	tenantNetworkPolicyNodeYAML []byte
+	//go:embed testdata/tenant-networkpolicy-node-entity.yaml
+	tenantNetworkPolicyNodeEntityYAML []byte
 )
 
 func prepareTenantNetworkPolicy() {
@@ -81,6 +83,10 @@ func testTenantNetworkPolicy() {
 		_, _, err := ExecAtWithInput(boot0, tenantNetworkPolicyNodeYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).To(HaveOccurred())
 		_, _, err = ExecAtWithInput(boot0, tenantNetworkPolicyBmcYAML, "kubectl", "apply", "-f", "-")
+		Expect(err).To(HaveOccurred())
+
+		By("attempting to apply policy with forbidden entity")
+		_, _, err = ExecAtWithInput(boot0, tenantNetworkPolicyNodeEntityYAML, "kubectl", "apply", "-f", "-")
 		Expect(err).To(HaveOccurred())
 	})
 }
