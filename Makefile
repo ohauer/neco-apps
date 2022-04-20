@@ -111,7 +111,6 @@ update-grafana-operator:
 update-grafana:
 	$(call get-latest-tag,grafana)
 	sed -i -E 's/grafana-image-tag=.*$$/grafana-image-tag=$(latest_tag)/' monitoring/base/grafana-operator/deployment.yaml
-	sed -i -E 's,quay.io/cybozu/grafana:.*$$,quay.io/cybozu/grafana:$(latest_tag),' sandbox/overlays/gcp/grafana/statefulset.yaml
 	sed -i -E 's,quay.io/cybozu/grafana:.*$$,quay.io/cybozu/grafana:$(latest_tag),' grafana-sandbox/overlays/common/grafana.yaml
 
 .PHONY: update-heartbeat
