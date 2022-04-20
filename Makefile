@@ -1,9 +1,9 @@
 # Makefile to update manifests
 
-HELM_VERSION = 3.6.0
+HELM_VERSION = 3.8.0
 TANKA_VERSION = 0.15.1
 JSONNET_LIBS_K8S_ALPHA_VERSION = 1.20
-YQ_VERSION = 4.11.2
+YQ_VERSION = 4.24.5
 
 KUSTOMIZE = test/bin/kustomize
 
