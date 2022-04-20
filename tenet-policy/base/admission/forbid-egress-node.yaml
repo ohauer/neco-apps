@@ -9,3 +9,8 @@ spec:
     forbiddenIPRanges:
       - cidr: 10.69.0.0/16
         type: egress
+    forbiddenEntities:
+      - entity: host
+        type: egress
+      - entity: remote-node
+        type: egress
