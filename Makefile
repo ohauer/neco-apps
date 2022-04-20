@@ -316,6 +316,9 @@ update-rook:
 	sed -i -E \
 		-e 's/^(    newTag:).*$$/\1 $(ROOK_IMAGE_VERSION)/' \
 		rook/base/toolbox/kustomization.yaml
+	sed -i -E \
+		-e 's/(image: quay.io\/cybozu\/rook:).*$$/\1$(ROOK_IMAGE_VERSION)/' \
+		rook/base/ceph-extra-exporter/deployment.yaml
 	for t in common	ceph-object-store ceph-object-store-clusterrolebinding \
 		ceph-poc ceph-poc-clusterrolebinding \
 		ceph-ssd ceph-ssd-clusterrolebinding; do \

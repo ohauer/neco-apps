@@ -1,0 +1,17 @@
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: ceph-extra-exporter
+  namespace: monitoring
+spec:
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app: ceph-extra-exporter
+  endpoints:
+  - path: /v1/metrics
+    port: http
+    relabelConfigs:
+      - replacement: ceph-extra-exporter
+        targetLabel: job
