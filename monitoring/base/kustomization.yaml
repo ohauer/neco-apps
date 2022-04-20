@@ -36,4 +36,4 @@ images:
     newName: quay.io/cybozu/grafana-operator
     newTag: 4.2.0.2
   - name: quay.io/cybozu/heartbeat
-    newTag: 1.0.5
+    newTag: 1.0.6
