@@ -42,6 +42,8 @@ spec:
       server: '*'
     - namespace: app-maneki-static-cybozu-com
       server: '*'
+    - namespace: app-metropolis
+      server: '*'
     - namespace: app-misc
       server: '*'
     - namespace: app-monitoring
