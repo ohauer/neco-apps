@@ -77,6 +77,15 @@
       "repo": "https://github.com/cybozu-private/elasticsearch-apps.git",
       "team": "maneki"
     },
+    "file-type-detector-apps": {
+      "destinations": {
+        "osaka0": "release",
+        "stage0": "main",
+        "tokyo0": "release"
+      },
+      "repo": "https://github.com/cybozu-private/file-type-detector-apps.git",
+      "team": "cydec"
+    },
     "garoon-apps": {
       "destinations": {
         "osaka0": "production",
