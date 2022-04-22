@@ -23,8 +23,7 @@ spec:
       selfHeal: true
   ignoreDifferences:
     # PVC storage size will be change by pvc-autoresizer.
-    - group: ""
-      kind: PersistentVolumeClaim
+    - kind: PersistentVolumeClaim
       name: loki-small-data
       namespace: logging-small
       jqPathExpressions:
