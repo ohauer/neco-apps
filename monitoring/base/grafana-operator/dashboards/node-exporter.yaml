@@ -3,7 +3,11 @@ kind: GrafanaDashboard
 metadata:
   name: node-exporter
 spec:
-  url: https://grafana.com/api/dashboards/1860/revisions/21/download
+  # source: https://grafana.com/grafana/dashboards/1860
+  # Prepare files to the following steps.
+  # wget -O node-exporter-full_rev21.json https://grafana.com/api/dashboards/1860/revisions/21/download
+  # gsutil cp -a public-read node-exporter-full_rev21.json gs://neco-public
+  url: https://storage.googleapis.com/neco-public/node-exporter-full_rev21.json
   datasources:
     - inputName: "DS_PROMETHEUS"
       datasourceName: "vmcluster-largeset"
