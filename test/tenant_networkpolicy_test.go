@@ -54,11 +54,20 @@ func testTenantNetworkPolicy() {
 
 		By("waiting for ubuntu pod")
 		Eventually(func() error {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", "default", "exec", "ubuntu", "--", "date")
-			if err != nil {
-				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			checkUbuntuPod := func(ns string) error {
+				stdout, stderr, err := ExecAt(boot0, "kubectl", "-n", ns, "exec", "ubuntu", "--", "date")
+				if err != nil {
+					return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+				}
+				return nil
 			}
-			return nil
+			if err := checkUbuntuPod("default"); err != nil {
+				return err
+			}
+			if err := checkUbuntuPod(testTenantNamespace); err != nil {
+				return err
+			}
+			return checkUbuntuPod(testTenantNamespace2)
 		}).Should(Succeed())
 
 		testConnectivity := func(srcName, srcNamespace, destName, destNamespace string) error {
@@ -67,15 +76,21 @@ func testTenantNetworkPolicy() {
 		}
 
 		By("ensuring ingress for same team is allowed")
-		Expect(testConnectivity("ubuntu", testTenantNamespace, "testhttpd", testTenantNamespace2)).NotTo(HaveOccurred())
+		Eventually(testConnectivity("ubuntu", testTenantNamespace, "testhttpd", testTenantNamespace2)).ShouldNot(HaveOccurred())
 
 		// TODO: actually verify non-connectivity once the temporary
 		// tenant-ingress-cluster-allow policy is removed
 		// (once tenants have migrated to tenet)
 		By("ensuring ingress from different namespaces is blocked")
-		Expect(testConnectivity("ubuntu", testTenantNamespace2, "testhttpd", testTenantNamespace)).NotTo(HaveOccurred())
-		Expect(testConnectivity("ubuntu", "default", "testhttpd", testTenantNamespace)).NotTo(HaveOccurred())
-		Expect(testConnectivity("ubuntu", "default", "testhttpd", testTenantNamespace2)).NotTo(HaveOccurred())
+		Eventually(func() error {
+			if err := testConnectivity("ubuntu", testTenantNamespace2, "testhttpd", testTenantNamespace); err != nil {
+				return err
+			}
+			if err := testConnectivity("ubuntu", "default", "testhttpd", testTenantNamespace); err != nil {
+				return err
+			}
+			return testConnectivity("ubuntu", "default", "testhttpd", testTenantNamespace2)
+		}).ShouldNot(HaveOccurred())
 	})
 
 	It("should prevent tenants from specifying forbidden IPs in their network policies", func() {
