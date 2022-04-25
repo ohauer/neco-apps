@@ -76,7 +76,9 @@ func testTenantNetworkPolicy() {
 		}
 
 		By("ensuring ingress for same team is allowed")
-		Eventually(testConnectivity("ubuntu", testTenantNamespace, "testhttpd", testTenantNamespace2)).ShouldNot(HaveOccurred())
+		Eventually(func() error {
+			return testConnectivity("ubuntu", testTenantNamespace, "testhttpd", testTenantNamespace2)
+		}).ShouldNot(HaveOccurred())
 
 		// TODO: actually verify non-connectivity once the temporary
 		// tenant-ingress-cluster-allow policy is removed
