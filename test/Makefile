@@ -23,7 +23,7 @@ export BOOT0 BOOT1 BOOT2 GINKGO SSH_PRIVKEY TEST_ID COMMIT_ID NUM_DASHBOARD SUDO
 # Follow Argo CD installed kustomize version
 # https://github.com/cybozu/neco-containers/blob/main/argocd/Dockerfile#L11
 KUSTOMIZE_VERSION := 4.2.0
-PROMTOOL_VERSION := 2.30.0
+PROMTOOL_VERSION := 2.34.0
 TELEPORT_VERSION := 8.3.4
 KUBERNETES_VERSION := 1.22.5
 ARGOCD_VERSION := 2.2.5
