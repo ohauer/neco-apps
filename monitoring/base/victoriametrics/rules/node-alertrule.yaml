@@ -95,3 +95,27 @@ spec:
             severity: error
           annotations:
             summary: The network interface `{{ $labels.device }}` on `{{ $labels.address }}` is down.
+        - alert: SystemdUnitActiveMetricMissing
+          expr: group(sabakan_machine_status{status!="retired",role="boot"} == 1) by (address) unless (count(systemd_unit_active) by (address) > 0)
+          for: 30m
+          labels:
+            severity: error
+          annotations:
+            summary: The metric of systemd unit activeness is missing for `{{ $labels.address }}`.
+            runbook: Run `systemctl status export-unit-status.timer` and `systemctl status export-unit-status.service` to investigate the unit statuses.
+        - alert: SystemdUnitActiveMetricStale
+          expr: group(sabakan_machine_status{status!="retired",role="boot"} == 1) by (address) unless group(time() - systemd_unit_active_timestamp < 300) by (address)
+          for: 30m
+          labels:
+            severity: error
+          annotations:
+            summary: The metric of systemd unit activeness is stale for `{{ $labels.address }}`.
+            runbook: Run `systemctl status export-unit-status.timer` and `systemctl status export-unit-status.service` to investigate the unit statuses.
+        - alert: SystemdUnitNotActive
+          expr: (systemd_unit_active * on(address) group_left group(sabakan_machine_status{status!="retired",role="boot"} == 1) by (address)) == 0
+          for: 30m
+          labels:
+            severity: error
+          annotations:
+            summary: The `{{ $labels.unit }}` unit is not active on `{{ $labels.address }}`.
+            runbook: Run `systemctl status {{ $labels.unit }}` and `journalctl -u {{ $labels.unit }}` to investigate the unit log.
