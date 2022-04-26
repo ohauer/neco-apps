@@ -518,6 +518,16 @@ func applyAndWaitForApplications(commitID string) {
 				// ignore error
 			}
 
+			// TODO: remove this block after release the PR bellow
+			// https://github.com/cybozu-go/neco-apps/pull/2509
+			if doUpgrade {
+				if app.Name == "sealed-secrets" && app.Operation == nil && app.Status.Sync.Status == SyncStatusCodeOutOfSync {
+					fmt.Printf("%s sync sealed-secrets app manually: syncStatus=%s, healthStatus=%s\n",
+						time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+					ExecSafeAt(boot0, "argocd", "app", "sync", "sealed-secrets", "--force")
+				}
+			}
+
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.
 			// It leads to ArgoCD's improper behavior. In spite of the network-policy app becomes Synced/Healthy, the operation does not end.
 			// So terminate the unexpected operation manually in upgrade test.
