@@ -37,6 +37,7 @@ resources:
   - rules/argocd-scrape.yaml
   - rules/cattage-alertrule.yaml
   - rules/cattage-scrape.yaml
+  - rules/ceph-extra-exporter-scrape.yaml
   - rules/cert-manager-alertrule.yaml
   - rules/cert-manager-scrape.yaml
   - rules/cilium-alertrule.yaml

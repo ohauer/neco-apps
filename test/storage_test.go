@@ -576,6 +576,34 @@ func waitRGW(ns, podName string) {
 	}).Should(Succeed())
 }
 
+func testCephExtraExporter() {
+	By("getting metrics exported by ceph-extra-exporter", func() {
+		Eventually(func() error {
+			result, err := queryMetrics(MonitoringLargeset, "ceph_extra_osd_pool_autoscale_status_pool_count")
+			if err != nil {
+				return err
+			}
+
+			if len(result.Data.Result) == 0 {
+				return fmt.Errorf("ceph_extra_osd_pool_autoscale_status_pool_count must be scraped")
+			}
+
+			for _, sample := range result.Data.Result {
+				namespace := sample.Metric["namespace"]
+				if namespace != "ceph-object-store" && namespace != "ceph-ssd" {
+					return fmt.Errorf("unknown cluster exist: %s", namespace)
+				}
+
+				if sample.Value < 1 {
+					return fmt.Errorf("pool count of %s must be greater than or equal to 1: got %f", namespace, sample.Value)
+				}
+			}
+
+			return nil
+		}, 5*time.Minute).Should(Succeed())
+	})
+}
+
 func testRookCeph() {
 	It("should be available", func() {
 		testRookOperator()
@@ -586,5 +614,6 @@ func testRookCeph() {
 		testRGWPodsSpreadAll()
 		testRookRGW()
 		testRookRBDAll()
+		testCephExtraExporter()
 	})
 }

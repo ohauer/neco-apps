@@ -600,6 +600,99 @@ metadata:
   name: rook-config-override
   namespace: ceph-poc
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ceph-extra-exporter
+  name: ceph-extra-exporter
+  namespace: ceph-poc
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: http
+  selector:
+    app: ceph-extra-exporter
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ceph-extra-exporter
+  name: ceph-extra-exporter
+  namespace: ceph-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ceph-extra-exporter
+  template:
+    metadata:
+      labels:
+        app: ceph-extra-exporter
+    spec:
+      containers:
+      - image: quay.io/cybozu/ceph-extra-exporter:0.1.0
+        name: ceph-extra-exporter
+        ports:
+        - containerPort: 8080
+          name: http
+        securityContext:
+          runAsGroup: 2016
+          runAsNonRoot: true
+          runAsUser: 2016
+        volumeMounts:
+        - mountPath: /etc/ceph
+          name: ceph-config
+      - args:
+        - -m
+        - -c
+        - /usr/local/bin/toolbox.sh
+        command:
+        - /bin/bash
+        env:
+        - name: ROOK_CEPH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: ceph-username
+              name: rook-ceph-mon
+        - name: ROOK_CEPH_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: ceph-secret
+              name: rook-ceph-mon
+        image: quay.io/cybozu/rook:1.8.3.1
+        imagePullPolicy: IfNotPresent
+        name: toolbox
+        securityContext:
+          runAsGroup: 2016
+          runAsNonRoot: true
+          runAsUser: 2016
+        tty: true
+        volumeMounts:
+        - mountPath: /etc/ceph
+          name: ceph-config
+        - mountPath: /etc/rook
+          name: mon-endpoint-volume
+      dnsPolicy: ClusterFirstWithHostNet
+      tolerations:
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+        tolerationSeconds: 5
+      - key: node.cybozu.io/cluster-not-ready
+        operator: Exists
+      volumes:
+      - configMap:
+          items:
+          - key: data
+            path: mon-endpoints
+          name: rook-ceph-mon-endpoints
+        name: mon-endpoint-volume
+      - emptyDir: {}
+        name: ceph-config
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
