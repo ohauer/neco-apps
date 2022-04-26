@@ -6,3 +6,4 @@ metadata:
 spec:
   source:
     targetRevision: stage
+    path: network-policy/overlays/stage0

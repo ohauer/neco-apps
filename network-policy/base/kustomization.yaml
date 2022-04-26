@@ -2,13 +2,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - policies/bmc-reverse-proxy.yaml
+  - policies/ceph.yaml
   - policies/customer-egress.yaml
   - policies/domestic-egress.yaml
   - policies/hubble-relay.yaml
   - policies/ingress.yaml
   - policies/internet-egress.yaml
+  - policies/logging-small.yaml
   - policies/monitoring.yaml
+  - policies/pvc-autoresizer.yaml
   - policies/teleport.yaml
+  - policies/topolvm.yaml
   - global-policies/apiserver.yaml
   - global-policies/controller-manager.yaml
   - global-policies/egress-backyard-deny.yaml

@@ -1,0 +1,178 @@
+# ceph-object-store
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-ceph-extra-exporter-allow
+  namespace: ceph-object-store
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: ceph-extra-exporter
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: monitoring
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-ceph-mgr-allow
+  namespace: ceph-object-store
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: ceph-mgr
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: monitoring
+    toPorts:
+    - ports:
+      - port: "9283"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-ceph-rgw-allow
+  namespace: ceph-object-store
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: ceph-rgw
+  ingress:
+  - fromEntities:
+    - cluster
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+  - fromCIDR:
+    # Bastion network
+    - 10.72.48.0/24
+    - 10.72.80.0/24
+    - 10.76.48.0/24
+    - 10.76.80.0/24
+    - 10.78.48.0/24
+    - 10.78.80.0/24
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-same-ns-allow
+  namespace: ceph-object-store
+spec:
+  endpointSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: ceph-object-store
+
+# ceph-ssd
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-ceph-extra-exporter-allow
+  namespace: ceph-ssd
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: ceph-extra-exporter
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: monitoring
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-ceph-mgr-allow
+  namespace: ceph-ssd
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: ceph-mgr
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: monitoring
+    toPorts:
+    - ports:
+      - port: "9283"
+        protocol: TCP
+  # accept accessing from Ceph CSI Driver using host network.
+  - fromEntities:
+    - host
+    - remote-node
+    # we'd like to write like bellow, but range is not supported yet
+    # cf. https://docs.cilium.io/en/v1.11/policy/language/#limit-ingress-egress-ports
+    # toPorts:
+    # - ports:
+    #   - port: "6800-7300"
+    #     protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-ceph-mon-allow
+  namespace: ceph-ssd
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: ceph-mon
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+    toPorts:
+    - ports:
+      - port: "3300"
+        protocol: TCP
+      - port: "6789"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-ceph-osd-allow
+  namespace: ceph-ssd
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: ceph-osd
+  ingress:
+  - fromEntities:
+    - host
+    - remote-node
+    # we'd like to write like bellow, but range is not supported yet
+    # cf. https://docs.cilium.io/en/v1.11/policy/language/#limit-ingress-egress-ports
+    # toPorts:
+    # - ports:
+    #   - port: "6800-7300"
+    #     protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-same-ns-allow
+  namespace: ceph-ssd
+spec:
+  endpointSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: ceph-ssd
