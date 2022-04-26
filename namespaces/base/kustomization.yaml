@@ -14,7 +14,6 @@ resources:
 - internet-egress.yaml
 - kube-system.yaml
 - logging.yaml
-- metallb.yaml
 - moco.yaml
 - monitoring.yaml
 - prometheus-adapter.yaml

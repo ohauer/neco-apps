@@ -78,7 +78,7 @@ func prepareTest() {
 	Context("preparing contour", prepareContour)
 	Context("preparing elastic", prepareElastic)
 	Context("preparing local-pv-provisioner", prepareLocalPVProvisioner)
-	Context("preparing metallb", prepareMetalLB)
+	Context("preparing metallb", prepareExternalDNS)
 	Context("preparing pushgateway", preparePushgateway)
 	Context("preparing hpa", prepareHPA)
 	Context("preparing grafana-operator", prepareGrafanaOperator)
@@ -100,7 +100,7 @@ func runTest() {
 	// running tests
 	Context("rook-ceph", testRookCeph)
 	Context("network-policy", testNetworkPolicy)
-	Context("metallb", testMetalLB)
+	Context("external-dns", testExternalDNS)
 	Context("contour", testContour)
 	Context("machines-endpoints", testMachinesEndpoints)
 	Context("kube-state-metrics", testKubeStateMetrics)

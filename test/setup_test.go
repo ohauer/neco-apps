@@ -37,6 +37,12 @@ var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONSc
 //go:embed testdata/setup-teleport.yaml
 var setupTeleportYAML string
 
+//go:embed testdata/cke-template.yaml
+var ckeTemplateYAML []byte
+
+//go:embed testdata/cilium.yaml
+var ciliumConfigYAML []byte
+
 const numControlPlanes = 3
 const numWorkers = 6
 const numNodes = numControlPlanes + numWorkers
@@ -433,6 +439,29 @@ func applyAndWaitForApplications(commitID string) {
 	// note: do not delete this comment and By.
 	By("running pre-sync special process")
 
+	if doUpgrade {
+		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "metallb-system")
+		if err == nil {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", "metallb-system", "admission.cybozu.com/i-am-sure-to-delete=metallb-system")
+			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
+		}
+		_, _, err = ExecAt(boot0, "kubectl", "-n", "argocd", "get", "application", "metallb")
+		if err == nil {
+			stdout, stderr, err := ExecAt(boot0, "argocd", "app", "set", "metallb", "--sync-policy", "none")
+			Expect(err).ShouldNot(HaveOccurred(), "failed to disable MetalLB app's auto sync : stdout=%s, stderr=%s", stdout, stderr)
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "metallb-system", "delete", "ds", "speaker")
+			Expect(err).ShouldNot(HaveOccurred(), "failed to delete MetalLB speaker : stdout=%s, stderr=%s", stdout, stderr)
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "metallb-system", "delete", "deployment", "controller")
+			Expect(err).ShouldNot(HaveOccurred(), "failed to delete MetalLB controller : stdout=%s, stderr=%s", stdout, stderr)
+			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "metallb-system", "wait", "pod", "-l", "app=metallb", "--for=delete")
+			Expect(err).ShouldNot(HaveOccurred(), "failed to wait MetalLB to be deleted : stdout=%s, stderr=%s", stdout, stderr)
+		}
+	}
+
+	if isKubeProxyReplacementDisabled() {
+		enableKubeProxyReplacement()
+	}
+
 	// TODO: remove this block after release the PR bellow
 	// https://github.com/cybozu-go/neco-apps/pull/2248
 	if doUpgrade {
@@ -463,7 +492,8 @@ func applyAndWaitForApplications(commitID string) {
 			"&&", "argocd", "app", "sync", "argocd-config",
 			"--retry-limit", "100",
 			"--local", "argocd-config/overlays/"+overlayName,
-			"--async")
+			"--async",
+			"--prune")
 		if err != nil {
 			return fmt.Errorf("stdout=%s, stderr=%s: %w", string(stdout), string(stderr), err)
 		}
@@ -793,4 +823,65 @@ func setupArgoCD() {
 		}
 		return nil
 	}).Should(Succeed())
+}
+
+func isKubeProxyReplacementDisabled() bool {
+	stdout, _, err := ExecAt(boot0, "cilium", "config", "view", "|", "grep", "kube-proxy-replacement")
+	if err != nil {
+		return true
+	}
+	if strings.Contains(string(stdout), "strict") || strings.Contains(string(stdout), "partial") {
+		return false
+	}
+	return true
+}
+
+func enableKubeProxyReplacement() {
+	By("Enable Cilium kube-proxy replacement")
+	stdout, stderr, err := ExecAtWithInput(boot0, ciliumConfigYAML, "kubectl", "apply", "-f", "-")
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+	// Waiting for rollout to finish
+	stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "kube-system", "rollout", "status", "ds/cilium")
+	Expect(err).ShouldNot(HaveOccurred(), "failed to wait cilium rollout: stdout=%s, stderr=%s", stdout, stderr)
+	stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "kube-system", "rollout", "status", "deployment/cilium-operator")
+	Expect(err).ShouldNot(HaveOccurred(), "failed to wait cilium operator rollout: stdout=%s, stderr=%s", stdout, stderr)
+
+	By("Stop kube-proxy")
+	stdout, stderr, err = ExecAtWithInput(boot0, ckeTemplateYAML, "sudo", "tee", "/usr/share/neco/cke-template.yml")
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+	stdout, stderr, err = ExecAt(boot0, "neco", "cke", "update")
+	Expect(err).ShouldNot(HaveOccurred(), "failed to update cke template: stdout=%s, stderr=%s", stdout, stderr)
+
+	stdout, stderr, err = ExecAt(boot0, "ckecli", "cluster", "get")
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+	cluster := new(ckeCluster)
+	err = k8sYaml.Unmarshal(stdout, cluster)
+	Expect(err).ShouldNot(HaveOccurred(), "data=%s", stdout)
+	// Wait for kube-proxy shutdown
+	Eventually(func() error {
+		for _, node := range cluster.Nodes {
+			_, _, err := ExecAt(boot0, "ckecli", "ssh", node.Address, "--", "docker", "inspect", "kube-proxy")
+			if err == nil {
+				return fmt.Errorf("kube-proxy is still running")
+			}
+		}
+		return nil
+	}).Should(Succeed())
+	for _, node := range cluster.Nodes {
+		stdout, stderr, err := ExecAt(boot0, "ckecli", "ssh", node.Address, "--", "sudo", "ip", "link", "del", "kube-ipvs0")
+		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+		stdout, stderr, err = ExecAt(boot0, "ckecli", "ssh", node.Address, "--", "sudo", "ipvsadm", "-C")
+		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
+	}
+
+	// Temporary Fix. Requests to node ports from boot servers fail because of the ipvs settings remaining on each worker. Use ClusterIP instead.
+	// This issue will be fixed after all workers are rebooted
+	var svc corev1.Service
+	stdout = ExecSafeAt(boot0, "kubectl", "get", "svc/argocd-server", "-n", "argocd", "-o", "json")
+	err = json.Unmarshal(stdout, &svc)
+	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", string(stdout))
+	clusterIP := svc.Spec.ClusterIP
+	Expect(clusterIP).ShouldNot(BeNil())
+	stdout, stderr, err = ExecAt(boot0, "sed", "-i", "-E", fmt.Sprintf("'s/server:.*$/server: %s/'", clusterIP), "~/.config/argocd/config")
+	Expect(err).ShouldNot(HaveOccurred(), "failed to sed argocd config: stdout=%s, stderr=%s", stdout, stderr)
 }

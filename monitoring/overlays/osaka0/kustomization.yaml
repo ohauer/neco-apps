@@ -3,6 +3,9 @@ kind: Kustomization
 resources:
   - ../../base
   - grafana-operator/httpproxy.yaml
+  - victoriametrics/rules/kube-proxy-scrape.yaml
+  - victoriametrics/rules/metallb-alertrule.yaml
+  - victoriametrics/rules/metallb-scrape.yaml
 patchesStrategicMerge:
   - grafana-operator/grafana.yaml
   - pushgateway/httpproxy.yaml

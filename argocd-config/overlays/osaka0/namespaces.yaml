@@ -1,8 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: metallb
+  name: namespaces
   namespace: argocd
 spec:
   source:
-    path: metallb/overlays/gcp
+    path: namespaces/overlays/osaka0

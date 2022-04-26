@@ -20,7 +20,6 @@ resources:
 - logging.yaml
 - logging-small.yaml
 - meows.yaml
-- metallb.yaml
 - moco.yaml
 - monitoring.yaml
 - namespaces.yaml

@@ -98,20 +98,3 @@ spec:
       targetLabel: namespace
     - action: labeldrop
       regex: container_label_io_kubernetes_.*
----
-apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMNodeScrape
-metadata:
-  name: kube-proxy
-  namespace: monitoring
-  labels:
-    smallset: "true"
-spec:
-  relabelConfigs:
-    - replacement: kube-proxy
-      targetLabel: job
-    - sourceLabels: [__address__]
-      action: replace
-      regex: ([^:]+)(?::\d+)?
-      replacement: ${1}:10249
-      targetLabel: __address__

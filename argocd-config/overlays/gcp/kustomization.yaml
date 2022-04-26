@@ -12,7 +12,6 @@ patchesStrategicMerge:
 - logging.yaml
 - logging-small.yaml
 - meows.yaml
-- metallb.yaml
 - monitoring.yaml
 - neco-admission.yaml
 - rook.yaml
