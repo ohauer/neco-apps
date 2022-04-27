@@ -825,7 +825,7 @@ metadata:
   namespace: ceph-object-store
 spec:
   cephVersion:
-    image: quay.io/cybozu/ceph:16.2.7.2
+    image: quay.io/cybozu/ceph:16.2.7.3
   dashboard:
     ssl: true
   dataDirHostPath: /var/lib/rook
