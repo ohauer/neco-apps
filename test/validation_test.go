@@ -348,6 +348,7 @@ func testVMCustomResources(t *testing.T) {
 
 	// expected resource names of each CRs which are handled by smallset cluster (must be sorted)
 	expectedSmallsetServiceScrapes := []string{
+		"ceph-extra-exporter",
 		"kube-state-metrics",
 		"kubernetes",
 		"rook",

@@ -3,6 +3,8 @@ kind: VMServiceScrape
 metadata:
   name: ceph-extra-exporter
   namespace: monitoring
+  labels:
+    smallset: "true"
 spec:
   namespaceSelector:
     any: true
