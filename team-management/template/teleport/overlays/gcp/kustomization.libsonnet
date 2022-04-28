@@ -12,7 +12,7 @@ function(teams) [{
     'apps/vmalertmanager-largeset.yaml',
     'apps/vmalertmanager-smallset.yaml',
     'apps/vmalertmanager-app-csa-monitoring.yaml',
-    'apps/vmalertmanager-app-cybozu-com-mysql.yaml',
+    'apps/vmalertmanager-app-dbre-monitoring.yaml',
     'apps/vmalertmanager-app-monitoring.yaml',
   ] + std.map(function(x) 'nodes/' + x + '.yaml', teams + ['neco'])),
   images: [

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: teleport-app-vmalertmanager-app-cybozu-com-mysql
+  name: teleport-app-vmalertmanager-app-dbre-monitoring
   namespace: teleport
   labels:
     app.kubernetes.io/name: teleport
@@ -13,7 +13,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: teleport
       app.kubernetes.io/component: app
-      app: vmalertmanager-app-cybozu-com-mysql
+      app: vmalertmanager-app-dbre-monitoring
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -22,7 +22,7 @@ spec:
       labels:
         app.kubernetes.io/name: teleport
         app.kubernetes.io/component: app
-        app: vmalertmanager-app-cybozu-com-mysql
+        app: vmalertmanager-app-dbre-monitoring
       annotations:
         prometheus.io/port: "3020"
     spec:
@@ -33,8 +33,8 @@ spec:
         imagePullPolicy: IfNotPresent
         args:
         - --roles=app
-        - --app-name=vmalertmanager-app-cybozu-com-mysql
-        - --app-uri=http://vmalertmanager-vmalertmanager.app-cybozu-com-mysql.svc:9093/
+        - --app-name=vmalertmanager-app-dbre-monitoring
+        - --app-uri=http://vmalertmanager-vmalertmanager.app-dbre-monitoring.svc:9093/
         - --labels=team=dbre
         - --diag-addr=0.0.0.0:3020
         livenessProbe:

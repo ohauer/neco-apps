@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: teleport-app-vmalertmanager-app-cybozu-com-mysql
+  name: teleport-app-vmalertmanager-app-dbre-monitoring
   namespace: teleport
 spec:
   template:
@@ -11,7 +11,7 @@ spec:
         args:
         - --insecure
         - --roles=app
-        - --app-name=vmalertmanager-app-cybozu-com-mysql
-        - --app-uri=http://vmalertmanager-vmalertmanager.app-cybozu-com-mysql.svc:9093/
+        - --app-name=vmalertmanager-app-dbre-monitoring
+        - --app-uri=http://vmalertmanager-vmalertmanager.app-dbre-monitoring.svc:9093/
         - --labels=team=dbre
         - --diag-addr=0.0.0.0:3020
