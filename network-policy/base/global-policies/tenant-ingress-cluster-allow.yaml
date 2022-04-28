@@ -11,7 +11,7 @@ spec:
       operator: NotIn
       values:
       - network-nat
-    - key: k8s.io.cilium.k8s.namespace.labels.team
+    - key: k8s:io.cilium.k8s.namespace.labels.team
       operator: NotIn
       values:
         - neco
