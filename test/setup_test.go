@@ -37,12 +37,6 @@ var decUnstructured = yaml.NewDecodingSerializer(unstructured.UnstructuredJSONSc
 //go:embed testdata/setup-teleport.yaml
 var setupTeleportYAML string
 
-//go:embed testdata/cke-template.yaml
-var ckeTemplateYAML []byte
-
-//go:embed testdata/cilium.yaml
-var ciliumConfigYAML []byte
-
 const numControlPlanes = 3
 const numWorkers = 6
 const numNodes = numControlPlanes + numWorkers
@@ -403,21 +397,6 @@ func testSetup() {
 	})
 }
 
-// annotateNamespaceToDeleteDuringUpgrade adds `admission.cybozu.com/i-am-sure-to-delete` annotation,
-//  which is required to delete a namespace, during upgrade.
-// If the namespace does not exist (= already deleted by Argo CD, etc), It does nothing.
-// It does nothing in non-upgrade case neither.
-// This function is intended to be used in pre- and post-sync special processes.
-func annotateNamespaceToDeleteDuringUpgrade(namespace string) {
-	if doUpgrade {
-		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", namespace)
-		if err == nil {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", namespace, "admission.cybozu.com/i-am-sure-to-delete="+namespace)
-			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
-		}
-	}
-}
-
 func applyAndWaitForApplications(commitID string) {
 	By("creating Argo CD app")
 	Eventually(func() error {
@@ -438,53 +417,6 @@ func applyAndWaitForApplications(commitID string) {
 	// Write special process for upgrade.
 	// note: do not delete this comment and By.
 	By("running pre-sync special process")
-
-	if doUpgrade {
-		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "metallb-system")
-		if err == nil {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", "metallb-system", "admission.cybozu.com/i-am-sure-to-delete=metallb-system")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
-		}
-		_, _, err = ExecAt(boot0, "kubectl", "-n", "argocd", "get", "application", "metallb")
-		if err == nil {
-			stdout, stderr, err := ExecAt(boot0, "argocd", "app", "set", "metallb", "--sync-policy", "none")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to disable MetalLB app's auto sync : stdout=%s, stderr=%s", stdout, stderr)
-			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "metallb-system", "delete", "ds", "speaker")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to delete MetalLB speaker : stdout=%s, stderr=%s", stdout, stderr)
-			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "metallb-system", "delete", "deployment", "controller")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to delete MetalLB controller : stdout=%s, stderr=%s", stdout, stderr)
-			stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "metallb-system", "wait", "pod", "-l", "app=metallb", "--for=delete")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to wait MetalLB to be deleted : stdout=%s, stderr=%s", stdout, stderr)
-		}
-	}
-
-	if isKubeProxyReplacementDisabled() {
-		enableKubeProxyReplacement()
-	}
-
-	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2248
-	if doUpgrade {
-		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "dev-kintone")
-		if err == nil {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", "dev-kintone", "admission.cybozu.com/i-am-sure-to-delete=dev-kintone")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
-		}
-	}
-
-	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2267
-	if doUpgrade {
-		_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "ceph-hdd")
-		if err == nil {
-			stdout, stderr, err := ExecAt(boot0, "kubectl", "annotate", "ns", "ceph-hdd", "admission.cybozu.com/i-am-sure-to-delete=ceph-hdd")
-			Expect(err).ShouldNot(HaveOccurred(), "failed to annotate: stdout=%s, stderr=%s", stdout, stderr)
-		}
-	}
-
-	// TODO: remove this block after release the PR bellow
-	// https://github.com/cybozu-go/neco-apps/pull/2414
-	annotateNamespaceToDeleteDuringUpgrade("app-csa-privileged")
 
 	By("syncing argocd-config")
 	Eventually(func() error {
@@ -584,47 +516,6 @@ func applyAndWaitForApplications(commitID string) {
 					time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
 				ExecAt(boot0, "argocd", "app", "sync", "rook", "--async", "--prune")
 				// ignore error
-			}
-
-			// TODO: remove this block after release the PR bellow
-			// https://github.com/cybozu-go/neco-apps/pull/2327
-			// https://github.com/cybozu-go/neco-apps/pull/2389
-			if doUpgrade {
-				if app.Name == "team-management" && app.Status.Sync.Status != SyncStatusCodeSynced {
-					fmt.Printf("%s failed to sync team-management app: syncStatus=%s, healthStatus=%s\n",
-						time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-
-					_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "dev-set")
-					if err == nil {
-						fmt.Printf("%s remove dev set app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
-							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "dev-set", "app.kubernetes.io/instance-")
-						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
-					}
-
-					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "app-ept")
-					if err == nil {
-						fmt.Printf("%s remove app-ept app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
-							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "app-ept", "app.kubernetes.io/instance-")
-						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
-					}
-
-					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "dev-ept")
-					if err == nil {
-						fmt.Printf("%s remove dev-ept app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
-							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "dev-ept", "app.kubernetes.io/instance-")
-						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
-					}
-
-					if app.Operation == nil {
-						fmt.Printf("%s sync team-management manually: syncStatus=%s, healthStatus=%s\n",
-							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-						ExecAt(boot0, "argocd", "app", "sync", "team-management", "--async", "--prune")
-						// ignore error
-					}
-				}
 			}
 
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.
@@ -823,65 +714,4 @@ func setupArgoCD() {
 		}
 		return nil
 	}).Should(Succeed())
-}
-
-func isKubeProxyReplacementDisabled() bool {
-	stdout, _, err := ExecAt(boot0, "cilium", "config", "view", "|", "grep", "kube-proxy-replacement")
-	if err != nil {
-		return true
-	}
-	if strings.Contains(string(stdout), "strict") || strings.Contains(string(stdout), "partial") {
-		return false
-	}
-	return true
-}
-
-func enableKubeProxyReplacement() {
-	By("Enable Cilium kube-proxy replacement")
-	stdout, stderr, err := ExecAtWithInput(boot0, ciliumConfigYAML, "kubectl", "apply", "-f", "-")
-	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-	// Waiting for rollout to finish
-	stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "kube-system", "rollout", "status", "ds/cilium")
-	Expect(err).ShouldNot(HaveOccurred(), "failed to wait cilium rollout: stdout=%s, stderr=%s", stdout, stderr)
-	stdout, stderr, err = ExecAt(boot0, "kubectl", "-n", "kube-system", "rollout", "status", "deployment/cilium-operator")
-	Expect(err).ShouldNot(HaveOccurred(), "failed to wait cilium operator rollout: stdout=%s, stderr=%s", stdout, stderr)
-
-	By("Stop kube-proxy")
-	stdout, stderr, err = ExecAtWithInput(boot0, ckeTemplateYAML, "sudo", "tee", "/usr/share/neco/cke-template.yml")
-	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-	stdout, stderr, err = ExecAt(boot0, "neco", "cke", "update")
-	Expect(err).ShouldNot(HaveOccurred(), "failed to update cke template: stdout=%s, stderr=%s", stdout, stderr)
-
-	stdout, stderr, err = ExecAt(boot0, "ckecli", "cluster", "get")
-	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-	cluster := new(ckeCluster)
-	err = k8sYaml.Unmarshal(stdout, cluster)
-	Expect(err).ShouldNot(HaveOccurred(), "data=%s", stdout)
-	// Wait for kube-proxy shutdown
-	Eventually(func() error {
-		for _, node := range cluster.Nodes {
-			_, _, err := ExecAt(boot0, "ckecli", "ssh", node.Address, "--", "docker", "inspect", "kube-proxy")
-			if err == nil {
-				return fmt.Errorf("kube-proxy is still running")
-			}
-		}
-		return nil
-	}).Should(Succeed())
-	for _, node := range cluster.Nodes {
-		stdout, stderr, err := ExecAt(boot0, "ckecli", "ssh", node.Address, "--", "sudo", "ip", "link", "del", "kube-ipvs0")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-		stdout, stderr, err = ExecAt(boot0, "ckecli", "ssh", node.Address, "--", "sudo", "ipvsadm", "-C")
-		Expect(err).ShouldNot(HaveOccurred(), "stdout=%s, stderr=%s", stdout, stderr)
-	}
-
-	// Temporary Fix. Requests to node ports from boot servers fail because of the ipvs settings remaining on each worker. Use ClusterIP instead.
-	// This issue will be fixed after all workers are rebooted
-	var svc corev1.Service
-	stdout = ExecSafeAt(boot0, "kubectl", "get", "svc/argocd-server", "-n", "argocd", "-o", "json")
-	err = json.Unmarshal(stdout, &svc)
-	Expect(err).ShouldNot(HaveOccurred(), "stdout=%s", string(stdout))
-	clusterIP := svc.Spec.ClusterIP
-	Expect(clusterIP).ShouldNot(BeNil())
-	stdout, stderr, err = ExecAt(boot0, "sed", "-i", "-E", fmt.Sprintf("'s/server:.*$/server: %s/'", clusterIP), "~/.config/argocd/config")
-	Expect(err).ShouldNot(HaveOccurred(), "failed to sed argocd config: stdout=%s, stderr=%s", stdout, stderr)
 }
