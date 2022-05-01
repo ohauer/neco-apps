@@ -22,12 +22,16 @@ spec:
           - --follow
           - --verdict
           - AUDIT
+          - --verdict
+          - DROPPED
+          - --verdict
+          - ERROR
           - --server
           - hubble-relay.kube-system.svc:443
           - --tls
           - --tls-allow-insecure
           - -o
-          - jsonpb
+          - json
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
