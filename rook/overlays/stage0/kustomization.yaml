@@ -4,3 +4,14 @@ resources:
   - ../../base
   - ceph-poc
   - ceph-object-store/httpproxy.yaml
+patches:
+  # A serious regression in stage0 after applying PR#2539.
+  # So we must not upgrade ceph image to 16.2.7.3.
+  # However, we must keep version to 16.2.7.3 in stage0.
+  # It's because downgrading to 16.2.7.2 causes osd crash.
+  - patch: |-
+      - op: replace
+        path: /spec/cephVersion/image
+        value: quay.io/cybozu/ceph:16.2.7.3
+    target:
+      kind: CephCluster
