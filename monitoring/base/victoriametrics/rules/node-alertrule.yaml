@@ -86,3 +86,12 @@ spec:
           annotations:
             summary: The system clock on `{{ $labels.address }}` is hastened or delayed by 0.05 seconds.
             runbook: Please check the node.
+        - alert: NodeNetworkDown
+          # We have to enumerate used physical interfaces
+          # because virtual interfaces (lo, node0, ...) and unused physical interfaces (eno3, eno4, ...) are always down.
+          expr: node_network_up{device=~"^(eno1|eno2|eno12399|eno12409)$"} != 1
+          for: 1h
+          labels:
+            severity: error
+          annotations:
+            summary: The network interface `{{ $labels.device }}` on `{{ $labels.address }}` is down.
