@@ -312,3 +312,46 @@ tests:
             exp_annotations:
               runbook: "Please check the node."
               summary: "The system clock on `192.168.0.1` is hastened or delayed by 0.05 seconds."
+
+  - interval: 1m
+    input_series:
+      - series: 'node_network_up{address="192.168.0.1",device="eno1"}'
+        values: '0+0x90'
+      - series: 'node_network_up{address="192.168.0.2",device="eno1"}'
+        values: '1+0x90'
+      - series: 'node_network_up{address="192.168.0.3",device="eno2"}'
+        values: '0+0x90'
+      - series: 'node_network_up{address="192.168.0.4",device="eno12399"}'
+        values: '0+0x90'
+      - series: 'node_network_up{address="192.168.0.5",device="eno12409"}'
+        values: '0+0x90'
+      - series: 'node_network_up{address="192.168.0.6",device="eno3"}'
+        values: '0+0x90'
+    alert_rule_test:
+      - eval_time: 80m
+        alertname: NodeNetworkDown
+        exp_alerts:
+          - exp_labels:
+              address: "192.168.0.1"
+              device: eno1
+              severity: error
+            exp_annotations:
+              summary: The network interface `eno1` on `192.168.0.1` is down.
+          - exp_labels:
+              address: "192.168.0.3"
+              device: eno2
+              severity: error
+            exp_annotations:
+              summary: The network interface `eno2` on `192.168.0.3` is down.
+          - exp_labels:
+              address: "192.168.0.4"
+              device: eno12399
+              severity: error
+            exp_annotations:
+              summary: The network interface `eno12399` on `192.168.0.4` is down.
+          - exp_labels:
+              address: "192.168.0.5"
+              device: eno12409
+              severity: error
+            exp_annotations:
+              summary: The network interface `eno12409` on `192.168.0.5` is down.
