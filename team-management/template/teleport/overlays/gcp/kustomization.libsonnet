@@ -9,6 +9,8 @@ function(teams) [{
     'deployment.yaml',
     'statefulset.yaml',
     'apps/hubble-ui.yaml',
+    'apps/vmalert-largeset.yaml',
+    'apps/vmalert-smallset.yaml',
     'apps/vmalertmanager-largeset.yaml',
     'apps/vmalertmanager-smallset.yaml',
     'apps/vmalertmanager-app-csa-monitoring.yaml',
