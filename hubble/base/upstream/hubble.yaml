@@ -185,12 +185,14 @@ spec:
     spec:
       securityContext:
         runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
       priorityClassName: 
       serviceAccount: "hubble-ui"
       serviceAccountName: "hubble-ui"
       containers:
       - name: frontend
-        image: "quay.io/cybozu/hubble-ui-frontend:0.8.5.1"
+        image: "quay.io/cybozu/hubble-ui-frontend:0.9.0.1"
         imagePullPolicy: IfNotPresent
         ports:
         - name: http
@@ -200,7 +202,7 @@ spec:
             cpu: 100m
             memory: 200Mi
       - name: backend
-        image: "quay.io/cybozu/hubble-ui-backend:0.8.5.1"
+        image: "quay.io/cybozu/hubble-ui-backend:0.9.0.1"
         imagePullPolicy: IfNotPresent
         env:
         - name: EVENTS_SERVER_PORT
@@ -229,7 +231,7 @@ spec:
           mountPath: /var/lib/hubble-ui/certs
           readOnly: true
       - name: proxy
-        image: "quay.io/cybozu/envoy:1.19.1.2"
+        image: "quay.io/cybozu/envoy:1.18.4.1"
         imagePullPolicy: IfNotPresent
         ports:
         - name: http

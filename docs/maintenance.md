@@ -148,15 +148,24 @@ $ git diff
 
 ## hubble
 
-Check [releases](https://github.com/cilium/cilium/releases).
-
-Update the manifest as follows:
-
-```console
-$ make setup   # install/update Helm; if a newer Helm is required, update HELM_VERSION in Makefile first
-$ make update-hubble
-$ git diff hubble
-```
+1. Check [releases](https://github.com/cilium/cilium/releases).
+2. Check the envoy version for Hubble-ui from the values file.
+    - https://github.com/cilium/cilium/blob/vX.Y.Z/install/kubernetes/cilium/values.yaml
+    ```
+    proxy:
+      # -- Hubble-ui ingress proxy image.
+      image:
+        repository: docker.io/envoyproxy/envoy
+        tag: v1.18.4@sha256:e5c2bb2870d0e59ce917a5100311813b4ede96ce4eb0c6bfa879e3fbe3e83935
+    ```
+3. Update the envoy tag in `./hubble/base/values.yaml`.
+    - Use the nearest version, registered in `quay.io/cybozu/envoy`.
+4. Update the manifest as follows:
+    ```console
+    $ make setup   # install/update Helm; if a newer Helm is required, update HELM_VERSION in Makefile first
+    $ make update-hubble
+    $ git diff hubble
+    ```
 
 ## kube-metrics-adapter
 

@@ -120,6 +120,10 @@ update-heartbeat:
 
 .PHONY: update-hubble
 update-hubble:
+	$(call get-latest-tag,hubble-ui-frontend)
+	sed -i -E '/repository:.*hubble-ui-frontend$$/!b;n;s/tag:.*$$/tag: $(latest_tag)/' hubble/base/values.yaml
+	$(call get-latest-tag,hubble-ui-backend)
+	sed -i -E '/repository:.*hubble-ui-backend$$/!b;n;s/tag:.*$$/tag: $(latest_tag)/' hubble/base/values.yaml
 	helm repo add cilium https://helm.cilium.io/ >/dev/null
 	helm repo update >/dev/null
 	helm template cilium cilium/cilium \
