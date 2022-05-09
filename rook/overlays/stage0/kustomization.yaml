@@ -12,6 +12,6 @@ patches:
   - patch: |-
       - op: replace
         path: /spec/cephVersion/image
-        value: quay.io/cybozu/ceph:16.2.7.3
+        value: quay.io/cybozu/ceph:16.2.7.4
     target:
       kind: CephCluster
