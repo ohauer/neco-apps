@@ -30,7 +30,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: NO_PROXY
-          value: 10.0.0.0/8
+          value: 10.0.0.0/8,127.0.0.1
         - name: HTTP_PROXY
           value: http://squid.internet-egress.svc:3128
         - name: HTTPS_PROXY
