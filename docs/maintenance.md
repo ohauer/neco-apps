@@ -58,8 +58,6 @@ $ git diff
 
 ## argocd
 
-note: Argo CD v2.3.0 will incorporate Argo CD Notifications. We have to modify argocd-notifications deployment at that time.
-
 1. Check [releases](https://github.com/argoproj/argo-cd/releases) for changes.
 2. Check [upgrading overview](https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/upgrading/overview.md) when upgrading major or minor version.
 3. Run the following command and check the diff.
@@ -70,6 +68,8 @@ note: Argo CD v2.3.0 will incorporate Argo CD Notifications. We have to modify a
    ```
 
 4. Update `KUSTOMIZE_VERSION` in `test/Makefile`.
+
+Note: We don't use ApplicationSet. So we delete the ApplicationSet related resources.
 
 ## bmc-reverse-proxy
 

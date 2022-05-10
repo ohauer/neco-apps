@@ -6,9 +6,9 @@ spec:
   template:
     spec:
       containers:
-      - image: quay.io/cybozu/argocd
+      - name: argocd-application-controller
+        image: quay.io/cybozu/argocd
         imagePullPolicy: IfNotPresent
-        name: argocd-application-controller
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -18,9 +18,9 @@ spec:
   template:
     spec:
       containers:
-      - image: quay.io/cybozu/redis
+      - name: redis
+        image: quay.io/cybozu/redis
         imagePullPolicy: IfNotPresent
-        name: redis
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -30,9 +30,9 @@ spec:
   template:
     spec:
       containers:
-      - image: quay.io/cybozu/argocd
+      - name: argocd-repo-server
+        image: quay.io/cybozu/argocd
         imagePullPolicy: IfNotPresent
-        name: argocd-repo-server
         command:
         - argocd-repo-server
         - --redis
@@ -45,9 +45,9 @@ spec:
         - name: HTTPS_PROXY
           value: http://squid.internet-egress.svc:3128
       initContainers:
-      - image: quay.io/cybozu/argocd
+      - name: copyutil
+        image: quay.io/cybozu/argocd
         imagePullPolicy: IfNotPresent
-        name: copyutil
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -57,9 +57,9 @@ spec:
   template:
     spec:
       containers:
-      - image: quay.io/cybozu/argocd
+      - name: argocd-server
+        image: quay.io/cybozu/argocd
         imagePullPolicy: IfNotPresent
-        name: argocd-server
         env:
         - name: NO_PROXY
           value: argocd-repo-server,argocd-application-controller,argocd-metrics,argocd-server,argocd-server-metrics,argocd-redis,argocd-dex-server,10.0.0.0/8
@@ -87,9 +87,9 @@ spec:
         - name: HTTPS_PROXY
           value: http://squid.internet-egress.svc:3128
       initContainers:
-      - image: quay.io/cybozu/argocd
+      - name: copyutil
+        image: quay.io/cybozu/argocd
         imagePullPolicy: IfNotPresent
-        name: copyutil
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -100,7 +100,7 @@ spec:
     spec:
       containers:
       - name: argocd-notifications-controller
-        image: quay.io/cybozu/argocd-notifications
+        image: quay.io/cybozu/argocd
         imagePullPolicy: IfNotPresent
         env:
         - name: NO_PROXY

@@ -7,14 +7,13 @@ resources:
 patchesStrategicMerge:
   - configmap.yaml
   - deployment.yaml
+  - delete-applicationset.yaml
   - secret.yaml
   - service.yaml
 images:
   - name: quay.io/cybozu/argocd
-    newTag: 2.2.5.1
+    newTag: 2.3.3.1
   - name: quay.io/cybozu/dex
-    newTag: 2.30.2.1
+    newTag: 2.30.2.2
   - name: quay.io/cybozu/redis
-    newTag: 6.2.6.1
-  - name: quay.io/cybozu/argocd-notifications
-    newTag: 1.2.1.1
+    newTag: 6.2.6.2
