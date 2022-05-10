@@ -7,7 +7,7 @@ resources:
   - ./service.yaml
 images:
   - name: quay.io/cybozu/memcached
-    newTag: 1.6.10.1
+    newTag: 1.6.15.1
   - name: quay.io/cybozu/memcached-exporter
     newTag: 0.9.0.3
   - name: quay.io/cybozu/loki

@@ -5,7 +5,7 @@ metadata:
   namespace: my-team-child
 spec:
   containers:
-  - image: quay.io/cybozu/testhttpd:0.1.6
+  - image: quay.io/cybozu/testhttpd:0
     imagePullPolicy: IfNotPresent
     name: testhttpd
     ports:
