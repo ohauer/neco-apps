@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.6.2
+    controller-gen.kubebuilder.io/version: v0.6.0
   creationTimestamp: null
   name: contourconfigurations.projectcontour.io
 spec:
@@ -83,9 +83,6 @@ spec:
                   defaultHTTPVersions:
                   - HTTP/1.1
                   - HTTP/2
-                  health:
-                    address: 0.0.0.0
-                    port: 8002
                   http:
                     accessLog: /dev/stdout
                     address: 0.0.0.0
@@ -169,24 +166,6 @@ spec:
                       - HTTP/2
                       type: string
                     type: array
-                  health:
-                    default:
-                      address: 0.0.0.0
-                      port: 8002
-                    description: Health defines the endpoint Envoy uses to serve health
-                      checks.
-                    properties:
-                      address:
-                        description: Defines the health address interface.
-                        minLength: 1
-                        type: string
-                      port:
-                        description: Defines the health port.
-                        type: integer
-                    required:
-                    - address
-                    - port
-                    type: object
                   http:
                     default:
                       accessLog: /dev/stdout
@@ -332,8 +311,8 @@ spec:
                     default:
                       address: 0.0.0.0
                       port: 8002
-                    description: Metrics defines the endpoint Envoy uses to serve
-                      metrics.
+                    description: Metrics defines the endpoints Envoy use to serve
+                      to metrics.
                     properties:
                       address:
                         description: Defines the metrics address interface.
@@ -343,21 +322,6 @@ spec:
                       port:
                         description: Defines the metrics port.
                         type: integer
-                      tls:
-                        description: TLS holds TLS file config details. Metrics and
-                          health endpoints cannot have same port number when metrics
-                          is served over HTTPS.
-                        properties:
-                          caFile:
-                            description: CA filename.
-                            type: string
-                          certFile:
-                            description: Client certificate filename.
-                            type: string
-                          keyFile:
-                            description: Client key filename.
-                            type: string
-                        type: object
                     required:
                     - address
                     - port
@@ -483,15 +447,15 @@ spec:
                 default:
                   address: 0.0.0.0
                   port: 8000
-                description: Health defines the endpoints Contour uses to serve health
-                  checks.
+                description: Health contains parameters to configure endpoints which
+                  Contour exposes to respond to Kubernetes health checks.
                 properties:
                   address:
-                    description: Defines the health address interface.
+                    description: Defines the Contour health address interface.
                     minLength: 1
                     type: string
                   port:
-                    description: Defines the health port.
+                    description: Defines the Contour health port.
                     type: integer
                 required:
                 - address
@@ -538,11 +502,48 @@ spec:
                     description: Address to set in Ingress object status.
                     type: string
                 type: object
+              leaderElection:
+                default:
+                  configmap:
+                    name: leader-elect
+                    namespace: projectcontour
+                  disableLeaderElection: false
+                  leaseDuration: 15s
+                  renewDeadline: 10s
+                  retryPeriod: 2s
+                description: LeaderElection contains leader election parameters.
+                properties:
+                  configmap:
+                    description: NamespacedName defines the namespace/name of the
+                      Kubernetes resource referred from the config file. Used for
+                      Contour config YAML file parsing, otherwise we could use K8s
+                      types.NamespacedName.
+                    properties:
+                      name:
+                        type: string
+                      namespace:
+                        type: string
+                    required:
+                    - name
+                    - namespace
+                    type: object
+                  disableLeaderElection:
+                    type: boolean
+                  leaseDuration:
+                    type: string
+                  renewDeadline:
+                    type: string
+                  retryPeriod:
+                    type: string
+                required:
+                - disableLeaderElection
+                type: object
               metrics:
                 default:
                   address: 0.0.0.0
                   port: 8000
-                description: Metrics defines the endpoint Contour uses to serve metrics.
+                description: Metrics defines the endpoints Contour uses to serve to
+                  metrics.
                 properties:
                   address:
                     description: Defines the metrics address interface.
@@ -552,21 +553,6 @@ spec:
                   port:
                     description: Defines the metrics port.
                     type: integer
-                  tls:
-                    description: TLS holds TLS file config details. Metrics and health
-                      endpoints cannot have same port number when metrics is served
-                      over HTTPS.
-                    properties:
-                      caFile:
-                        description: CA filename.
-                        type: string
-                      certFile:
-                        description: Client certificate filename.
-                        type: string
-                      keyFile:
-                        description: Client key filename.
-                        type: string
-                    type: object
                 required:
                 - address
                 - port
@@ -924,7 +910,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.6.2
+    controller-gen.kubebuilder.io/version: v0.6.0
   creationTimestamp: null
   name: contourdeployments.projectcontour.io
 spec:
@@ -1007,9 +993,6 @@ spec:
                       defaultHTTPVersions:
                       - HTTP/1.1
                       - HTTP/2
-                      health:
-                        address: 0.0.0.0
-                        port: 8002
                       http:
                         accessLog: /dev/stdout
                         address: 0.0.0.0
@@ -1093,24 +1076,6 @@ spec:
                           - HTTP/2
                           type: string
                         type: array
-                      health:
-                        default:
-                          address: 0.0.0.0
-                          port: 8002
-                        description: Health defines the endpoint Envoy uses to serve
-                          health checks.
-                        properties:
-                          address:
-                            description: Defines the health address interface.
-                            minLength: 1
-                            type: string
-                          port:
-                            description: Defines the health port.
-                            type: integer
-                        required:
-                        - address
-                        - port
-                        type: object
                       http:
                         default:
                           accessLog: /dev/stdout
@@ -1259,8 +1224,8 @@ spec:
                         default:
                           address: 0.0.0.0
                           port: 8002
-                        description: Metrics defines the endpoint Envoy uses to serve
-                          metrics.
+                        description: Metrics defines the endpoints Envoy use to serve
+                          to metrics.
                         properties:
                           address:
                             description: Defines the metrics address interface.
@@ -1270,21 +1235,6 @@ spec:
                           port:
                             description: Defines the metrics port.
                             type: integer
-                          tls:
-                            description: TLS holds TLS file config details. Metrics
-                              and health endpoints cannot have same port number when
-                              metrics is served over HTTPS.
-                            properties:
-                              caFile:
-                                description: CA filename.
-                                type: string
-                              certFile:
-                                description: Client certificate filename.
-                                type: string
-                              keyFile:
-                                description: Client key filename.
-                                type: string
-                            type: object
                         required:
                         - address
                         - port
@@ -1413,15 +1363,15 @@ spec:
                     default:
                       address: 0.0.0.0
                       port: 8000
-                    description: Health defines the endpoints Contour uses to serve
-                      health checks.
+                    description: Health contains parameters to configure endpoints
+                      which Contour exposes to respond to Kubernetes health checks.
                     properties:
                       address:
-                        description: Defines the health address interface.
+                        description: Defines the Contour health address interface.
                         minLength: 1
                         type: string
                       port:
-                        description: Defines the health port.
+                        description: Defines the Contour health port.
                         type: integer
                     required:
                     - address
@@ -1468,12 +1418,48 @@ spec:
                         description: Address to set in Ingress object status.
                         type: string
                     type: object
+                  leaderElection:
+                    default:
+                      configmap:
+                        name: leader-elect
+                        namespace: projectcontour
+                      disableLeaderElection: false
+                      leaseDuration: 15s
+                      renewDeadline: 10s
+                      retryPeriod: 2s
+                    description: LeaderElection contains leader election parameters.
+                    properties:
+                      configmap:
+                        description: NamespacedName defines the namespace/name of
+                          the Kubernetes resource referred from the config file. Used
+                          for Contour config YAML file parsing, otherwise we could
+                          use K8s types.NamespacedName.
+                        properties:
+                          name:
+                            type: string
+                          namespace:
+                            type: string
+                        required:
+                        - name
+                        - namespace
+                        type: object
+                      disableLeaderElection:
+                        type: boolean
+                      leaseDuration:
+                        type: string
+                      renewDeadline:
+                        type: string
+                      retryPeriod:
+                        type: string
+                    required:
+                    - disableLeaderElection
+                    type: object
                   metrics:
                     default:
                       address: 0.0.0.0
                       port: 8000
-                    description: Metrics defines the endpoint Contour uses to serve
-                      metrics.
+                    description: Metrics defines the endpoints Contour uses to serve
+                      to metrics.
                     properties:
                       address:
                         description: Defines the metrics address interface.
@@ -1483,21 +1469,6 @@ spec:
                       port:
                         description: Defines the metrics port.
                         type: integer
-                      tls:
-                        description: TLS holds TLS file config details. Metrics and
-                          health endpoints cannot have same port number when metrics
-                          is served over HTTPS.
-                        properties:
-                          caFile:
-                            description: CA filename.
-                            type: string
-                          certFile:
-                            description: Client certificate filename.
-                            type: string
-                          keyFile:
-                            description: Client key filename.
-                            type: string
-                        type: object
                     required:
                     - address
                     - port
@@ -1864,7 +1835,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.6.2
+    controller-gen.kubebuilder.io/version: v0.6.0
   creationTimestamp: null
   name: extensionservices.projectcontour.io
 spec:
@@ -1919,12 +1890,6 @@ spec:
                       description: RequestHashPolicy contains configuration for an
                         individual hash policy on a request attribute.
                       properties:
-                        hashSourceIP:
-                          description: HashSourceIP should be set to true when request
-                            source IP hash based load balancing is desired. It must
-                            be the only hash option field set, otherwise this request
-                            hash policy object will be ignored.
-                          type: boolean
                         headerHashOptions:
                           description: HeaderHashOptions should be set when request
                             header hash based load balancing is desired. It must be
@@ -2271,7 +2236,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.6.2
+    controller-gen.kubebuilder.io/version: v0.6.0
   creationTimestamp: null
   name: httpproxies.projectcontour.io
 spec:
@@ -2600,12 +2565,6 @@ spec:
                             description: RequestHashPolicy contains configuration
                               for an individual hash policy on a request attribute.
                             properties:
-                              hashSourceIP:
-                                description: HashSourceIP should be set to true when
-                                  request source IP hash based load balancing is desired.
-                                  It must be the only hash option field set, otherwise
-                                  this request hash policy object will be ignored.
-                                type: boolean
                               headerHashOptions:
                                 description: HeaderHashOptions should be set when
                                   request header hash based load balancing is desired.
@@ -2935,56 +2894,6 @@ spec:
                             type: object
                           type: array
                       type: object
-                    requestRedirectPolicy:
-                      description: RequestRedirectPolicy defines an HTTP redirection.
-                      properties:
-                        hostname:
-                          description: Hostname is the precise hostname to be used
-                            in the value of the `Location` header in the response.
-                            When empty, the hostname of the request is used. No wildcards
-                            are allowed.
-                          maxLength: 253
-                          minLength: 1
-                          pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
-                          type: string
-                        path:
-                          description: "Path allows for redirection to a different
-                            path from the original on the request. The path must start
-                            with a leading slash. \n Note: Only one of Path or Prefix
-                            can be defined."
-                          pattern: ^\/.*$
-                          type: string
-                        port:
-                          description: Port is the port to be used in the value of
-                            the `Location` header in the response. When empty, port
-                            (if specified) of the request is used.
-                          format: int32
-                          maximum: 65535
-                          minimum: 1
-                          type: integer
-                        prefix:
-                          description: "Prefix defines the value to swap the matched
-                            prefix or path with. The prefix must start with a leading
-                            slash. \n Note: Only one of Path or Prefix can be defined."
-                          pattern: ^\/.*$
-                          type: string
-                        scheme:
-                          description: Scheme is the scheme to be used in the value
-                            of the `Location` header in the response. When empty,
-                            the scheme of the request is used.
-                          enum:
-                          - http
-                          - https
-                          type: string
-                        statusCode:
-                          default: 302
-                          description: StatusCode is the HTTP status code to be used
-                            in response.
-                          enum:
-                          - 301
-                          - 302
-                          type: integer
-                      type: object
                     responseHeadersPolicy:
                       description: The policy for managing response headers during
                         proxying. Rewriting the 'Host' header is not supported.
@@ -3261,6 +3170,7 @@ spec:
                         - name
                         - port
                         type: object
+                      minItems: 1
                       type: array
                     timeoutPolicy:
                       description: The timeout policy for this route.
@@ -3282,6 +3192,8 @@ spec:
                           pattern: ^(((\d*(\.\d*)?h)|(\d*(\.\d*)?m)|(\d*(\.\d*)?s)|(\d*(\.\d*)?ms)|(\d*(\.\d*)?us)|(\d*(\.\d*)?µs)|(\d*(\.\d*)?ns))+|infinity|infinite)$
                           type: string
                       type: object
+                  required:
+                  - services
                   type: object
                 type: array
               tcpproxy:
@@ -3357,12 +3269,6 @@ spec:
                           description: RequestHashPolicy contains configuration for
                             an individual hash policy on a request attribute.
                           properties:
-                            hashSourceIP:
-                              description: HashSourceIP should be set to true when
-                                request source IP hash based load balancing is desired.
-                                It must be the only hash option field set, otherwise
-                                this request hash policy object will be ignored.
-                              type: boolean
                             headerHashOptions:
                               description: HeaderHashOptions should be set when request
                                 header hash based load balancing is desired. It must
@@ -3650,26 +3556,6 @@ spec:
                           no timeout.
                         pattern: ^(((\d*(\.\d*)?h)|(\d*(\.\d*)?m)|(\d*(\.\d*)?s)|(\d*(\.\d*)?ms)|(\d*(\.\d*)?us)|(\d*(\.\d*)?µs)|(\d*(\.\d*)?ns))+|infinity|infinite)$
                         type: string
-                      withRequestBody:
-                        description: WithRequestBody specifies configuration for sending
-                          the client request's body to authorization server.
-                        properties:
-                          allowPartialMessage:
-                            description: If AllowPartialMessage is true, then Envoy
-                              will buffer the body until MaxRequestBytes are reached.
-                            type: boolean
-                          maxRequestBytes:
-                            default: 1024
-                            description: MaxRequestBytes sets the maximum size of
-                              message body ExtAuthz filter will hold in-memory.
-                            format: int32
-                            minimum: 1
-                            type: integer
-                          packAsBytes:
-                            description: If PackAsBytes is true, the body sent to
-                              Authorization Server is in raw bytes.
-                            type: boolean
-                        type: object
                     required:
                     - extensionRef
                     type: object
@@ -3730,7 +3616,7 @@ spec:
                     description: The fully qualified domain name of the root of the
                       ingress tree all leaves of the DAG rooted at this object relate
                       to the fqdn.
-                    pattern: ^(\*\.)?[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
+                    pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$
                     type: string
                   rateLimitPolicy:
                     description: The policy for rate limiting on the virtual host.
@@ -4016,9 +3902,6 @@ spec:
                 type: object
             type: object
           status:
-            default:
-              currentStatus: NotReconciled
-              description: Waiting for controller
             description: Status is a container for computed information about the
               HTTPProxy.
             properties:
@@ -4317,7 +4200,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.6.2
+    controller-gen.kubebuilder.io/version: v0.6.0
   creationTimestamp: null
   name: tlscertificatedelegations.projectcontour.io
 spec:
