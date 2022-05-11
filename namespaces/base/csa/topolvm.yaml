@@ -5,5 +5,4 @@ metadata:
   labels:
     app.kubernetes.io/name: topolvm-system
     pod-security.cybozu.com/policy: privileged
-    team: csa
     topolvm.cybozu.com/webhook: ignore

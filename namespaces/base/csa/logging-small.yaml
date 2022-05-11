@@ -1,9 +1,6 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ceph-object-store
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+  name: logging-small
   labels:
     pod-security.cybozu.com/policy: privileged
-    team: csa
