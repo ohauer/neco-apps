@@ -26,6 +26,7 @@ patchesStrategicMerge:
   - nodes/neco-guests.yaml
   - nodes/neco.yaml
   - nodes/network.yaml
+  - nodes/office.yaml
   - nodes/set.yaml
   - statefulset.yaml
 resources:

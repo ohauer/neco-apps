@@ -321,6 +321,36 @@
         }
       ]
     },
+    "office": {
+      "argocd": {
+        "repositories": [
+          "https://github.com/cybozu-private/*"
+        ]
+      },
+      "delegates": [
+        {
+          "name": "maneki",
+          "roles": [
+            "admin"
+          ]
+        }
+      ],
+      "rootNamespaces": [
+        {
+          "labels": {
+            "team": "office"
+          },
+          "name": "team-office"
+        },
+        {
+          "labels": {
+            "development": "true",
+            "team": "office"
+          },
+          "name": "dev-team-office"
+        }
+      ]
+    },
     "set": {
       "argocd": {
         "repositories": [
