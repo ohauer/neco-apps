@@ -76,8 +76,6 @@ spec:
       server: '*'
     - namespace: team-izumo
       server: '*'
-    - namespace: team-kintone
-      server: '*'
     - namespace: team-landsat
       server: '*'
   namespaceResourceBlacklist:

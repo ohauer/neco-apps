@@ -113,13 +113,6 @@
       "repo": "https://github.com/cybozu-private/izumo-apps.git",
       "team": "izumo"
     },
-    "kintone-apps": {
-      "destinations": {
-        "stage0": "main"
-      },
-      "repo": "https://github.com/cybozu-private/kintone-apps.git",
-      "team": "kintone-neco"
-    },
     "landsat-apps": {
       "destinations": {
         "osaka0": "release",
@@ -238,17 +231,6 @@
         "accurate.cybozu.com/type": "root"
       }
     },
-    "kintone-neco": {
-      "dev-team-kintone": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root",
-        "development": "true"
-      },
-      "team-kintone": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
-      }
-    },
     "landsat": {
       "dev-team-landsat": {
         "accurate.cybozu.com/template": "init-template",
@@ -318,6 +300,37 @@
             "team": "ept"
           },
           "name": "dev-ept"
+        }
+      ]
+    },
+    "kintone-neco": {
+      "argocd": {
+        "repositories": [
+          "https://github.com/cybozu-private/*",
+          "https://github.com/kintone-private/*"
+        ]
+      },
+      "delegates": [
+        {
+          "name": "maneki",
+          "roles": [
+            "admin"
+          ]
+        }
+      ],
+      "rootNamespaces": [
+        {
+          "labels": {
+            "team": "kintone-neco"
+          },
+          "name": "team-kintone"
+        },
+        {
+          "labels": {
+            "development": "true",
+            "team": "kintone-neco"
+          },
+          "name": "dev-team-kintone"
         }
       ]
     },
