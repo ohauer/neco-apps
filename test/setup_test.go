@@ -519,6 +519,16 @@ func applyAndWaitForApplications(commitID string) {
 			}
 
 			// TODO: remove this block after release the PR bellow
+			// https://github.com/cybozu-go/neco-apps/pull/2579
+			if doUpgrade {
+				if app.Name == "topolvm" && app.Operation == nil && app.Status.Sync.Status == SyncStatusCodeOutOfSync {
+					fmt.Printf("%s sync topolvm app manually: syncStatus=%s, healthStatus=%s\n",
+						time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+					ExecSafeAt(boot0, "argocd", "app", "sync", "topolvm", "--force", "--prune")
+				}
+			}
+
+			// TODO: remove this block after release the PR bellow
 			// https://github.com/cybozu-go/neco-apps/pull/2509
 			if doUpgrade {
 				if app.Name == "sealed-secrets" && app.Operation == nil && app.Status.Sync.Status == SyncStatusCodeOutOfSync {
