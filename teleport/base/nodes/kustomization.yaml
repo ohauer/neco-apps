@@ -18,5 +18,6 @@ resources:
   - neco-guests.yaml
   - neco.yaml
   - network.yaml
+  - office.yaml
   - serviceaccount.yaml
   - set.yaml

@@ -12,6 +12,7 @@ ArgoCDApplicationValidator:
         - maneki
         - neco-guests
         - network
+        - office
         - set
         - tenant-app-of-apps
       repositoryPrefix: https://github.com/cybozu-private

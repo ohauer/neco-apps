@@ -12,6 +12,7 @@ patchesStrategicMerge:
   - dev-guests.yaml
   - dev-network.yaml
   - tenant-ept.yaml
+  - tenant-office.yaml
   - tenant-set.yaml
 resources:
   - ../../base

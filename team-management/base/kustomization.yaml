@@ -17,4 +17,5 @@ resources:
   - ./network
   - ./sandbox
   - tenant-ept.yaml
+  - tenant-office.yaml
   - tenant-set.yaml

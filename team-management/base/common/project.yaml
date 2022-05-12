@@ -110,6 +110,7 @@ spec:
         - cybozu-private:maneki
         - cybozu-private:neco-guests
         - cybozu-private:network
+        - cybozu-private:office
         - cybozu-private:set
       name: tenant-apps
       policies:
@@ -165,6 +166,7 @@ spec:
         - cybozu-private:neco
         - cybozu-private:neco-guests
         - cybozu-private:network
+        - cybozu-private:office
         - cybozu-private:set
       name: admin
       policies:
