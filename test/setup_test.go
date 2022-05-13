@@ -259,16 +259,41 @@ func testSetup() {
 	It("should checkout neco-apps repository@"+commitID, func() {
 		ExecSafeAt(boot0, "rm", "-rf", "neco-apps")
 
-		ExecSafeAt(boot0, "env", "https_proxy=http://10.0.49.3:3128",
-			"git", "clone", "https://github.com/cybozu-go/neco-apps")
+		data, err := os.ReadFile(cybozuPrivateRepoReadPAT)
+		Expect(err).ShouldNot(HaveOccurred())
+
+		_, stderr, err := ExecAtWithInput(boot0, data,
+			"bash", "-c", "'read -sr PASSWORD; env https_proxy=http://10.0.49.3:3128 git clone https://cybozu-neco:${PASSWORD}@github.com/cybozu-go/neco-apps'")
+		Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
 		ExecSafeAt(boot0, "cd neco-apps; git checkout "+commitID)
 	})
 
-	It("should setup applications", func() {
-		if !doUpgrade {
-			applyNetworkPolicy()
-			setupArgoCD()
+	It("should setup network policy & ArgoCD", func() {
+		if doUpgrade {
+			Skip("No need to setup it when upgrading")
 		}
+		applyNetworkPolicy()
+		setupArgoCD()
+	})
+
+	It("should add a credential to access to cybozu-private repositories and cybozu-go/neco-apps", func() {
+		if doUpgrade {
+			Skip("No need to create it when upgrading")
+		}
+
+		data, err := os.ReadFile(cybozuPrivateRepoReadPAT)
+		Expect(err).ShouldNot(HaveOccurred())
+
+		By("add a credential for cybozu-private")
+		// Change the reference of ArgoCD to cybozu-private/neco-apps, then delete here.
+		_, stderr, err := ExecAtWithInput(boot0, data, "bash", "-c", "'read -sr PASSWORD; argocd repocreds add https://github.com/cybozu-go/neco-apps --username cybozu-neco --password=${PASSWORD}'")
+		Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+
+		_, stderr, err = ExecAtWithInput(boot0, data, "bash", "-c", "'read -sr PASSWORD; argocd repocreds add https://github.com/cybozu-private/ --username cybozu-neco --password=${PASSWORD}'")
+		Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
+	})
+
+	It("should setup applications", func() {
 		if meowsDisabled() {
 			ExecSafeAt(boot0, "sed", "-i", "/meows.yaml/d", "./neco-apps/argocd-config/overlays/gcp/kustomization.yaml")
 		}
@@ -279,22 +304,6 @@ func testSetup() {
 
 	It("should wait for rook stable", func() {
 		confirmOsdPrepare()
-	})
-
-	It("should add a credential to access to cybozu-private repositories", func() {
-		if doUpgrade {
-			Skip("No need to create it when upgrading")
-		}
-
-		_, err := os.Stat(cybozuPrivateRepoReadPAT)
-		if err == nil {
-			data, err := os.ReadFile(cybozuPrivateRepoReadPAT)
-			Expect(err).ShouldNot(HaveOccurred())
-
-			By("add a credential for cybozu-private")
-			_, stderr, err := ExecAtWithInput(boot0, data, "bash", "-c", "'read -sr PASSWORD; argocd repocreds add https://github.com/cybozu-private/ --username cybozu-neco --password=${PASSWORD}'")
-			Expect(err).ShouldNot(HaveOccurred(), "stderr=%s", stderr)
-		}
 	})
 
 	It("should set HTTP proxy", func() {
