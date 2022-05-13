@@ -524,7 +524,8 @@ func applyAndWaitForApplications(commitID string) {
 				if app.Name == "topolvm" && app.Operation == nil && app.Status.Sync.Status == SyncStatusCodeOutOfSync {
 					fmt.Printf("%s sync topolvm app manually: syncStatus=%s, healthStatus=%s\n",
 						time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
-					ExecSafeAt(boot0, "argocd", "app", "sync", "topolvm", "--force", "--prune")
+					ExecAt(boot0, "argocd", "app", "sync", "topolvm", "--force", "--prune")
+					// ignore error
 				}
 			}
 
