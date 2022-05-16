@@ -237,6 +237,7 @@ jobs:
           name: Test neco-apps
           command: |
             export NECO_DIR=$(pwd)/neco
+            echo "$SECRET_GITHUB_TOKEN" > cybozu_private_repo_read_pat
             TARGET=dctest-reboot ./bin/run-test.sh
           no_output_timeout: 61m
       - delete-instance
