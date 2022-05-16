@@ -8,7 +8,6 @@ resources:
   - ./dbre
   - ./garoon
   - ./izumo
-  - ./kintone-neco
   - ./landsat
   - ./maneki
   - ./neco
@@ -17,5 +16,6 @@ resources:
   - ./network
   - ./sandbox
   - tenant-ept.yaml
+  - tenant-kintone-neco.yaml
   - tenant-office.yaml
   - tenant-set.yaml

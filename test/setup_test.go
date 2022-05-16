@@ -547,6 +547,36 @@ func applyAndWaitForApplications(commitID string) {
 				}
 			}
 
+			if doUpgrade {
+				if app.Name == "team-management" && app.Status.Sync.Status != SyncStatusCodeSynced {
+					fmt.Printf("%s failed to sync team-management app: syncStatus=%s, healthStatus=%s\n",
+						time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+
+					// TODO: remove this block after release the PR bellow
+					// https://github.com/cybozu-go/neco-apps/pull/2587
+					_, _, err := ExecAt(boot0, "kubectl", "get", "ns", "team-kintone")
+					if err == nil {
+						fmt.Printf("%s remove team-kintone app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "team-kintone", "app.kubernetes.io/instance-")
+						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
+					}
+					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "dev-team-kintone")
+					if err == nil {
+						fmt.Printf("%s remove dev-team-kintone app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "dev-team-kintone", "app.kubernetes.io/instance-")
+						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
+					}
+
+					if app.Operation == nil {
+						fmt.Printf("%s sync team-management manually: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						ExecAt(boot0, "argocd", "app", "sync", "team-management", "--async", "--prune")
+						// ignore error
+					}
+				}
+			}
 			// In upgrade test, syncing network-policy app may cause temporal network disruption.
 			// It leads to ArgoCD's improper behavior. In spite of the network-policy app becomes Synced/Healthy, the operation does not end.
 			// So terminate the unexpected operation manually in upgrade test.
