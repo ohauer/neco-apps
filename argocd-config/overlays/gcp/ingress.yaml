@@ -6,4 +6,3 @@ metadata:
 spec:
   source:
     path: ingress/overlay
-    targetRevision: stage
