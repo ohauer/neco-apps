@@ -355,3 +355,77 @@ tests:
               severity: error
             exp_annotations:
               summary: The network interface `eno12409` on `192.168.0.5` is down.
+
+  - interval: 1m
+    input_series:
+      - series: 'systemd_unit_active{address="192.168.0.1",unit="neco-updater.service"}'
+        values: '1+0x30'
+      - series: 'systemd_unit_active_timestamp{address="192.168.0.1"}'
+        values: '0+60x30'
+      - series: 'systemd_unit_active{address="192.168.0.2",unit="neco-updater.service"}'
+        values: '0+0x30'
+      - series: 'systemd_unit_active_timestamp{address="192.168.0.2"}'
+        values: '0+60x30'
+      - series: 'systemd_unit_active{address="192.168.0.4",unit="neco-updater.service"}'
+        values: '1+0x30'
+      - series: 'systemd_unit_active_timestamp{address="192.168.0.4"}'
+        values: '-600+0x30'
+      - series: 'sabakan_machine_status{status="healthy", role="boot", address="192.168.0.1"}'
+        values: '1+0x30'
+      - series: 'sabakan_machine_status{status="retired", role="boot", address="192.168.0.1"}'
+        values: '0+0x30'
+      - series: 'sabakan_machine_status{status="healthy", role="boot", address="192.168.0.2"}'
+        values: '1+0x30'
+      - series: 'sabakan_machine_status{status="retired", role="boot", address="192.168.0.2"}'
+        values: '0+0x30'
+      - series: 'sabakan_machine_status{status="healthy", role="boot", address="192.168.0.3"}'
+        values: '1+0x30'
+      - series: 'sabakan_machine_status{status="retired", role="boot", address="192.168.0.3"}'
+        values: '0+0x30'
+      - series: 'sabakan_machine_status{status="healthy", role="boot", address="192.168.0.4"}'
+        values: '1+0x30'
+      - series: 'sabakan_machine_status{status="retired", role="boot", address="192.168.0.4"}'
+        values: '0+0x30'
+      - series: 'sabakan_machine_status{status="healthy", role="boot", address="192.168.0.5"}'
+        values: '0+0x30'
+      - series: 'sabakan_machine_status{status="retired", role="boot", address="192.168.0.5"}'
+        values: '1+0x30'
+      - series: 'sabakan_machine_status{status="healthy", role="cs", address="192.168.0.6"}'
+        values: '1+0x30'
+      - series: 'sabakan_machine_status{status="retired", role="cs", address="192.168.0.6"}'
+        values: '0+0x30'
+    alert_rule_test:
+      - eval_time: 30m
+        alertname: SystemdUnitActiveMetricMissing
+        exp_alerts:
+          - exp_labels:
+              address: "192.168.0.3"
+              severity: "error"
+            exp_annotations:
+              summary: "The metric of systemd unit activeness is missing for `192.168.0.3`."
+              runbook: "Run `systemctl status export-unit-status.timer` and `systemctl status export-unit-status.service` to investigate the unit statuses."
+      - eval_time: 30m
+        alertname: SystemdUnitActiveMetricStale
+        exp_alerts:
+          - exp_labels:
+              address: "192.168.0.3"
+              severity: "error"
+            exp_annotations:
+              summary: "The metric of systemd unit activeness is stale for `192.168.0.3`."
+              runbook: "Run `systemctl status export-unit-status.timer` and `systemctl status export-unit-status.service` to investigate the unit statuses."
+          - exp_labels:
+              address: "192.168.0.4"
+              severity: "error"
+            exp_annotations:
+              summary: "The metric of systemd unit activeness is stale for `192.168.0.4`."
+              runbook: "Run `systemctl status export-unit-status.timer` and `systemctl status export-unit-status.service` to investigate the unit statuses."
+      - eval_time: 30m
+        alertname: SystemdUnitNotActive
+        exp_alerts:
+          - exp_labels:
+              address: "192.168.0.2"
+              unit: "neco-updater.service"
+              severity: "error"
+            exp_annotations:
+              summary: "The `neco-updater.service` unit is not active on `192.168.0.2`."
+              runbook: "Run `systemctl status neco-updater.service` and `journalctl -u neco-updater.service` to investigate the unit log."
