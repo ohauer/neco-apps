@@ -23,4 +23,10 @@ function(teams) [{
       newName: 'quay.io/gravitational/teleport',
     },
   ],
+  patches: [
+    {
+      target: { kind: 'Service', name: 'teleport-proxy' },
+      patch: '- op: remove\n  path: /spec/externalTrafficPolicy',
+    },
+  ],
 }]

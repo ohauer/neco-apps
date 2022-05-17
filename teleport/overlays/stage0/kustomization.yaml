@@ -3,3 +3,10 @@ kind: Kustomization
 resources:
   - ../../base
   - certificate.yaml
+patches:
+  - target:
+      kind: Service
+      name: teleport-proxy
+    patch: |-
+      - op: remove
+        path: /spec/externalTrafficPolicy
