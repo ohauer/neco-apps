@@ -8,5 +8,3 @@ helmCharts:
   repo: https://topolvm.github.io/topolvm
   valuesFile: values.yaml
   version: 6.0.0
-resources:
-  - namespace.yaml
