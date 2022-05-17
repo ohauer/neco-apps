@@ -1,9 +1,5 @@
 {
   "allowed_namespaces": {
-    "csa": [
-      "app-csa-*",
-      "app-forest-archive"
-    ],
     "cydec": [
       "app-gorush"
     ],
@@ -41,15 +37,6 @@
     ]
   },
   "apps": {
-    "csa-apps": {
-      "destinations": {
-        "osaka0": "release",
-        "stage0": "stage",
-        "tokyo0": "release"
-      },
-      "repo": "https://github.com/cybozu-private/csa-apps.git",
-      "team": "csa"
-    },
     "cydec-apps": {
       "destinations": {
         "osaka0": "release",
@@ -179,12 +166,6 @@
   },
   "migrating_teams": [],
   "namespaces": {
-    "csa": {
-      "app-csa": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
-      }
-    },
     "cydec": {
       "app-cydec": {
         "accurate.cybozu.com/template": "init-template",
@@ -281,6 +262,21 @@
     }
   },
   "tenants": {
+    "csa": {
+      "argocd": {
+        "repositories": [
+          "https://github.com/cybozu-private/*"
+        ]
+      },
+      "rootNamespaces": [
+        {
+          "labels": {
+            "team": "csa"
+          },
+          "name": "app-csa"
+        }
+      ]
+    },
     "ept": {
       "argocd": {
         "repositories": [

@@ -570,6 +570,16 @@ func applyAndWaitForApplications(commitID string) {
 						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
 					}
 
+					// TODO: remove this block after release the PR bellow
+					// https://github.com/cybozu-go/neco-apps/pull/2588
+					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "app-csa")
+					if err == nil {
+						fmt.Printf("%s remove app-csa app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "app-csa", "app.kubernetes.io/instance-")
+						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
+					}
+
 					if app.Operation == nil {
 						fmt.Printf("%s sync team-management manually: syncStatus=%s, healthStatus=%s\n",
 							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)

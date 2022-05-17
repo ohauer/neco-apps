@@ -10,6 +10,7 @@ patchesStrategicMerge:
   - dev-maneki.yaml
   - dev-guests.yaml
   - dev-network.yaml
+  - tenant-csa.yaml
   - tenant-ept.yaml
   - tenant-kintone-neco.yaml
   - tenant-office.yaml

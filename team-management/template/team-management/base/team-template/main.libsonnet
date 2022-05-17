@@ -5,7 +5,7 @@ local project_template = import 'project.libsonnet';
 function(settings, team)
   local namespaces = utility.get_team_namespaces(settings, team);
   local allowed_namespaces = utility.get_allowed_namespaces(settings, team);
-  local maneki_team_namespaces = std.setDiff(std.set(utility.get_all_namespaces(settings)), std.set(utility.get_team_namespaces(settings, 'csa')));
+  local maneki_team_namespaces = std.set(utility.get_all_namespaces(settings));
   local maneki_allowed_namespaces = std.setDiff(std.set(utility.get_all_allowed_namespaces(settings)), std.set(utility.get_allowed_namespaces(settings, 'csa')));
   {
     'kustomization.yaml': kustomization_template(team, namespaces),
