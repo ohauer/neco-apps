@@ -6,8 +6,15 @@ dctest
 
 1. Set `NECO_DIR` environment variable to point the directory for `github.com/cybozu-go/neco`
 2. Place `account.json` file for GCP Cloud DNS in this directory.
-3. Push the current feature branch to GitHub.
-4. Prepare dctest environment using `github.com/cybozu-go/neco/dctest`.
+3. Place `cybozu_private_repo_read_pat` file for reading private repository in this directory.
+
+    ```console
+    PAT=$(systemd-ask-password -)
+    echo $PAT > /path/to/neco-apps/test/cybozu_private_repo_read_pat
+    ```
+
+4. Push the current feature branch to GitHub.
+5. Prepare dctest environment using `github.com/cybozu-go/neco/dctest`.
 
     ```console
     # In this case, menu-ss.yml should be used.
@@ -17,14 +24,14 @@ dctest
     make -C ${NECO_DIR}/dctest test SUITE=bootstrap
     ```
 
-5. Run following commands to setup tools.
+6. Run following commands to setup tools.
 
     ```console
     cd test
     make setup
     ```
 
-6. Run either one of the following.
+7. Run either one of the following.
 
     1. Setup all applications without tests.
 
@@ -47,6 +54,13 @@ External DNS in Argo CD app `external-dns` requires Google Application Credentia
 neco-apps test runs `kubectl create secrets .... --from-file=account.json` to register `Secret` for External DNS.
 To run `external-dns` test, put your account.json of the Google Cloud service account which has a role `roles/dns.admin`.
 See details of the role at https://cloud.google.com/iam/docs/understanding-roles#dns-roles
+
+`./cybozu_private_repo_read_pat`
+--------------------------------
+
+The PAT in this file is required for neco-apps checkout and for ArgoCD to read the private repository.
+neco-apps test runs `argocd repocreds add https://github.com/cybozu-private/ --username cybozu-neco --password=<cybozu_private_repo_read_pat>`.
+This PAT must belong to a `cybozu-neco` user.
 
 Using `argocd`
 --------------
