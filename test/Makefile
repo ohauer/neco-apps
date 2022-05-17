@@ -81,10 +81,10 @@ dctest-upgrade: install.yaml
 		git worktree remove /tmp/neco-apps; \
 		git worktree add /tmp/neco-apps $(BASE_BRANCH) && \
 		cp account.json /tmp/neco-apps/test && \
+		cp cybozu_private_repo_read_pat /tmp/neco-apps/test && \
 		cp meows-secret.json /tmp/neco-apps/test || true && \
 		cp ghcr_dockerconfig.json /tmp/neco-apps/test || true && \
 		cp quay_dockerconfig.json /tmp/neco-apps/test || true && \
-		cp cybozu_private_repo_read_pat /tmp/neco-apps/test || true && \
 		$(MAKE) -C /tmp/neco-apps/test setup dctest SUITE=bootstrap COMMIT_ID=$(BASE_BRANCH); \
 		cp /tmp/neco-apps/test/argocd-password.txt ./; \
 	fi
