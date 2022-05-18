@@ -3,3 +3,10 @@ kind: Kustomization
 resources:
   - ../../base
   - bmc-reverse-proxy/certificate.yaml
+patches:
+  - target:
+      kind: Service
+      name: bmc-reverse-proxy
+    patch: |-
+      - op: remove
+        path: /spec/externalTrafficPolicy

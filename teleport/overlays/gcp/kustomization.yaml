@@ -4,6 +4,13 @@ images:
   - name: quay.io/gravitational/teleport-ent
     newName: quay.io/gravitational/teleport
 kind: Kustomization
+patches:
+  - patch: |-
+      - op: remove
+        path: /spec/externalTrafficPolicy
+    target:
+      kind: Service
+      name: teleport-proxy
 patchesStrategicMerge:
   - apps/hubble-ui.yaml
   - apps/vmalert-largeset.yaml
