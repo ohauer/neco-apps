@@ -27,7 +27,7 @@ spec:
         egress.coil.cybozu.com/internet-egress: nat
     automountServiceAccountToken: false
     runnerContainer:
-      image: quay.io/cybozu/meows-dctest-runner:0.7.0.1
+      image: quay.io/cybozu/meows-dctest-runner:0.7.0.3
       securityContext:
         privileged: true
       env:
@@ -35,6 +35,16 @@ spec:
         value: "release"
       - name: NECO_APPS_BRANCH
         value: "release"
+      - name: GITHUB_USER
+        valueFrom:
+          secretKeyRef:
+            name: cybozu-private-repo-read-pat
+            key: GITHUB_USER
+      - name: GITHUB_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: cybozu-private-repo-read-pat
+            key: GITHUB_TOKEN
       resources:
         requests:
           cpu: 15000m
