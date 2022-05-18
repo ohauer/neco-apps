@@ -24,13 +24,15 @@
       "app-kodama",
       "app-maneki-static-cybozu-com",
       "app-metropolis",
+      "app-minefield",
       "app-misc",
       "app-monitoring",
       "app-monitoring-elasticstack",
       "app-oauth-redirector",
       "app-octodns",
       "app-schreiben",
-      "app-schreiben-mta"
+      "app-schreiben-mta",
+      "app-themis"
     ],
     "network": [
       "app-network-*"
