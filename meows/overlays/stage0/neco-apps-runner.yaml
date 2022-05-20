@@ -1,17 +1,17 @@
 apiVersion: meows.cybozu.com/v1alpha1
 kind: RunnerPool
 metadata:
-  name: dctest-runner
+  name: neco-apps-runner
   namespace: meows-runner
 spec:
   organization: cybozu-private
-  replicas: 2
+  replicas: 3
+  maxRunnerPods: 25
   notification:
     slack:
       enable: true
-      channel: "#neco"
+      channel: "#kmdkuk-dev"
     extendDuration: "30m"
-  setupCommand: ["/usr/local/bin/dctest-bootstrap"]
   workVolume:
     ephemeral:
       volumeClaimTemplate:
@@ -35,21 +35,6 @@ spec:
       image: quay.io/cybozu/meows-dctest-runner:0.7.0.4
       securityContext:
         privileged: true
-      env:
-      - name: NECO_BRANCH
-        value: "release"
-      - name: NECO_APPS_BRANCH
-        value: "release"
-      - name: GITHUB_USER
-        valueFrom:
-          secretKeyRef:
-            name: cybozu-private-repo-read-pat
-            key: GITHUB_USER
-      - name: GITHUB_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: cybozu-private-repo-read-pat
-            key: GITHUB_TOKEN
       resources:
         requests:
           cpu: 15000m
@@ -72,9 +57,6 @@ spec:
             mountPath: /opt/hostedtoolcache
           - name: tmp
             mountPath: /tmp
-          - name: secrets
-            mountPath: /secrets
-            readOnly: true
     volumes:
         - name: bird
           emptyDir: {}
@@ -120,6 +102,3 @@ spec:
                 resources:
                   requests:
                     storage: 15Gi
-        - name: secrets
-          secret:
-            secretName: clouddns
