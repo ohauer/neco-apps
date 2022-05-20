@@ -6,7 +6,7 @@ updateStrategy:
 image:
   registry: quay.io
   repository: cybozu/promtail
-  tag: 2.3.0.1
+  tag: 2.5.0.1
 
 priorityClassName: node-bound
 
