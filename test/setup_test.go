@@ -580,6 +580,23 @@ func applyAndWaitForApplications(commitID string) {
 						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
 					}
 
+					// TODO: remove this block after release the PR bellow
+					// https://github.com/cybozu-go/neco-apps/pull/2623
+					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "team-izumo")
+					if err == nil {
+						fmt.Printf("%s remove team-izumo app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "team-izumo", "app.kubernetes.io/instance-")
+						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
+					}
+					_, _, err = ExecAt(boot0, "kubectl", "get", "ns", "dev-team-izumo")
+					if err == nil {
+						fmt.Printf("%s remove dev-team-izumo app.kubernetes.io/instance label: syncStatus=%s, healthStatus=%s\n",
+							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)
+						stdout, stderr, err := ExecAt(boot0, "kubectl", "label", "ns", "dev-team-izumo", "app.kubernetes.io/instance-")
+						Expect(err).ShouldNot(HaveOccurred(), "failed to unlabel: stdout=%s, stderr=%s", stdout, stderr)
+					}
+
 					if app.Operation == nil {
 						fmt.Printf("%s sync team-management manually: syncStatus=%s, healthStatus=%s\n",
 							time.Now().Format(time.RFC3339), app.Status.Sync.Status, app.Status.Health.Status)

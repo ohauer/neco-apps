@@ -93,15 +93,6 @@
       "repo": "https://github.com/cybozu-private/hazama-apps.git",
       "team": "maneki"
     },
-    "izumo-apps": {
-      "destinations": {
-        "osaka0": "release",
-        "stage0": "main",
-        "tokyo0": "release"
-      },
-      "repo": "https://github.com/cybozu-private/izumo-apps.git",
-      "team": "izumo"
-    },
     "landsat-apps": {
       "destinations": {
         "osaka0": "release",
@@ -203,17 +194,6 @@
         "development": "true"
       }
     },
-    "izumo": {
-      "dev-team-izumo": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root",
-        "development": "true"
-      },
-      "team-izumo": {
-        "accurate.cybozu.com/template": "init-template",
-        "accurate.cybozu.com/type": "root"
-      }
-    },
     "landsat": {
       "dev-team-landsat": {
         "accurate.cybozu.com/template": "init-template",
@@ -298,6 +278,28 @@
             "team": "ept"
           },
           "name": "dev-ept"
+        }
+      ]
+    },
+    "izumo": {
+      "argocd": {
+        "repositories": [
+          "https://github.com/cybozu-private/*"
+        ]
+      },
+      "rootNamespaces": [
+        {
+          "labels": {
+            "team": "izumo"
+          },
+          "name": "team-izumo"
+        },
+        {
+          "labels": {
+            "development": "true",
+            "team": "izumo"
+          },
+          "name": "dev-team-izumo"
         }
       ]
     },

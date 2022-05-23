@@ -78,8 +78,6 @@ spec:
       server: '*'
     - namespace: team-dbre
       server: '*'
-    - namespace: team-izumo
-      server: '*'
     - namespace: team-landsat
       server: '*'
   namespaceResourceBlacklist:

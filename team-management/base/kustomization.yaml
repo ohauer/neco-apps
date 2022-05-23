@@ -6,7 +6,6 @@ resources:
   - ./cydec
   - ./dbre
   - ./garoon
-  - ./izumo
   - ./landsat
   - ./maneki
   - ./neco
@@ -16,6 +15,7 @@ resources:
   - ./sandbox
   - tenant-csa.yaml
   - tenant-ept.yaml
+  - tenant-izumo.yaml
   - tenant-kintone-neco.yaml
   - tenant-office.yaml
   - tenant-set.yaml
