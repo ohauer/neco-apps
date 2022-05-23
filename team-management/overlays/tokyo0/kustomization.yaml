@@ -5,13 +5,13 @@ patchesStrategicMerge:
   - dev-cydec.yaml
   - dev-dbre.yaml
   - dev-garoon.yaml
-  - dev-team-izumo.yaml
   - dev-team-landsat.yaml
   - dev-maneki.yaml
   - dev-guests.yaml
   - dev-network.yaml
   - tenant-csa.yaml
   - tenant-ept.yaml
+  - tenant-izumo.yaml
   - tenant-kintone-neco.yaml
   - tenant-office.yaml
   - tenant-set.yaml

@@ -51,12 +51,6 @@ spec:
         - p, proj:tenant-app-of-apps:hazama-apps, applications, get, tenant-app-of-apps/hazama-apps, allow
         - p, proj:tenant-app-of-apps:hazama-apps, applications, sync, tenant-app-of-apps/hazama-apps, allow
     - groups:
-        - cybozu-private:izumo
-      name: izumo-apps
-      policies:
-        - p, proj:tenant-app-of-apps:izumo-apps, applications, get, tenant-app-of-apps/izumo-apps, allow
-        - p, proj:tenant-app-of-apps:izumo-apps, applications, sync, tenant-app-of-apps/izumo-apps, allow
-    - groups:
         - cybozu-private:landsat
       name: landsat-apps
       policies:
