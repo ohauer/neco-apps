@@ -5,8 +5,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.3.0
-    helm.sh/chart: promtail-3.8.2
+    app.kubernetes.io/version: 2.5.0
+    helm.sh/chart: promtail-4.2.0
   name: promtail-small
   namespace: logging-small
 ---
@@ -17,8 +17,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.3.0
-    helm.sh/chart: promtail-3.8.2
+    app.kubernetes.io/version: 2.5.0
+    helm.sh/chart: promtail-4.2.0
   name: promtail-small
 rules:
 - apiGroups:
@@ -41,8 +41,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.3.0
-    helm.sh/chart: promtail-3.8.2
+    app.kubernetes.io/version: 2.5.0
+    helm.sh/chart: promtail-4.2.0
   name: promtail-small
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -60,13 +60,13 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.3.0
-    helm.sh/chart: promtail-3.8.2
+    app.kubernetes.io/version: 2.5.0
+    helm.sh/chart: promtail-4.2.0
   name: promtail-small
   namespace: logging-small
 stringData:
-  promtail.yaml: "server:\n  log_level: info\n  http_listen_port: 3101\n\nclient:\n
-    \ url: http://loki-small.logging-small:3100/loki/api/v1/push\n  \n\npositions:\n
+  promtail.yaml: "server:\n  log_level: info\n  http_listen_port: 3101\n\nclients:\n
+    \ - url: http://loki-small.logging-small:3100/loki/api/v1/push\n\npositions:\n
     \ filename: /run/promtail/positions.yaml\n\nscrape_configs:\n  # See also https://github.com/grafana/loki/blob/master/production/ksonnet/promtail/scrape_config.libsonnet
     for reference\n  - job_name: kubernetes-pods\n    pipeline_stages:\n      - cri:
     {}\n    kubernetes_sd_configs:\n      - role: pod\n    relabel_configs:\n      -
@@ -119,8 +119,8 @@ metadata:
     app.kubernetes.io/instance: promtail-small
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: promtail
-    app.kubernetes.io/version: 2.3.0
-    helm.sh/chart: promtail-3.8.2
+    app.kubernetes.io/version: 2.5.0
+    helm.sh/chart: promtail-4.2.0
   name: promtail-small
   namespace: logging-small
 spec:
@@ -131,7 +131,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: a3e817f97866f69c75fb15aa9b6c455d5e5914af30ee46a1785b72b0cf34cdf5
+        checksum/config: 4e006fd579094e715cd83ab5c1ff2475bb0e343c4d6b6cc3d6d15dd042bc1b08
       labels:
         app.kubernetes.io/instance: promtail-small
         app.kubernetes.io/name: promtail
@@ -144,7 +144,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        image: quay.io/cybozu/promtail:2.3.0.1
+        image: quay.io/cybozu/promtail:2.5.0.1
         imagePullPolicy: IfNotPresent
         name: promtail
         ports:

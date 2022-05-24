@@ -7,5 +7,5 @@ helmCharts:
     releaseName: logging
     repo: https://grafana.github.io/helm-charts
     valuesFile: values.yaml
-    version: 3.8.2
+    version: 4.2.0
 namespace: logging
