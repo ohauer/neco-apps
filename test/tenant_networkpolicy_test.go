@@ -31,6 +31,20 @@ func prepareTenantNetworkPolicy() {
 		By("preparing namespaces")
 		ExecSafeAt(boot0, "kubectl", "accurate", "sub", "create", testTenantNamespace, testRootNamespace)
 		ExecSafeAt(boot0, "kubectl", "accurate", "sub", "create", testTenantNamespace2, testRootNamespace)
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "namespace", testTenantNamespace)
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+			return nil
+		}).Should(Succeed())
+		Eventually(func() error {
+			stdout, stderr, err := ExecAt(boot0, "kubectl", "get", "namespace", testTenantNamespace2)
+			if err != nil {
+				return fmt.Errorf("stdout: %s, stderr: %s, err: %v", stdout, stderr, err)
+			}
+			return nil
+		}).Should(Succeed())
 
 		By("opting namespaces into network policies")
 		ExecSafeAt(boot0, "kubectl", "annotate", "namespace", testTenantNamespace, "tenet.cybozu.io/network-policy-template=allow-same-namespace-ingress")
