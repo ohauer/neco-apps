@@ -1,0 +1,44 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-same-ns-allow
+  namespace: logging-small
+spec:
+  endpointSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: logging-small
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-loki-allow
+  namespace: logging-small
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app: loki
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: monitoring
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: teleport
+    toPorts:
+    - ports:
+      - port: "3100"
+        protocol: TCP
+  - fromCIDR:
+    # Bastion network
+    - 10.72.48.0/24
+    - 10.72.80.0/24
+    - 10.76.48.0/24
+    - 10.76.80.0/24
+    - 10.78.48.0/24
+    - 10.78.80.0/24
+    toPorts:
+    - ports:
+      - port: "3100"
+        protocol: TCP

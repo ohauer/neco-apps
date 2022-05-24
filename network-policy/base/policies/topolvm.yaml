@@ -1,0 +1,49 @@
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-same-ns-allow
+  namespace: topolvm-system
+spec:
+  endpointSelector: {}
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: topolvm-system
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-topolvm-node-allow
+  namespace: topolvm-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: topolvm
+      k8s:app.kubernetes.io/component: node
+  ingress:
+  - fromEndpoints:
+    - matchLabels:
+        k8s:io.kubernetes.pod.namespace: monitoring
+    toPorts:
+    - ports:
+      - port: "8080"
+        protocol: TCP
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ingress-topolvm-controller-allow
+  namespace: topolvm-system
+spec:
+  endpointSelector:
+    matchLabels:
+      k8s:app.kubernetes.io/name: topolvm
+      k8s:app.kubernetes.io/component: controller
+  ingress:
+  - fromEntities:
+    - kube-apiserver
+    toPorts:
+    - ports:
+      - port: "9443"
+        protocol: TCP
