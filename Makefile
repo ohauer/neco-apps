@@ -253,6 +253,7 @@ update-meows:
 	sed -i -E '/name:.*meows-controller$$/!b;n;s/newTag:.*$$/newTag: $(patsubst v%,%,$(latest_gh))/' meows/overlays/gcp/kustomization.yaml
 	$(call get-latest-tag,meows-dctest-runner)
 	sed -i -E 's,quay.io/cybozu/meows-dctest-runner:.*$$,quay.io/cybozu/meows-dctest-runner:$(latest_tag),' meows/overlays/stage0/runnerpool.yaml
+	sed -i -E 's,quay.io/cybozu/meows-dctest-runner:.*$$,quay.io/cybozu/meows-dctest-runner:$(latest_tag),' meows/overlays/stage0/neco-apps-runner.yaml
 	$(call get-latest-tag,meows-neco-runner)
 	sed -i -E 's,quay.io/cybozu/meows-neco-runner:.*$$,quay.io/cybozu/meows-neco-runner:$(latest_tag),' meows/overlays/gcp/deployment.yaml
 

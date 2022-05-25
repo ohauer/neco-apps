@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - ../gcp
   - ./runnerpool.yaml
+  - ./neco-apps-runner.yaml
 patchesStrategicMerge:
   - ./configmap.yaml
